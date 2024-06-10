@@ -29,8 +29,10 @@
     },
     "require": {
         "php": "^8.1",
+        "illuminate/database": "^10.0 || ^11.0",
         "illuminate/support": "^10.0 || ^11.0",
-        "laravel-lang/config": "^1.1"
+        "laravel-lang/config": "^1.1",
+        "laravel-lang/locales": "^2.8"
     },
     "require-dev": {
         "orchestra/testbench": "^8.23 || ^9.1",
