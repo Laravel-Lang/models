@@ -14,18 +14,21 @@ beforeEach(fn () => File::ensureDelete(
 ));
 
 test('console command', function () {
-    $directory = Config::shared()->models->helpers;
+    $path = sprintf(
+        '%s/_ide_helper_models_%s.php',
+        Config::shared()->models->helpers,
+        md5(TestModel::class)
+    );
 
-    $filename = '_ide_helper_models_' . md5(TestModel::class) . '.php';
-
-    expect($directory . '/' . $filename)->not->toBeReadableFile();
+    expect($path)->not->toBeReadableFile();
 
     artisan(ModelsHelperCommand::class)->run();
 
-    expect($directory . '/' . $filename)->toBeReadableFile();
+    expect($path)->toBeReadableFile();
 
-    expect(file_get_contents($directory . '/' . $filename))
+    expect(file_get_contents($path))
         ->toContain('Tests\\Fixtures\\Models')
         ->toContain('TestModel')
-        ->toContain('@property string $title');
+        ->toContain('@property string $title')
+        ->toContain('@property string $description');
 });

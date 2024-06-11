@@ -18,8 +18,11 @@ class AttributeIsNotTranslatableException extends Exception
         $available = implode(', ', $model->translatable());
 
         parent::__construct(
-            "Cannot translate attribute `$column` as it's not on of the translatable attributes: `$available`.",
-            500
+            sprintf(
+                'Cannot translate attribute `%s` as it\'s not on of the translatable attributes: `%s`.',
+                $column,
+                $available
+            )
         );
     }
 }

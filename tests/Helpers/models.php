@@ -2,18 +2,23 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Collection;
 use LaravelLang\Models\Data\ContentData;
 use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
 use Tests\Fixtures\Models\TestModel;
 
-function fakeModel(string $key, ?string $text = null, ?string $fallback = null, ?string $custom = null): TestModel
-{
+function fakeModel(
+    ?string $key = null,
+    ?string $main = null,
+    ?string $fallback = null,
+    ?string $custom = null
+): TestModel {
+    $key ??= fake()->word;
+
     $model = TestModel::create(compact('key'));
 
-    if ($text || $fallback) {
-        fakeTranslation($model, $text, $fallback, $custom);
+    if ($main || $fallback || $custom) {
+        fakeTranslation($model, $main, $fallback, $custom);
     }
 
     return $model;
@@ -25,13 +30,26 @@ function fakeTranslation(
     ?string $fallback = null,
     ?string $custom = null
 ): Translation {
-    $data = collect()
-        ->when($text, fn (Collection $items) => $items->put(LocaleValue::LocaleMain, $text))
-        ->when($fallback, fn (Collection $items) => $items->put(LocaleValue::LocaleFallback, $fallback))
-        ->when($custom, fn (Collection $items) => $items->put(LocaleValue::LocaleCustom, $custom))
-        ->all();
+    $data = [];
+
+    if ($text) {
+        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleMain] = $text;
+    }
+
+    if ($fallback) {
+        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleFallback] = $fallback;
+    }
+
+    if ($custom) {
+        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleCustom] = $custom;
+    }
 
     return $model->translation()->create([
         'content' => new ContentData($data),
     ]);
+}
+
+function findFakeModel(): TestModel
+{
+    return TestModel::firstOrFail();
 }

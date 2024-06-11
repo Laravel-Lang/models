@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Data;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 
-class ContentData implements Jsonable
+class ContentData implements Jsonable, Arrayable
 {
     public function __construct(
         protected array $locales
@@ -37,7 +38,12 @@ class ContentData implements Jsonable
 
     public function toJson($options = 0): string
     {
-        return json_encode($this->locales, $options);
+        return json_encode($this->toArray(), $options);
+    }
+
+    public function toArray(): array
+    {
+        return array_filter(array_map(fn (array $locale) => array_filter($locale), $this->locales));
     }
 
     protected function locale(Locale|string|null $locale): string

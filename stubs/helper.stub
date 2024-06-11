@@ -4,7 +4,6 @@
 namespace {{namespace}} {
 
     use Illuminate\Database\Eloquent\Model;
-    use LaravelLang\Models\Data\ContentData;
     
     /**
 {{properties}}

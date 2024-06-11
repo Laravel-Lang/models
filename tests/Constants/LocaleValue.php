@@ -6,6 +6,8 @@ namespace Tests\Constants;
 
 class LocaleValue
 {
+    public const ColumnDescription = 'description';
+    public const ColumnTitle       = 'title';
     public const LocaleCustom      = 'as';
     public const LocaleFallback    = 'de';
     public const LocaleMain        = 'fr';

@@ -11,7 +11,7 @@ use LaravelLang\Config\Facades\Config;
 
 class HelperGenerator
 {
-    protected string $template = '     * @property array|string|ContentData $%s';
+    protected string $template = '     * @property string $%s';
 
     protected string $filenamePrefix = '_ide_helper_models_';
 

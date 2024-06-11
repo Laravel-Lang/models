@@ -66,14 +66,12 @@ trait HasTranslations
         return in_array($column, $this->translatable(), true);
     }
 
-    public function forgetTranslation(string $key, string $locale): static
+    public function forgetTranslation(string $column, ?string $locale = null): static
     {
         // TODO: write this one
 
         return $this;
     }
-
-    public function forgetTranslations() {}
 
     public function forgetAllTranslations(): void
     {

@@ -9,13 +9,14 @@ use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\HasTranslations;
+use LaravelLang\Models\Services\Autoloader;
 use LaravelLang\Models\Services\HelperGenerator;
 
 class ModelsHelperCommand extends Command
 {
     protected $signature = 'lang:models';
 
-    protected $description = 'Command description';
+    protected $description = 'Generating autocomplete translatable properties for models';
 
     public function handle(): void
     {
@@ -39,7 +40,7 @@ class ModelsHelperCommand extends Command
 
     protected function classes(): array
     {
-        return ['load from composer'];
+        return Autoloader::classes();
     }
 
     protected function isTranslatable(string $class): bool

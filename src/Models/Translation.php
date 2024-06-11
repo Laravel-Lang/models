@@ -15,9 +15,7 @@ class Translation extends Model
     use Initialize;
     use SoftDeletes;
 
-    /*
-     * Backward compatibility for Laravel 10
-     */
+    // Backward compatibility for Laravel 10.
     protected $casts = [
         'model_type' => 'string',
         'model_id'   => 'string',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use LaravelLang\Config\Facades\Config;
 
@@ -23,10 +24,11 @@ return new class extends Migration {
 
                 $table->timestamps();
                 $table->softDeletes();
-
-                // TODO: Заменить на условный индекс
-                $table->unique(['model_type', 'model_id']);
             });
+
+        DB::statement(
+            "CREATE UNIQUE INDEX {$config->table}_model_type_model_id_unique ON {$config->table} (model_type, model_id) WHERE deleted_at IS NULL"
+        );
     }
 
     public function down(): void
