@@ -12,11 +12,6 @@ use LaravelLang\Models\Models\Translation;
 /** @mixin \Illuminate\Database\Eloquent\Model */
 trait HasTranslations
 {
-    /*
-     * Translatable columns
-     */
-    protected array $translatable = [];
-
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
@@ -40,6 +35,10 @@ trait HasTranslations
         int|float|string|null $value,
         Locale|string|null $locale = null
     ): static {
+        if (is_null($this->translation)) {
+            $this->setRelation('translation', $this->translation()->make());
+        }
+
         $this->translation->content->set($column, $value, $locale);
 
         return $this;
@@ -47,6 +46,11 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|string|null $locale = null): int|float|string|null
     {
-        return $this->translation->content->get($column, $locale);
+        return $this->translation?->content?->get($column, $locale);
+    }
+
+    protected function translatable(): array
+    {
+        return [];
     }
 }
