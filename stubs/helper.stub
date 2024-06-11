@@ -1,0 +1,13 @@
+<?php //{{hash}}
+/** @noinspection all */
+
+namespace {{namespace}} {
+
+    use Illuminate\Database\Eloquent\Model;
+    
+    /**
+     * @property string $key
+{{properties}}
+     */
+    class {{model}} extends Model {}
+}

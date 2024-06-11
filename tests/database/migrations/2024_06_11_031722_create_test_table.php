@@ -12,7 +12,7 @@ return new class extends Migration {
         Schema::create('test_models', function (Blueprint $table) {
             $table->id();
 
-            $table->string('key', 255);
+            $table->string('key');
 
             $table->timestamps();
             $table->softDeletes();

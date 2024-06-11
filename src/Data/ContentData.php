@@ -7,6 +7,7 @@ namespace LaravelLang\Models\Data;
 use Illuminate\Contracts\Support\Jsonable;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 
 class ContentData implements Jsonable
 {
@@ -41,6 +42,10 @@ class ContentData implements Jsonable
 
     protected function locale(Locale|string|null $locale): string
     {
-        return Locales::get($locale)->code ?? Locales::getDefault()->code;
+        if (! Locales::isInstalled($locale)) {
+            throw new UnavailableLocaleException($locale);
+        }
+
+        return Locales::get($locale)->code;
     }
 }

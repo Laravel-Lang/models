@@ -7,6 +7,7 @@ namespace LaravelLang\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\Models\Exceptions\UnknownTranslationColumnException;
 use LaravelLang\Models\Models\Translation;
 
 /** @mixin \Illuminate\Database\Eloquent\Model */
@@ -16,12 +17,12 @@ trait HasTranslations
     {
         static::saved(function (Model $model) {
             /** @var \LaravelLang\Models\HasTranslations $model */
-            return $model->translation?->save() ?? $model;
+            return $model->translation?->save();
         });
 
         static::deleting(function (Model $model) {
             /** @var \LaravelLang\Models\HasTranslations $model */
-            return $model->translation()->delete();
+            return $model->translation?->delete() ?? $model->translation()->delete();
         });
     }
 
@@ -35,6 +36,8 @@ trait HasTranslations
         int|float|string|null $value,
         Locale|string|null $locale = null
     ): static {
+        $this->validateTranslationColumn($column);
+
         if (is_null($this->translation)) {
             $this->setRelation('translation', $this->translation()->make());
         }
@@ -46,7 +49,28 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|string|null $locale = null): int|float|string|null
     {
+        $this->validateTranslationColumn($column);
+
         return $this->translation?->content?->get($column, $locale);
+    }
+
+    public function hasTranslated(string $column, Locale|string|null $locale = null): bool
+    {
+        $this->validateTranslationColumn($column);
+
+        return $this->translation->content?->has($column, $locale) ?? false;
+    }
+
+    public function isTranslatable(string $column): bool
+    {
+        return in_array($column, $this->translatable(), true);
+    }
+
+    protected function validateTranslationColumn(string $column): void
+    {
+        if (! $this->isTranslatable($column)) {
+            throw new UnknownTranslationColumnException($column);
+        }
     }
 
     protected function translatable(): array

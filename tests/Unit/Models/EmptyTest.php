@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Tests\Fixtures\Models\TestModel;
-
 test('get', function () {
-    $model = TestModel::create();
+    $key = fake()->word;
+
+    $model = fakeModel($key);
 
     $locale   = config('app.locale');
     $fallback = config('app.fallback_locale');
@@ -21,12 +21,14 @@ test('get', function () {
 });
 
 test('set', function () {
-    $model = TestModel::create();
+    $key = fake()->word;
+
+    $model = fakeModel($key);
 
     $locale   = config('app.locale');
     $fallback = config('app.fallback_locale');
 
-    $text = fakeText();
+    $text = fake()->paragraph;
 
     $model->title = $text;
 

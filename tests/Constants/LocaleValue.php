@@ -6,10 +6,8 @@ namespace Tests\Constants;
 
 class LocaleValue
 {
-    public const LocaleAlias       = 'de-DE';
-    public const LocaleAliasParent = 'de';
+    public const LocaleCustom      = 'as';
+    public const LocaleFallback    = 'de';
     public const LocaleMain        = 'fr';
-    public const TranslationFrench = 'Toutes les données ont été chargées.';
-    public const TranslationGerman = 'Alle Ressourcen geladen.';
-    public const TranslationKey    = 'Foo';
+    public const LocaleUninstalled = 'af';
 }

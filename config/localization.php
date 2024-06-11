@@ -9,6 +9,8 @@ return [
         'table' => 'translations',
 
         'json_flags' => JSON_UNESCAPED_UNICODE ^ JSON_UNESCAPED_SLASHES,
+
+        'helpers' => base_path('vendor/_laravel_lang'),
     ],
 
     'translators' => [
