@@ -4,9 +4,9 @@
 namespace {{namespace}} {
 
     use Illuminate\Database\Eloquent\Model;
+    use LaravelLang\Models\Data\ContentData;
     
     /**
-     * @property string $key
 {{properties}}
      */
     class {{model}} extends Model {}

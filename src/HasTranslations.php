@@ -7,7 +7,7 @@ namespace LaravelLang\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use LaravelLang\LocaleList\Locale;
-use LaravelLang\Models\Exceptions\UnknownTranslationColumnException;
+use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Models\Translation;
 
 /** @mixin \Illuminate\Database\Eloquent\Model */
@@ -66,15 +66,29 @@ trait HasTranslations
         return in_array($column, $this->translatable(), true);
     }
 
+    public function forgetTranslation(string $key, string $locale): static
+    {
+        // TODO: write this one
+
+        return $this;
+    }
+
+    public function forgetTranslations() {}
+
+    public function forgetAllTranslations(): void
+    {
+            $this->translation?->delete() ?? $this->translation()->delete();
+    }
+
+    public function translatable(): array
+    {
+        return [];
+    }
+
     protected function validateTranslationColumn(string $column): void
     {
         if (! $this->isTranslatable($column)) {
-            throw new UnknownTranslationColumnException($column);
+            throw new AttributeIsNotTranslatableException($column, $this);
         }
-    }
-
-    protected function translatable(): array
-    {
-        return [];
     }
 }

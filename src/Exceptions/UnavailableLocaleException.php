@@ -6,6 +6,7 @@ namespace LaravelLang\Models\Exceptions;
 
 use Exception;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\Locales\Facades\Locales;
 
 class UnavailableLocaleException extends Exception
 {
@@ -13,6 +14,11 @@ class UnavailableLocaleException extends Exception
     {
         $locale = $locale->value ?? $locale;
 
-        parent::__construct("Unknown locale code:\"$locale\"", 500);
+        $available = Locales::installed()->pluck('locale.code')->filter()->implode(', ');
+
+        parent::__construct(
+            "Cannot set translation for `$locale` locale as it's not on of the installed locales: `$available`.",
+            500
+        );
     }
 }

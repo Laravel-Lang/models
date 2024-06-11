@@ -22,7 +22,7 @@ class TestModel extends Model
         'title',
     ];
 
-    protected function translatable(): array
+    public function translatable(): array
     {
         return [
             'title',
