@@ -12,5 +12,5 @@ function jsonEncode(array $value): string
 
 function jsonEncodeRaw(array $value): string
 {
-    return json_encode($value, Config::shared()->models->jsonFlags);
+    return json_encode($value, Config::shared()->models->flags);
 }

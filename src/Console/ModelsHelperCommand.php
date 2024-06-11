@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use DragonCode\Support\Facades\Filesystem\Directory;
-use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
-use LaravelLang\Models\HasTranslations;
-use LaravelLang\Models\Services\Autoloader;
+use LaravelLang\Models\Services\ClassMap;
 use LaravelLang\Models\Services\HelperGenerator;
 
 class ModelsHelperCommand extends Command
@@ -26,26 +24,19 @@ class ModelsHelperCommand extends Command
 
     protected function process(): void
     {
-        foreach ($this->classes() as $class) {
-            if ($this->isTranslatable($class)) {
-                $this->generate($class);
-            }
+        foreach ($this->models() as $model) {
+            $this->components->task($model, fn () => $this->generate($model));
         }
     }
 
-    protected function generate(string $class): void
+    protected function generate(string $model): void
     {
-        HelperGenerator::of($class)->generate();
+        HelperGenerator::of($model)->generate();
     }
 
-    protected function classes(): array
+    protected function models(): array
     {
-        return Autoloader::classes();
-    }
-
-    protected function isTranslatable(string $class): bool
-    {
-        return Instance::of($class, HasTranslations::class);
+        return ClassMap::get();
     }
 
     protected function cleanUp(): void

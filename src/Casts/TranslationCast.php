@@ -33,7 +33,7 @@ class TranslationCast implements CastsAttributes
     public function set(Model $model, string $key, mixed $value, array $attributes): ?string
     {
         if ($value) {
-            return $value->toJson(Config::shared()->models->jsonFlags);
+            return $value->toJson(Config::shared()->models->flags);
         }
 
         return null;

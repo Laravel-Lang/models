@@ -7,6 +7,7 @@ namespace LaravelLang\Models\Services;
 use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use LaravelLang\Config\Facades\Config;
 
 class HelperGenerator
@@ -41,12 +42,11 @@ class HelperGenerator
         ], '{{%s}}')->toString();
     }
 
-    protected function getProperties(): array
+    protected function getProperties(): string
     {
-        return array_map(
-            fn (string $attribute) => sprintf($this->template, $attribute),
-            $this->getTranslatable($this->class)
-        );
+        return $this->getTranslatable($this->class)
+            ->map(fn (string $attribute) => sprintf($this->template, $attribute))
+            ->implode(PHP_EOL);
     }
 
     protected function getNamespace(): string
@@ -64,9 +64,9 @@ class HelperGenerator
         return md5($this->class);
     }
 
-    protected function getTranslatable(string $class): array
+    protected function getTranslatable(string $class): Collection
     {
-        return $this->initializeModel($class)->translatable();
+        return collect($this->initializeModel($class)->translatable());
     }
 
     /**

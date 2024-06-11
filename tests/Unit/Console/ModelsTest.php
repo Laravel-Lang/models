@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use DragonCode\Support\Facades\Filesystem\File;
+use DragonCode\Support\Facades\Filesystem\Directory;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelsHelperCommand;
 use Tests\Fixtures\Models\TestModel;
 
 use function Pest\Laravel\artisan;
 
-beforeEach(fn () => File::ensureDelete(
+beforeEach(fn () => Directory::ensureDelete(
     Config::shared()->models->helpers
 ));
 

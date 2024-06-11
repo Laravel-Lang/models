@@ -14,8 +14,5 @@ trait Initialize
 
         $this->connection = $config->connection;
         $this->table      = $config->table;
-
-        $this->incrementing = $config->incrementing;
-        $this->timestamps   = $config->timestamps;
     }
 }
