@@ -49,7 +49,7 @@ test('custom locale', function () {
 
     $model = fakeModel(custom: $text);
 
-    expect($model->title)->toBeString()->toBeNull();
+    expect($model->title)->toBeNull();
 
     expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBeNull();
     expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
@@ -69,13 +69,11 @@ test('uninstalled', function () {
 })->throws(UnavailableLocaleException::class);
 
 test('without translations model', function () {
-    $text = fake()->paragraph;
-
-    $model = fakeModel(custom: $text);
+    $model = fakeModel();
 
     assertDatabaseEmpty(Translation::class);
 
-    expect($model->title)->toBeString()->toBeNull();
+    expect($model->title)->toBeNull();
 
     expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBeNull();
     expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();

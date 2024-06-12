@@ -12,14 +12,21 @@ use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 
-/** @mixin \Illuminate\Database\Eloquent\Model */
+/**
+ * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
+ * @mixin \Illuminate\Database\Eloquent\Model
+ */
 trait HasTranslations
 {
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
             /** @var \LaravelLang\Models\HasTranslations $model */
-            return $model->translation?->save();
+            $model->translation?->save();
+
+            if (! $model->translation) {
+                $model->setRelation('translation', $model->translation()->make());
+            }
         });
 
         static::deleting(function (Model $model) {
@@ -83,6 +90,15 @@ trait HasTranslations
     public function translatable(): array
     {
         return [];
+    }
+
+    public function getAttribute($key): mixed
+    {
+        if ($this->isTranslatable($key)) {
+            return $this->getTranslation($key);
+        }
+
+        return parent::getAttribute($key);
     }
 
     protected function validateTranslationColumn(

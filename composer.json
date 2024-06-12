@@ -34,7 +34,7 @@
         "dragon-code/support": "^6.13",
         "illuminate/database": "^10.0 || ^11.0",
         "illuminate/support": "^10.0 || ^11.0",
-        "laravel-lang/config": "^1.4",
+        "laravel-lang/config": "^1.4.2",
         "laravel-lang/locales": "^2.8"
     },
     "require-dev": {

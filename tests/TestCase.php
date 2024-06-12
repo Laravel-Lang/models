@@ -8,16 +8,19 @@ use LaravelLang\Config\ServiceProvider as ConfigServiceProvider;
 use LaravelLang\Locales\ServiceProvider as LocalesServiceProvider;
 use LaravelLang\Models\ServiceProvider as ModelsServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Tests\Concerns\Locales;
 use Tests\Constants\LocaleValue;
 
 abstract class TestCase extends BaseTestCase
 {
+    use Locales;
+
     protected function getPackageProviders($app): array
     {
         return [
+            ConfigServiceProvider::class,
             ModelsServiceProvider::class,
             LocalesServiceProvider::class,
-            ConfigServiceProvider::class,
         ];
     }
 
@@ -29,8 +32,7 @@ abstract class TestCase extends BaseTestCase
         $config->set('app.locale', LocaleValue::LocaleMain);
         $config->set('app.fallback_locale', LocaleValue::LocaleFallback);
 
-        //$config->set(Name::Hidden() . '.models.directory', __DIR__ . '/Fixtures/Models');
-        $config->set(Name::Hidden() . '.models.directory', __DIR__);
+        $config->set(Name::Hidden() . '.models.directory', __DIR__ . '/Fixtures/Models');
     }
 
     protected function defineDatabaseMigrations(): void

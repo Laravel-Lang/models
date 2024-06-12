@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use LaravelLang\Models\Data\ContentData;
-use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
 use Tests\Fixtures\Models\TestModel;
 
@@ -31,7 +30,7 @@ function fakeTranslation(
     ?string $fallback = null,
     ?string $custom = null,
     ?string $uninstalled = null
-): Translation {
+): void {
     $data = [];
 
     if ($text) {
@@ -50,9 +49,9 @@ function fakeTranslation(
         $data[LocaleValue::ColumnTitle][LocaleValue::LocaleUninstalled] = $uninstalled;
     }
 
-    return $model->translation()->create([
+    $model->translation->fill([
         'content' => new ContentData($data),
-    ]);
+    ])->save();
 }
 
 function findFakeModel(): TestModel

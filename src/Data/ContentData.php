@@ -16,24 +16,27 @@ class ContentData implements Jsonable, Arrayable
         protected array $locales
     ) {}
 
-    public function set(string $column, int|float|string|null $value, Locale|string|null $locale = null): void
-    {
-        $locale = $this->locale($locale);
-
-        if (is_null($value) || $value === '') {
-            unset($this->locales[$column][$locale]);
-
-            return;
-        }
+    public function set(
+        string $column,
+        int|float|string|null $value,
+        Locale|string|null $locale = null
+    ): int|float|string|null {
+        $locale = $locale ? $this->locale($locale) : $this->getDefault();
 
         $this->locales[$column][$locale] = $value;
+
+        return $value;
     }
 
     public function get(string $column, Locale|string|null $locale = null): int|float|string|null
     {
-        $locale = $this->locale($locale);
+        if ($locale) {
+            return $this->locales[$column][$this->locale($locale)] ?? null;
+        }
 
-        return $this->locales[$column][$locale] ?? null;
+        return $this->locales[$column][$this->getDefault()]
+            ?? $this->locales[$column][$this->getFallback()]
+            ?? null;
     }
 
     public function toJson($options = 0): string
@@ -53,5 +56,15 @@ class ContentData implements Jsonable, Arrayable
         }
 
         return Locales::get($locale)->code;
+    }
+
+    protected function getDefault(): string
+    {
+        return Locales::getDefault()->code;
+    }
+
+    protected function getFallback(): string
+    {
+        return Locales::getFallback()->code;
     }
 }

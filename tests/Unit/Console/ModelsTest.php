@@ -13,7 +13,7 @@ beforeEach(fn () => Directory::ensureDelete(
     Config::shared()->models->helpers
 ));
 
-test('console command', function () {
+test('generation', function () {
     $path = sprintf(
         '%s/_ide_helper_models_%s.php',
         Config::shared()->models->helpers,
