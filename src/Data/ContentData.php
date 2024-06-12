@@ -16,7 +16,7 @@ class ContentData implements Jsonable, Arrayable
         protected array $locales
     ) {}
 
-    public function set(string $column, int|float|string|null $value, Locale|string|null $locale): void
+    public function set(string $column, int|float|string|null $value, Locale|string|null $locale = null): void
     {
         $locale = $this->locale($locale);
 
@@ -29,7 +29,7 @@ class ContentData implements Jsonable, Arrayable
         $this->locales[$column][$locale] = $value;
     }
 
-    public function get(string $column, Locale|string|null $locale): int|float|string|null
+    public function get(string $column, Locale|string|null $locale = null): int|float|string|null
     {
         $locale = $this->locale($locale);
 

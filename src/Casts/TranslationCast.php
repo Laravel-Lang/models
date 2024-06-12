@@ -13,13 +13,9 @@ class TranslationCast implements CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): ?ContentData
     {
-        if ($value) {
-            return new ContentData(
-                json_decode($value, true)
-            );
-        }
-
-        return null;
+        return new ContentData(
+            $value ? json_decode($value, true) : []
+        );
     }
 
     /**

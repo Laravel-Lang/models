@@ -12,9 +12,22 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         if ($this->app->runningInConsole() || $this->app->runningUnitTests()) {
-            $this->commands([
-                ModelsHelperCommand::class,
-            ]);
+            $this->bootCommands();
+            $this->bootMigrations();
         }
+    }
+
+    protected function bootCommands(): void
+    {
+        $this->commands([
+            ModelsHelperCommand::class,
+        ]);
+    }
+
+    protected function bootMigrations(): void
+    {
+        $this->loadMigrationsFrom(
+            __DIR__ . '/../database/migrations'
+        );
     }
 }

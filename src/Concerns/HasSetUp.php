@@ -6,9 +6,9 @@ namespace LaravelLang\Models\Concerns;
 
 use LaravelLang\Config\Facades\Config;
 
-trait Initialize
+trait HasSetUp
 {
-    protected function bootInitialize(): void
+    public function initializeHasSetUp(): void
     {
         $config = Config::shared()->models;
 

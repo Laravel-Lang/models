@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use LaravelLang\Config\Data\ModelsData;
+use LaravelLang\Config\Data\Shared\ModelsData;
 use LaravelLang\Config\Facades\Config;
 
 return new class extends Migration {

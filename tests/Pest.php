@@ -1,7 +1,5 @@
 <?php
 
-uses(Tests\TestCase::class)->in('Unit');
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-// expect()->extend('toBeOne', function () {
-//    return $this->toBe(1);
-// });
+uses(Tests\TestCase::class, RefreshDatabase::class)->in('Unit');

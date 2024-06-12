@@ -8,12 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use LaravelLang\Models\Casts\TranslationCast;
-use LaravelLang\Models\Concerns\Initialize;
+use LaravelLang\Models\Concerns\HasSetUp;
+use LaravelLang\Models\Data\ContentData;
 
+/**
+ * @property ContentData $content
+ */
 class Translation extends Model
 {
-    use Initialize;
+    use HasSetUp;
     use SoftDeletes;
+
+    protected $fillable = [
+        'content',
+    ];
 
     // Backward compatibility for Laravel 10.
     protected $casts = [

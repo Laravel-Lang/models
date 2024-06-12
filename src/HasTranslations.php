@@ -7,7 +7,9 @@ namespace LaravelLang\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
+use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 
 /** @mixin \Illuminate\Database\Eloquent\Model */
@@ -36,7 +38,7 @@ trait HasTranslations
         int|float|string|null $value,
         Locale|string|null $locale = null
     ): static {
-        $this->validateTranslationColumn($column);
+        $this->validateTranslationColumn($column, $locale, true);
 
         if (is_null($this->translation)) {
             $this->setRelation('translation', $this->translation()->make());
@@ -49,14 +51,14 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|string|null $locale = null): int|float|string|null
     {
-        $this->validateTranslationColumn($column);
+        $this->validateTranslationColumn($column, $locale);
 
         return $this->translation?->content?->get($column, $locale);
     }
 
     public function hasTranslated(string $column, Locale|string|null $locale = null): bool
     {
-        $this->validateTranslationColumn($column);
+        $this->validateTranslationColumn($column, $locale);
 
         return $this->translation->content?->has($column, $locale) ?? false;
     }
@@ -83,10 +85,17 @@ trait HasTranslations
         return [];
     }
 
-    protected function validateTranslationColumn(string $column): void
-    {
+    protected function validateTranslationColumn(
+        string $column,
+        Locale|string|null $locale,
+        bool $withInstalled = false
+    ): void {
         if (! $this->isTranslatable($column)) {
             throw new AttributeIsNotTranslatableException($column, $this);
+        }
+
+        if ($locale && ! $withInstalled && ! Locales::isInstalled($locale)) {
+            throw new UnavailableLocaleException($locale);
         }
     }
 }
