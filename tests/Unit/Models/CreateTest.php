@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use LaravelLang\Models\Data\ContentData;
+use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
 use Tests\Fixtures\Models\TestModel;
@@ -173,3 +174,42 @@ test('data object', function () {
         ]),
     ]);
 });
+
+test('uninstalled store', function () {
+    assertDatabaseEmpty(TestModel::class);
+    assertDatabaseEmpty(Translation::class);
+
+    $model = TestModel::create([
+        'key' => 'foo',
+
+        LocaleValue::ColumnTitle => [
+            LocaleValue::LocaleMain        => 'qwerty 10',
+            LocaleValue::LocaleUninstalled => 'qwerty 11',
+        ],
+    ]);
+
+    assertDatabaseHas(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+
+        'content' => jsonEncodeRaw([
+            LocaleValue::ColumnTitle => [
+                LocaleValue::LocaleMain        => 'qwerty 10',
+                LocaleValue::LocaleUninstalled => 'qwerty 11',
+            ],
+        ]),
+    ]);
+});
+
+test('uninstalled reading', function () {
+    $model = TestModel::create([
+        'key' => 'foo',
+
+        LocaleValue::ColumnTitle => [
+            LocaleValue::LocaleMain        => 'qwerty 10',
+            LocaleValue::LocaleUninstalled => 'qwerty 11',
+        ],
+    ]);
+
+    $model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleUninstalled);
+})->throws(UnavailableLocaleException::class);

@@ -11,13 +11,14 @@ function fakeModel(
     ?string $key = null,
     ?string $main = null,
     ?string $fallback = null,
-    ?string $custom = null
+    ?string $custom = null,
+    ?string $uninstalled = null
 ): TestModel {
     $key ??= fake()->word;
 
     $model = TestModel::create(compact('key'));
 
-    if ($main || $fallback || $custom) {
+    if ($main || $fallback || $custom || $uninstalled) {
         fakeTranslation($model, $main, $fallback, $custom);
     }
 
@@ -28,7 +29,8 @@ function fakeTranslation(
     TestModel $model,
     ?string $text = null,
     ?string $fallback = null,
-    ?string $custom = null
+    ?string $custom = null,
+    ?string $uninstalled = null
 ): Translation {
     $data = [];
 
@@ -42,6 +44,10 @@ function fakeTranslation(
 
     if ($custom) {
         $data[LocaleValue::ColumnTitle][LocaleValue::LocaleCustom] = $custom;
+    }
+
+    if ($uninstalled) {
+        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleUninstalled] = $uninstalled;
     }
 
     return $model->translation()->create([

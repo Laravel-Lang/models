@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
 use Tests\Fixtures\Models\TestModel;
@@ -139,3 +140,9 @@ test('numeric', function () {
         ]),
     ]);
 });
+
+test('unknown locale', function () {
+    $model = fakeModel();
+
+    $model->setTranslation(LocaleValue::ColumnTitle, 'foo', LocaleValue::LocaleUninstalled);
+})->throws(UnavailableLocaleException::class);

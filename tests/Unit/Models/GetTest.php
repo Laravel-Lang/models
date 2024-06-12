@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
 
@@ -60,6 +61,12 @@ test('custom locale', function () {
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($text);
 });
+
+test('uninstalled', function () {
+    $model = fakeModel(uninstalled: fake()->paragraph);
+
+    $model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleUninstalled);
+})->throws(UnavailableLocaleException::class);
 
 test('without translations model', function () {
     $text = fake()->paragraph;
