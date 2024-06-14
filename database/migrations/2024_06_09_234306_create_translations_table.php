@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('model_type', 255);
             $table->string('model_id', 255);
 
-            $table->jsonb('content');
+            $table->jsonb('content')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

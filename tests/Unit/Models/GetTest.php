@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Models\Translation;
 use Tests\Constants\LocaleValue;
@@ -85,3 +86,17 @@ test('without translations model', function () {
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
 });
+
+test('non-translatable attribute', function () {
+    $key = fake()->word;
+
+    $model = fakeModel($key);
+
+    expect($model->key)->toBeString()->toBe($key);
+});
+
+test('not translatable attribute', function () {
+    $model = fakeModel();
+
+    $model->getTranslation('foo');
+})->throws(AttributeIsNotTranslatableException::class);

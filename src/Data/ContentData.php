@@ -8,24 +8,35 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasStrings;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 
 class ContentData implements Jsonable, Arrayable
 {
+    use HasStrings;
+
     public function __construct(
         protected array $locales
     ) {}
 
     public function set(
         string $column,
-        int|float|string|null $value,
+        array|int|float|string|null|ContentData $value,
         Locale|string|null $locale = null
-    ): int|float|string|null {
+    ): void {
         $locale = $locale ? $this->locale($locale) : $this->getDefault();
 
-        $this->locales[$column][$locale] = $value;
+        $value = $this->trim($value);
 
-        return $value;
+        if ($value instanceof ContentData) {
+            $this->locales[$column] = $value->getRaw($column);
+
+            return;
+        }
+
+        is_array($value)
+            ? $this->locales[$column] = $value
+            : $this->locales[$column][$locale] = $value;
     }
 
     public function get(string $column, Locale|string|null $locale = null): int|float|string|null
@@ -39,14 +50,47 @@ class ContentData implements Jsonable, Arrayable
             ?? null;
     }
 
-    public function toJson($options = 0): string
+    public function has(string $column, Locale|string|null $locale = null): bool
     {
-        return json_encode($this->toArray(), $options);
+        if ($locale) {
+            return isset($this->locales[$column][$this->locale($locale)]);
+        }
+
+        return isset($this->locales[$column][$this->getDefault()])
+            || isset($this->locales[$column][$this->getFallback()]);
+    }
+
+    public function forget(string $column, Locale|string|null $locale = null): void
+    {
+        if ($locale) {
+            unset($this->locales[$column][$this->locale($locale)]);
+
+            return;
+        }
+
+        unset($this->locales[$column]);
+    }
+
+    public function getRaw(?string $path = null): mixed
+    {
+        return $path ? data_get($this->locales, $path) : $this->locales;
+    }
+
+    public function toJson($options = 0): ?string
+    {
+        if ($items = $this->toArray()) {
+            return json_encode($items, $options);
+        }
+
+        return null;
     }
 
     public function toArray(): array
     {
-        return array_filter(array_map(fn (array $locale) => array_filter($locale), $this->locales));
+        return collect($this->locales)
+            ->map(fn (array $locale) => array_filter($locale, fn (mixed $value) => ! blank($value)))
+            ->filter()
+            ->all();
     }
 
     protected function locale(Locale|string|null $locale): string

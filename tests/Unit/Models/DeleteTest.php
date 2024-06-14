@@ -61,3 +61,44 @@ test('force delete', function () {
         'model_id'   => $model->id,
     ]);
 });
+
+test('restore', function () {
+    $model = fakeModel(main: 'foo');
+
+    assertDatabaseHas(TestModel::class, [
+        'id'         => $model->id,
+        'deleted_at' => null,
+    ]);
+
+    assertDatabaseHas(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+        'deleted_at' => null,
+    ]);
+
+    $model->delete();
+
+    assertDatabaseHas(TestModel::class, [
+        'id'         => $model->id,
+        'deleted_at' => now(),
+    ]);
+
+    assertDatabaseHas(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+        'deleted_at' => now(),
+    ]);
+
+    $model->restore();
+
+    assertDatabaseHas(TestModel::class, [
+        'id'         => $model->id,
+        'deleted_at' => null,
+    ]);
+
+    assertDatabaseHas(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+        'deleted_at' => null,
+    ]);
+});

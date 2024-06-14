@@ -16,13 +16,16 @@ test('main locale', function () {
 
     $model = fakeModel(main: $oldText);
 
+    expect($model->title)->toBeString()->toBe($oldText);
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($oldText);
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($oldText);
 
     // Change that
     $model->setTranslation(LocaleValue::ColumnTitle, $newText);
     $model->save();
-    $model->refresh();
 
+    expect($model->title)->toBeString()->toBe($newText);
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($newText);
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($newText);
 
     // Check database
@@ -45,27 +48,30 @@ test('fallback locale', function () {
 
     $model = fakeModel(fallback: $oldText);
 
+    expect($model->title)->toBeString()->toBe($oldText);
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($oldText);
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($oldText);
 
     // Change that
-    $model->setTranslation(LocaleValue::ColumnTitle, $newText);
+    $model->setTranslation(LocaleValue::ColumnTitle, $newText, LocaleValue::LocaleFallback);
     $model->save();
-    $model->refresh();
 
+    expect($model->title)->toBeString()->toBe($newText);
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($newText);
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($newText);
 
     // Check database
-    //assertDatabaseMissing(Translation::class, [
-    //    'model_type' => TestModel::class,
-    //    'model_id'   => $model->id,
-    //    'content'    => jsonEncode([LocaleValue::LocaleFallback => $oldText]),
-    //]);
-    //
-    //assertDatabaseHas(Translation::class, [
-    //    'model_type' => TestModel::class,
-    //    'model_id'   => $model->id,
-    //    'content'    => jsonEncode([LocaleValue::LocaleFallback => $newText]),
-    //]);
+    assertDatabaseMissing(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+        'content'    => jsonEncode([LocaleValue::LocaleFallback => $oldText]),
+    ]);
+
+    assertDatabaseHas(Translation::class, [
+        'model_type' => TestModel::class,
+        'model_id'   => $model->id,
+        'content'    => jsonEncode([LocaleValue::LocaleFallback => $newText]),
+    ]);
 });
 
 test('custom locale', function () {
@@ -74,13 +80,16 @@ test('custom locale', function () {
 
     $model = fakeModel(custom: $oldText);
 
+    expect($model->title)->toBeNull();
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($oldText);
 
     // Change that
-    $model->setTranslation(LocaleValue::ColumnTitle, $newText);
+    $model->setTranslation(LocaleValue::ColumnTitle, $newText, LocaleValue::LocaleCustom);
     $model->save();
-    $model->refresh();
 
+    expect($model->title)->toBeNull();
+    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($newText);
 
     // Check database
@@ -105,7 +114,6 @@ test('empties', function () {
     $model->setTranslation(LocaleValue::ColumnTitle, ' ', LocaleValue::LocaleCustom);
 
     $model->save();
-    $model->refresh();
 
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
@@ -125,7 +133,6 @@ test('numeric', function () {
     $model->setTranslation(LocaleValue::ColumnTitle, 0.01, LocaleValue::LocaleFallback);
 
     $model->save();
-    $model->refresh();
 
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe(0);
     expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe(0.01);

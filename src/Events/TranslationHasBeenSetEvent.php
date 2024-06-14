@@ -14,7 +14,7 @@ class TranslationHasBeenSetEvent
     public function __construct(
         public Model $model,
         public string $column,
-        public string $locale,
+        public ?string $locale,
         public mixed $oldValue,
         public mixed $newValue,
     ) {}

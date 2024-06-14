@@ -30,5 +30,6 @@ test('generation', function () {
         ->toContain('Tests\\Fixtures\\Models')
         ->toContain('TestModel')
         ->toContain('@property string $title')
-        ->toContain('@property string $description');
+        ->toContain('@property string $description')
+        ->not->toContain('@property string $key');
 });
