@@ -8,6 +8,7 @@ use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Facades\Config;
 
 class HelperGenerator
@@ -51,7 +52,7 @@ class HelperGenerator
 
     protected function getNamespace(): string
     {
-        return dirname($this->class);
+        return IS::beforeLast($this->class, '\\');
     }
 
     protected function getName(): string
