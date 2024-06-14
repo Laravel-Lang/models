@@ -26,7 +26,7 @@ trait HasTranslations
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
-            /** @var \LaravelLang\Models\HasTranslations $model */
+            // @var \LaravelLang\Models\HasTranslations $model
             $model->translation?->setAttribute('model_id', $model->getKey());
             $model->translation?->save();
 
@@ -36,20 +36,20 @@ trait HasTranslations
         });
 
         static::deleting(function (Model $model) {
-            /** @var \LaravelLang\Models\HasTranslations $model */
+            // @var \LaravelLang\Models\HasTranslations $model
             return $model->translation?->delete() ?? $model->translation()->delete();
         });
 
         if (method_exists(static::class, 'forceDeleted')) {
             static::forceDeleted(function (Model $model) {
-                /** @var \LaravelLang\Models\HasTranslations $model */
+                // @var \LaravelLang\Models\HasTranslations $model
                 return $model->translation?->forceDelete() ?? $model->translation()->forceDelete();
             });
         }
 
         if (method_exists(static::class, 'restored')) {
             static::restored(function (Model $model) {
-                /** @var \LaravelLang\Models\HasTranslations $model */
+                // @var \LaravelLang\Models\HasTranslations $model
                 $model->translation()->onlyTrashed()?->restore();
             });
         }
@@ -62,7 +62,7 @@ trait HasTranslations
 
     public function setTranslation(
         string $column,
-        array|int|float|string|null|ContentData $value,
+        array|ContentData|float|int|string|null $value,
         Locale|string|null $locale = null
     ): static {
         $this->validateTranslationColumn($column, $locale, true);
@@ -84,7 +84,7 @@ trait HasTranslations
         return $this;
     }
 
-    public function getTranslation(string $column, Locale|string|null $locale = null): int|float|string|null
+    public function getTranslation(string $column, Locale|string|null $locale = null): float|int|string|null
     {
         $this->validateTranslationColumn($column, $locale);
 

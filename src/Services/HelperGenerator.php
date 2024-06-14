@@ -71,7 +71,7 @@ class HelperGenerator
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Model|\LaravelLang\Models\HasTranslations
+     * @return Model|\LaravelLang\Models\HasTranslations
      */
     protected function initializeModel(string $class): Model
     {

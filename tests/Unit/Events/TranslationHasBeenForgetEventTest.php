@@ -52,8 +52,8 @@ test('column', function () {
 
     Event::assertDispatched(function (TranslationHasBeenForgetEvent $event) use ($model) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === null;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === null;
     });
 });
 
@@ -84,7 +84,7 @@ test('locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenForgetEvent $event) use ($model) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === LocaleValue::LocaleMain;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === LocaleValue::LocaleMain;
     });
 });

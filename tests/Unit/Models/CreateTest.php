@@ -36,7 +36,7 @@ test('single', function () {
         'model_id'   => $model->id,
 
         'content' => jsonEncodeRaw([
-            LocaleValue::ColumnTitle       => [
+            LocaleValue::ColumnTitle => [
                 LocaleValue::LocaleMain => 'qwerty 10',
             ],
             LocaleValue::ColumnDescription => [

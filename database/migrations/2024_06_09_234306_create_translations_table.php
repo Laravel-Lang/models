@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         $config = $this->config();
 
-        Schema::connection($config->connection)->create($config->table, function (Blueprint $table) use ($config) {
+        Schema::connection($config->connection)->create($config->table, function (Blueprint $table) {
             $table->id();
 
             $table->string('model_type', 255);

@@ -29,10 +29,10 @@ test('default locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === null
-            && $event->oldValue === $oldText
-            && $event->newValue === $newText;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === null
+            && $event->oldValue        === $oldText
+            && $event->newValue        === $newText;
     });
 });
 
@@ -55,10 +55,10 @@ test('main locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === LocaleValue::LocaleMain
-            && $event->oldValue === $oldText
-            && $event->newValue === $newText;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === LocaleValue::LocaleMain
+            && $event->oldValue        === $oldText
+            && $event->newValue        === $newText;
     });
 });
 
@@ -83,10 +83,10 @@ test('fallback locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === LocaleValue::LocaleFallback
-            && $event->oldValue === $oldText
-            && $event->newValue === $newText;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === LocaleValue::LocaleFallback
+            && $event->oldValue        === $oldText
+            && $event->newValue        === $newText;
     });
 });
 
@@ -113,9 +113,9 @@ test('custom locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column === LocaleValue::ColumnTitle
-            && $event->locale === LocaleValue::LocaleCustom
-            && $event->oldValue === $oldText
-            && $event->newValue === $newText;
+            && $event->column          === LocaleValue::ColumnTitle
+            && $event->locale          === LocaleValue::LocaleCustom
+            && $event->oldValue        === $oldText
+            && $event->newValue        === $newText;
     });
 });

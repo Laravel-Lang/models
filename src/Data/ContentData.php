@@ -11,7 +11,7 @@ use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasStrings;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 
-class ContentData implements Jsonable, Arrayable
+class ContentData implements Arrayable, Jsonable
 {
     use HasStrings;
 
@@ -21,7 +21,7 @@ class ContentData implements Jsonable, Arrayable
 
     public function set(
         string $column,
-        array|int|float|string|null|ContentData $value,
+        array|ContentData|float|int|string|null $value,
         Locale|string|null $locale = null
     ): void {
         $locale = $locale ? $this->locale($locale) : $this->getDefault();
@@ -35,11 +35,11 @@ class ContentData implements Jsonable, Arrayable
         }
 
         is_array($value)
-            ? $this->locales[$column] = $value
+            ? $this->locales[$column]          = $value
             : $this->locales[$column][$locale] = $value;
     }
 
-    public function get(string $column, Locale|string|null $locale = null): int|float|string|null
+    public function get(string $column, Locale|string|null $locale = null): float|int|string|null
     {
         if ($locale) {
             return $this->locales[$column][$this->locale($locale)] ?? null;
