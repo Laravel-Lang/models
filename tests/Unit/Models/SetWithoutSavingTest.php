@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Models\Models\Translation;
+use LaravelLang\Models\Translation;
 use Tests\Constants\LocaleValue;
 use Tests\Fixtures\Models\TestModel;
 

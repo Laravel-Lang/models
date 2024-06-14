@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
@@ -15,7 +15,6 @@ use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
-use LaravelLang\Models\Models\Translation;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
@@ -55,9 +54,11 @@ trait HasTranslations
         }
     }
 
-    public function translation(): MorphOne
+    public function translation(): HasOne
     {
-        return $this->morphOne(Translation::class, 'model');
+        $suffix = config('aaa.models.suffix');
+
+        return $this->hasOne(static::class . $suffix, 'parent_id');
     }
 
     public function setTranslation(

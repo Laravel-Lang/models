@@ -9,19 +9,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('translations', function (Blueprint $table) {
+        Schema::create('{{table}}', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('parent_id');
+            $table->{{primaryType}}('{{primaryName}}')->index();
 
-            $table->jsonb('content')->nullable();
+            $table->string('locale');
 
-            $table->timestamps();
+{{columns}}
+
+            $table->unique(['{{primaryName}}', 'locale']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('translations');
+        Schema::dropIfExists('{{table}}');
     }
 };

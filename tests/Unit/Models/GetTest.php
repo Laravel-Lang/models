@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
-use LaravelLang\Models\Models\Translation;
+use LaravelLang\Models\Translation;
 use Tests\Constants\LocaleValue;
 
 use function Pest\Laravel\assertDatabaseEmpty;
