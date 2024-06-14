@@ -27,7 +27,7 @@ test('generation', function () {
     expect($path)->toBeReadableFile();
 
     expect(file_get_contents($path))
-        ->toContain('Tests\\Fixtures\\Models')
+        ->toContain('Tests\Fixtures\Models')
         ->toContain('TestModel')
         ->toContain('@property string $title')
         ->toContain('@property string $description')
