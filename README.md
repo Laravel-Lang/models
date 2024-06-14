@@ -7,13 +7,6 @@
 [![Github Workflow Status][badge_build]][link_build]
 [![License][badge_license]](https://laravel-lang.com/license.html)
 
-## ToDo
-
-У астрономик взять принцип хранения данных, а у Спати - способ их использования.
-
-- https://github.com/Astrotomic/laravel-translatable
-- https://github.com/spatie/laravel-translatable
-
 ## Documentation
 
 See the [documentation](https://laravel-lang.com/packages-models.html) for detailed installation.
