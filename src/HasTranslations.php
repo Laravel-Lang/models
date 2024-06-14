@@ -10,6 +10,8 @@ use Illuminate\Support\Arr;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Data\ContentData;
+use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
+use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
@@ -106,11 +108,15 @@ trait HasTranslations
         $this->validateTranslationColumn($column, $locale);
 
         $this->translation->content?->forget($column, $locale);
+
+        TranslationHasBeenForgetEvent::dispatch($this, $column, $locale?->value ?? $locale);
     }
 
     public function forgetAllTranslations(): void
     {
         $this->translation?->setAttribute('content', new ContentData([]));
+
+        AllTranslationsHasBeenForgetEvent::dispatch($this);
     }
 
     public function translatable(): array

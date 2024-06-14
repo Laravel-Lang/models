@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Event;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use Tests\Constants\LocaleValue;
 
-test('default locale', function () {
-    Event::fake(TranslationHasBeenSetEvent::class);
+beforeEach(
+    fn () => Event::fake(TranslationHasBeenSetEvent::class)
+);
 
+test('default locale', function () {
     $oldText = fake()->paragraph;
     $newText = fake()->paragraph;
 
@@ -35,8 +37,6 @@ test('default locale', function () {
 });
 
 test('main locale', function () {
-    Event::fake(TranslationHasBeenSetEvent::class);
-
     $oldText = fake()->paragraph;
     $newText = fake()->paragraph;
 
@@ -63,8 +63,6 @@ test('main locale', function () {
 });
 
 test('fallback locale', function () {
-    Event::fake(TranslationHasBeenSetEvent::class);
-
     $oldText = fake()->paragraph;
     $newText = fake()->paragraph;
 
@@ -93,8 +91,6 @@ test('fallback locale', function () {
 });
 
 test('custom locale', function () {
-    Event::fake(TranslationHasBeenSetEvent::class);
-
     $oldText = fake()->paragraph;
     $newText = fake()->paragraph;
 
