@@ -21,10 +21,11 @@ class TestModel extends Model
 
     protected $fillable = [
         'key',
-        'title',
-        'description',
+        //'title',
+        //'description',
     ];
 
+    /** @deprecated */
     public function translatable(): array
     {
         return [
