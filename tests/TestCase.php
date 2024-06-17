@@ -9,7 +9,7 @@ use LaravelLang\Locales\ServiceProvider as LocalesServiceProvider;
 use LaravelLang\Models\ServiceProvider as ModelsServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Tests\Concerns\Locales;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -29,8 +29,8 @@ abstract class TestCase extends BaseTestCase
         /** @var Repository $config */
         $config = $app['config'];
 
-        $config->set('app.locale', LocaleValue::LocaleMain);
-        $config->set('app.fallback_locale', LocaleValue::LocaleFallback);
+        $config->set('app.locale', FakeValue::LocaleMain);
+        $config->set('app.fallback_locale', FakeValue::LocaleFallback);
 
         $config->set(Name::Hidden() . '.models.directory', __DIR__ . '/Fixtures/Models');
     }

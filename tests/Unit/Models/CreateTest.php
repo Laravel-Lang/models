@@ -5,7 +5,7 @@ declare(strict_types=1);
 use LaravelLang\Models\Data\ContentData;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Translation;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 use Tests\Fixtures\Models\TestModel;
 
 use function Pest\Laravel\assertDatabaseEmpty;
@@ -18,8 +18,8 @@ test('single', function () {
     $model = TestModel::create([
         'key' => 'foo',
 
-        LocaleValue::ColumnTitle       => 'qwerty 10',
-        LocaleValue::ColumnDescription => 'qwerty 20',
+        FakeValue::ColumnTitle       => 'qwerty 10',
+        FakeValue::ColumnDescription => 'qwerty 20',
     ]);
 
     expect($model->key)->toBeString()->toBe('foo');
@@ -36,11 +36,11 @@ test('single', function () {
         'model_id'   => $model->id,
 
         'content' => jsonEncodeRaw([
-            LocaleValue::ColumnTitle => [
-                LocaleValue::LocaleMain => 'qwerty 10',
+            FakeValue::ColumnTitle => [
+                FakeValue::LocaleMain => 'qwerty 10',
             ],
-            LocaleValue::ColumnDescription => [
-                LocaleValue::LocaleMain => 'qwerty 20',
+            FakeValue::ColumnDescription => [
+                FakeValue::LocaleMain => 'qwerty 20',
             ],
         ]),
     ]);
@@ -53,28 +53,28 @@ test('array', function () {
     $model = TestModel::create([
         'key' => 'foo',
 
-        LocaleValue::ColumnTitle => [
-            LocaleValue::LocaleMain     => 'qwerty 10',
-            LocaleValue::LocaleFallback => 'qwerty 11',
-            LocaleValue::LocaleCustom   => 'qwerty 12',
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain     => 'qwerty 10',
+            FakeValue::LocaleFallback => 'qwerty 11',
+            FakeValue::LocaleCustom   => 'qwerty 12',
         ],
 
-        LocaleValue::ColumnDescription => [
-            LocaleValue::LocaleMain     => 'qwerty 20',
-            LocaleValue::LocaleFallback => 'qwerty 21',
-            LocaleValue::LocaleCustom   => 'qwerty 22',
+        FakeValue::ColumnDescription => [
+            FakeValue::LocaleMain     => 'qwerty 20',
+            FakeValue::LocaleFallback => 'qwerty 21',
+            FakeValue::LocaleCustom   => 'qwerty 22',
         ],
     ]);
 
     expect($model->key)->toBeString()->toBe('foo');
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe('qwerty 10');
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe('qwerty 11');
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe('qwerty 12');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe('qwerty 10');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe('qwerty 11');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe('qwerty 12');
 
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleMain))->toBe('qwerty 20');
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleFallback))->toBe('qwerty 21');
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleCustom))->toBe('qwerty 22');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleMain))->toBe('qwerty 20');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleFallback))->toBe('qwerty 21');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleCustom))->toBe('qwerty 22');
 
     assertDatabaseHas(TestModel::class, [
         'id'  => $model->id,
@@ -86,16 +86,16 @@ test('array', function () {
         'model_id'   => $model->id,
 
         'content' => jsonEncodeRaw([
-            LocaleValue::ColumnTitle => [
-                LocaleValue::LocaleMain     => 'qwerty 10',
-                LocaleValue::LocaleFallback => 'qwerty 11',
-                LocaleValue::LocaleCustom   => 'qwerty 12',
+            FakeValue::ColumnTitle => [
+                FakeValue::LocaleMain     => 'qwerty 10',
+                FakeValue::LocaleFallback => 'qwerty 11',
+                FakeValue::LocaleCustom   => 'qwerty 12',
             ],
 
-            LocaleValue::ColumnDescription => [
-                LocaleValue::LocaleMain     => 'qwerty 20',
-                LocaleValue::LocaleFallback => 'qwerty 21',
-                LocaleValue::LocaleCustom   => 'qwerty 22',
+            FakeValue::ColumnDescription => [
+                FakeValue::LocaleMain     => 'qwerty 20',
+                FakeValue::LocaleFallback => 'qwerty 21',
+                FakeValue::LocaleCustom   => 'qwerty 22',
             ],
         ]),
     ]);
@@ -106,49 +106,49 @@ test('data object', function () {
     assertDatabaseEmpty(Translation::class);
 
     $data1 = new ContentData([
-        LocaleValue::ColumnTitle => [
-            LocaleValue::LocaleMain     => 'qwerty 10',
-            LocaleValue::LocaleFallback => 'qwerty 11',
-            LocaleValue::LocaleCustom   => 'qwerty 12',
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain     => 'qwerty 10',
+            FakeValue::LocaleFallback => 'qwerty 11',
+            FakeValue::LocaleCustom   => 'qwerty 12',
         ],
 
-        LocaleValue::ColumnDescription => [
-            LocaleValue::LocaleMain     => 'qwerty 20',
-            LocaleValue::LocaleFallback => 'qwerty 21',
-            LocaleValue::LocaleCustom   => 'qwerty 22',
+        FakeValue::ColumnDescription => [
+            FakeValue::LocaleMain     => 'qwerty 20',
+            FakeValue::LocaleFallback => 'qwerty 21',
+            FakeValue::LocaleCustom   => 'qwerty 22',
         ],
     ]);
 
     $data2 = new ContentData([
-        LocaleValue::ColumnTitle => [
-            LocaleValue::LocaleMain     => 'qwerty 30',
-            LocaleValue::LocaleFallback => 'qwerty 31',
-            LocaleValue::LocaleCustom   => 'qwerty 32',
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain     => 'qwerty 30',
+            FakeValue::LocaleFallback => 'qwerty 31',
+            FakeValue::LocaleCustom   => 'qwerty 32',
         ],
 
-        LocaleValue::ColumnDescription => [
-            LocaleValue::LocaleMain     => 'qwerty 40',
-            LocaleValue::LocaleFallback => 'qwerty 41',
-            LocaleValue::LocaleCustom   => 'qwerty 42',
+        FakeValue::ColumnDescription => [
+            FakeValue::LocaleMain     => 'qwerty 40',
+            FakeValue::LocaleFallback => 'qwerty 41',
+            FakeValue::LocaleCustom   => 'qwerty 42',
         ],
     ]);
 
     $model = TestModel::create([
         'key' => 'foo',
 
-        LocaleValue::ColumnTitle       => $data1,
-        LocaleValue::ColumnDescription => $data2,
+        FakeValue::ColumnTitle       => $data1,
+        FakeValue::ColumnDescription => $data2,
     ]);
 
     expect($model->key)->toBeString()->toBe('foo');
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe('qwerty 10');
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe('qwerty 11');
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe('qwerty 12');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe('qwerty 10');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe('qwerty 11');
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe('qwerty 12');
 
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleMain))->toBe('qwerty 40');
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleFallback))->toBe('qwerty 41');
-    expect($model->getTranslation(LocaleValue::ColumnDescription, LocaleValue::LocaleCustom))->toBe('qwerty 42');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleMain))->toBe('qwerty 40');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleFallback))->toBe('qwerty 41');
+    expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleCustom))->toBe('qwerty 42');
 
     assertDatabaseHas(TestModel::class, [
         'id'  => $model->id,
@@ -160,16 +160,16 @@ test('data object', function () {
         'model_id'   => $model->id,
 
         'content' => jsonEncodeRaw([
-            LocaleValue::ColumnTitle => [
-                LocaleValue::LocaleMain     => 'qwerty 10',
-                LocaleValue::LocaleFallback => 'qwerty 11',
-                LocaleValue::LocaleCustom   => 'qwerty 12',
+            FakeValue::ColumnTitle => [
+                FakeValue::LocaleMain     => 'qwerty 10',
+                FakeValue::LocaleFallback => 'qwerty 11',
+                FakeValue::LocaleCustom   => 'qwerty 12',
             ],
 
-            LocaleValue::ColumnDescription => [
-                LocaleValue::LocaleMain     => 'qwerty 40',
-                LocaleValue::LocaleFallback => 'qwerty 41',
-                LocaleValue::LocaleCustom   => 'qwerty 42',
+            FakeValue::ColumnDescription => [
+                FakeValue::LocaleMain     => 'qwerty 40',
+                FakeValue::LocaleFallback => 'qwerty 41',
+                FakeValue::LocaleCustom   => 'qwerty 42',
             ],
         ]),
     ]);
@@ -182,9 +182,9 @@ test('uninstalled store', function () {
     $model = TestModel::create([
         'key' => 'foo',
 
-        LocaleValue::ColumnTitle => [
-            LocaleValue::LocaleMain        => 'qwerty 10',
-            LocaleValue::LocaleUninstalled => 'qwerty 11',
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain        => 'qwerty 10',
+            FakeValue::LocaleUninstalled => 'qwerty 11',
         ],
     ]);
 
@@ -193,9 +193,9 @@ test('uninstalled store', function () {
         'model_id'   => $model->id,
 
         'content' => jsonEncodeRaw([
-            LocaleValue::ColumnTitle => [
-                LocaleValue::LocaleMain        => 'qwerty 10',
-                LocaleValue::LocaleUninstalled => 'qwerty 11',
+            FakeValue::ColumnTitle => [
+                FakeValue::LocaleMain        => 'qwerty 10',
+                FakeValue::LocaleUninstalled => 'qwerty 11',
             ],
         ]),
     ]);
@@ -205,11 +205,11 @@ test('uninstalled reading', function () {
     $model = TestModel::create([
         'key' => 'foo',
 
-        LocaleValue::ColumnTitle => [
-            LocaleValue::LocaleMain        => 'qwerty 10',
-            LocaleValue::LocaleUninstalled => 'qwerty 11',
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain        => 'qwerty 10',
+            FakeValue::LocaleUninstalled => 'qwerty 11',
         ],
     ]);
 
-    $model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleUninstalled);
+    $model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleUninstalled);
 })->throws(UnavailableLocaleException::class);

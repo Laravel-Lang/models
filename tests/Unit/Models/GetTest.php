@@ -5,7 +5,7 @@ declare(strict_types=1);
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Translation;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 
 use function Pest\Laravel\assertDatabaseEmpty;
 
@@ -16,15 +16,15 @@ test('main locale', function () {
 
     expect($model->title)->toBeString()->toBe($text);
 
-    expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBe($text);
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($text);
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle))->toBe($text);
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($text);
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($text);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($text);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 });
 
 test('fallback locale', function () {
@@ -34,15 +34,15 @@ test('fallback locale', function () {
 
     expect($model->title)->toBeString()->toBe($text);
 
-    expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBe($text);
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($text);
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle))->toBe($text);
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($text);
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($text);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($text);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 });
 
 test('custom locale', function () {
@@ -52,21 +52,21 @@ test('custom locale', function () {
 
     expect($model->title)->toBeNull();
 
-    expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($text);
+    expect($model->translation->content->get(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($text);
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($text);
 });
 
 test('uninstalled', function () {
     $model = fakeModel(uninstalled: fake()->paragraph);
 
-    $model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleUninstalled);
+    $model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleUninstalled);
 })->throws(UnavailableLocaleException::class);
 
 test('without translations model', function () {
@@ -76,15 +76,15 @@ test('without translations model', function () {
 
     expect($model->title)->toBeNull();
 
-    expect($model->translation->content->get(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->translation->content->get(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->translation->content->get(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 });
 
 test('non-translatable attribute', function () {

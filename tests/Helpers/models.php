@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use LaravelLang\Models\Data\ContentData;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 use Tests\Fixtures\Models\TestModel;
 
 function fakeModel(
@@ -34,19 +34,19 @@ function fakeTranslation(
     $data = [];
 
     if ($text) {
-        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleMain] = $text;
+        $data[FakeValue::ColumnTitle][FakeValue::LocaleMain] = $text;
     }
 
     if ($fallback) {
-        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleFallback] = $fallback;
+        $data[FakeValue::ColumnTitle][FakeValue::LocaleFallback] = $fallback;
     }
 
     if ($custom) {
-        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleCustom] = $custom;
+        $data[FakeValue::ColumnTitle][FakeValue::LocaleCustom] = $custom;
     }
 
     if ($uninstalled) {
-        $data[LocaleValue::ColumnTitle][LocaleValue::LocaleUninstalled] = $uninstalled;
+        $data[FakeValue::ColumnTitle][FakeValue::LocaleUninstalled] = $uninstalled;
     }
 
     $model->translation->fill([

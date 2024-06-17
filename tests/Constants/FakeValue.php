@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Constants;
 
-class LocaleValue
+class FakeValue
 {
     public const ColumnDescription = 'description';
     public const ColumnTitle       = 'title';

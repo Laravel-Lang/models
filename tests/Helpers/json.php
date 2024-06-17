@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use LaravelLang\Config\Facades\Config;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 
 function jsonEncode(array $value): string
 {
-    return jsonEncodeRaw([LocaleValue::ColumnTitle => $value]);
+    return jsonEncodeRaw([FakeValue::ColumnTitle => $value]);
 }
 
 function jsonEncodeRaw(array $value): string
