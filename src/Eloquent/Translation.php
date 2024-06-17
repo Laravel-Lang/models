@@ -2,13 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LaravelLang\Models;
+namespace LaravelLang\Models\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
 
 abstract class Translation extends Model
 {
-    protected $fillable = [
-        'aa'
-    ];
 }

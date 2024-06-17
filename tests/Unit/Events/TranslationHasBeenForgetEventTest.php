@@ -12,12 +12,12 @@ beforeEach(function () {
         'key' => fake()->word,
 
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain     => 'qwerty 10',
+            FakeValue::LocaleMain => 'qwerty 10',
             FakeValue::LocaleFallback => 'qwerty 11',
         ],
 
         FakeValue::ColumnDescription => [
-            FakeValue::LocaleMain     => 'qwerty 20',
+            FakeValue::LocaleMain => 'qwerty 20',
             FakeValue::LocaleFallback => 'qwerty 21',
         ],
     ]);
@@ -25,7 +25,7 @@ beforeEach(function () {
     Event::fake(TranslationHasBeenForgetEvent::class);
 });
 
-test('column', function () {
+test('forget column', function () {
     $model = findFakeModel();
 
     expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeTrue();
@@ -52,12 +52,12 @@ test('column', function () {
 
     Event::assertDispatched(function (TranslationHasBeenForgetEvent $event) use ($model) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === null;
+            && $event->column === FakeValue::ColumnTitle
+            && $event->locale === null;
     });
 });
 
-test('locale', function () {
+test('forget locale', function () {
     $model = findFakeModel();
 
     expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeTrue();
@@ -84,7 +84,7 @@ test('locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenForgetEvent $event) use ($model) {
         return $event->model->getKey() === $model->getKey()
-            && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === FakeValue::LocaleMain;
+            && $event->column === FakeValue::ColumnTitle
+            && $event->locale === FakeValue::LocaleMain;
     });
 });

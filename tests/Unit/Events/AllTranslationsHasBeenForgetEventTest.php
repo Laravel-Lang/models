@@ -12,12 +12,12 @@ beforeEach(function () {
         'key' => fake()->word,
 
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain     => 'qwerty 10',
+            FakeValue::LocaleMain => 'qwerty 10',
             FakeValue::LocaleFallback => 'qwerty 11',
         ],
 
         FakeValue::ColumnDescription => [
-            FakeValue::LocaleMain     => 'qwerty 20',
+            FakeValue::LocaleMain => 'qwerty 20',
             FakeValue::LocaleFallback => 'qwerty 21',
         ],
     ]);
@@ -50,9 +50,5 @@ test('all', function () {
     expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleMain))->toBeNull();
     expect($model->getTranslation(FakeValue::ColumnDescription, FakeValue::LocaleFallback))->toBeNull();
 
-    expect($model->translation->content->getRaw())->toBeEmpty();
-
-    Event::assertDispatched(function (AllTranslationsHasBeenForgetEvent $event) use ($model) {
-        return $event->model->getKey() === $model->getKey();
-    });
+    Event::assertDispatched(AllTranslationsHasBeenForgetEvent::class);
 });

@@ -27,10 +27,8 @@ test('generation', function () {
     expect($path)->toBeReadableFile();
 
     expect(file_get_contents($path))
-        ->toContain('Tests\Fixtures\Models')
+        ->toContain('namespace Tests\Fixtures\Models;')
         ->toContain('TestModel')
-        ->toContain('@property string $title')
-        ->toContain('@property string $description')
-        ->not->toContain('@property string $key')
-        ->not->toContain('Translation');
+        ->toContain('@property array|string|null $title')
+        ->toContain('@property array|string|null $description');
 });

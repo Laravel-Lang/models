@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Models\Translation;
+use LaravelLang\Models\Eloquent\Translation;
 use Tests\Constants\FakeValue;
 use Tests\Fixtures\Models\TestModel;
 

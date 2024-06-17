@@ -11,6 +11,9 @@ use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasStrings;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 
+/**
+ * @deprecated 
+ */
 class ContentData implements Arrayable, Jsonable
 {
     use HasStrings;

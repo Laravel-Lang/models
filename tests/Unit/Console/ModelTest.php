@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use DragonCode\Support\Facades\Filesystem\Directory;
-use LaravelLang\Models\Console\ModelsHelperCommand;
+use Illuminate\Foundation\Console\ModelMakeCommand as LaravelMakeModel;
+use LaravelLang\Config\Facades\Config;
+use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
 
 use function Pest\Laravel\artisan;
 
@@ -13,24 +15,21 @@ beforeEach(fn () => Directory::ensureDelete([
 ]));
 
 test('generation', function () {
-    $path = base_path('app/Models/TestTranslation.php');
-
-    expect($path)->not->toBeReadableFile();
-
-    artisan(ModelsHelperCommand::class, [
+    artisan(LaravelMakeModel::class, [
         'name' => 'Test',
     ])->run();
 
-    artisan(ModelGenerator::class, [
-        'model'   => 'App\Models\Test',
-        'columns' => ['test', 'description'],
+    artisan(PackageMakeModel::class, [
+        'model' => 'App\Models\Test',
+        'columns' => ['title', 'description'],
     ])->run();
 
-    expect($path)->toBeReadableFile();
+    $model = base_path('app/Models/TestTranslation.php');
+    $migration = database_path('migrations/' . date('Y_m_d_His') . '_create_test_translations_table.php');
+    $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Test'));
 
-    expect(file_get_contents($path))
+    expect(file_get_contents($model))
         ->toContain('App\Models')
-        ->toContain('TestTranslation')
         ->toContain('class TestTranslation extends Translation')
         ->toContain(
             <<<TEXT
@@ -41,4 +40,13 @@ test('generation', function () {
     ];
 TEXT
         );
+
+    expect(file_get_contents($migration))
+        ->toContain('Schema::create(\'test_translations\'')
+        ->toContain('Schema::dropIfExists(\'test_translations\')')
+        ->toContain('$table->bigInteger(\'item_id\')->index();')
+        ->toContain('$table->json(\'title\')')
+        ->toContain('$table->json(\'description\')');
+
+    expect($helper)->toBeReadableFile();
 });
