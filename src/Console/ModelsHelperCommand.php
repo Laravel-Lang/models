@@ -12,7 +12,7 @@ use LaravelLang\Models\Services\HelperGenerator;
 
 class ModelsHelperCommand extends Command
 {
-    protected $signature = 'lang:models {model?}';
+    protected $signature = 'lang:models:helper {model?}';
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
