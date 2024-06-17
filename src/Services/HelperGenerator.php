@@ -6,14 +6,14 @@ namespace LaravelLang\Models\Services;
 
 use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Helpers\Str;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Facades\Config;
+use LaravelLang\Models\Eloquent\Translation;
 
 class HelperGenerator
 {
-    protected string $template = '     * @property string $%s';
+    protected string $template = '     * @property array|string|null $%s';
 
     protected string $filenamePrefix = '_ide_helper_models_';
 
@@ -67,15 +67,18 @@ class HelperGenerator
 
     protected function getTranslatable(string $class): Collection
     {
-        return collect($this->initializeModel($class)->translatable());
+        return collect($this->initializeModel($class)->getFillable())
+            ->reject(fn (string $value) => strtolower($value) === 'locale');
     }
 
-    /**
-     * @return Model|\LaravelLang\Models\HasTranslations
-     */
-    protected function initializeModel(string $class): Model
+    protected function initializeModel(string $class): Translation
     {
-        return new $class();
+        return new ($class . $this->modelSuffix())();
+    }
+
+    protected function modelSuffix(): string
+    {
+        return IS::ucfirst(Config::shared()->models->suffix);
     }
 
     protected function stub(): string

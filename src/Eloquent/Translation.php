@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 abstract class Translation extends Model
 {
+    protected function casts(): array
+    {
+        return $this->casts;
+    }
 }

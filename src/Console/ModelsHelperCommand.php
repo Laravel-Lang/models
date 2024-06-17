@@ -36,6 +36,10 @@ class ModelsHelperCommand extends Command
 
     protected function models(): array
     {
+        if ($model = $this->argument('model')) {
+            return [$model];
+        }
+
         return ClassMap::get();
     }
 

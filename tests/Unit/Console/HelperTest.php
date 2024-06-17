@@ -13,7 +13,7 @@ beforeEach(fn () => Directory::ensureDelete(
     Config::shared()->models->helpers
 ));
 
-test('generation', function () {
+test('generate many models', function () {
     $path = sprintf(
         '%s/_ide_helper_models_%s.php',
         Config::shared()->models->helpers,
@@ -27,8 +27,30 @@ test('generation', function () {
     expect($path)->toBeReadableFile();
 
     expect(file_get_contents($path))
-        ->toContain('namespace Tests\Fixtures\Models;')
-        ->toContain('TestModel')
+        ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('class TestModel extends Model {}')
+        ->toContain('@property array|string|null $title')
+        ->toContain('@property array|string|null $description');
+});
+
+test('generate one model', function () {
+    $path = sprintf(
+        '%s/_ide_helper_models_%s.php',
+        Config::shared()->models->helpers,
+        md5(TestModel::class)
+    );
+
+    expect($path)->not->toBeReadableFile();
+
+    artisan(ModelsHelperCommand::class, [
+        'model' => TestModel::class,
+    ])->run();
+
+    expect($path)->toBeReadableFile();
+
+    expect(file_get_contents($path))
+        ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('class TestModel extends Model {}')
         ->toContain('@property array|string|null $title')
         ->toContain('@property array|string|null $description');
 });

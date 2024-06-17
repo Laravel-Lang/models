@@ -39,6 +39,15 @@ test('generation', function () {
         'description',
     ];
 TEXT
+        )
+        ->toContain(
+            <<<TEXT
+    protected \$casts = [
+        'title' => ColumnCast::class,
+        'description' => ColumnCast::class,
+    ];
+TEXT
+
         );
 
     expect(file_get_contents($migration))
