@@ -57,5 +57,6 @@ TEXT
         ->toContain('$table->string(\'title\')->nullable()')
         ->toContain('$table->string(\'description\')->nullable()');
 
+    expect($migration)->toBeReadableFile();
     expect($helper)->toBeReadableFile();
 });

@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use LaravelLang\Models\Translation;
+use LaravelLang\Models\Casts\ColumnCast;
+use LaravelLang\Models\Eloquent\Translation;
 
 class {{model}}{{suffix}} extends Translation
 {
     protected $fillable = [
-{{columns}}
+{{fillable}}
+    ];
+
+    protected $casts = [
+{{casts}}
     ];
 }

@@ -12,9 +12,9 @@ return new class extends Migration {
         Schema::create('{{table}}', function (Blueprint $table) {
             $table->id();
 
-            $table->string('locale');
-
             $table->{{primaryType}}('item_id')->index();
+
+            $table->string('locale');
 
 {{columns}}
 

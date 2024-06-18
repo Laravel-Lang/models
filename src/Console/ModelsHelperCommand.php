@@ -37,7 +37,7 @@ class ModelsHelperCommand extends Command
     protected function models(): array
     {
         if ($model = $this->argument('model')) {
-            return [$model];
+            return [ltrim($model, '\\')];
         }
 
         return ClassMap::get();
