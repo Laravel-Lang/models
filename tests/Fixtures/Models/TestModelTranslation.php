@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\Models;
 
-use LaravelLang\Models\Casts\ColumnCast;
 use LaravelLang\Models\Eloquent\Translation;
 
 class TestModelTranslation extends Translation
@@ -13,10 +12,5 @@ class TestModelTranslation extends Translation
         'locale',
         'title',
         'description',
-    ];
-
-    protected $casts = [
-        'title'       => ColumnCast::class,
-        'description' => ColumnCast::class,
     ];
 }
