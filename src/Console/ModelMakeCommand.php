@@ -89,8 +89,10 @@ class ModelMakeCommand extends Command
         $columnType = $base->getKeyType() === 'uuid' ? 'uuid' : 'bigInteger';
 
         $content = \DragonCode\Support\Facades\Helpers\Str::of(
-            file_get_contents(__DIR__ . '/../../stubs/migration_create.stub')
+            file_get_contents(__DIR__ . '/../../stubs/migration.stub')
         )->replaceFormat([
+            'modelNamespace' => $model,
+            'model' => class_basename($model),
             'table' => $translated->getTable(),
             'primaryType' => $columnType,
             'columns' => implode(PHP_EOL, $columns),
