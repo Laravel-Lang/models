@@ -6,6 +6,7 @@ namespace LaravelLang\Models\Services;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use DragonCode\Support\Facades\Instances\Instance;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\HasTranslations;
@@ -37,13 +38,23 @@ class ClassMap
 
     protected static function map(): array
     {
-        return ClassMapGenerator::createMap(static::modelsPath());
+        $generator = static::generator();
+
+        foreach (static::modelsPath() as $path) {
+            $generator->scanPaths($path);
+        }
+
+        return $generator->getClassMap()->getMap();
     }
 
-    protected static function modelsPath(): string
+    protected static function generator(): ClassMapGenerator
     {
-        return base_path('app');
-        return Config::hidden()->models->directory;
+        return new ClassMapGenerator();
+    }
+
+    protected static function modelsPath(): array
+    {
+        return Arr::wrap(Config::hidden()->models->directory);
     }
 
     protected static function isTranslatable(string $class): bool

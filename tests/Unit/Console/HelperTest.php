@@ -6,6 +6,7 @@ use DragonCode\Support\Facades\Filesystem\Directory;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelsHelperCommand;
 use Tests\Fixtures\Models\TestModel;
+use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\artisan;
 
@@ -28,9 +29,11 @@ test('generate many models', function () {
 
     expect(file_get_contents($path))
         ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('use ' . TestModelTranslation::class . ';')
         ->toContain('class TestModel extends Model {}')
-        ->toContain('@property array|string|null $title')
-        ->toContain('@property array|string|null $description');
+        ->toContain('@property string|null $title')
+        ->toContain('@property string|null $description')
+        ->toContain('@property-read Collection<TestModelTranslation> $translation');
 });
 
 test('generate one model', function () {
@@ -50,7 +53,9 @@ test('generate one model', function () {
 
     expect(file_get_contents($path))
         ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('use ' . TestModelTranslation::class . ';')
         ->toContain('class TestModel extends Model {}')
-        ->toContain('@property array|string|null $title')
-        ->toContain('@property array|string|null $description');
+        ->toContain('@property string|null $title')
+        ->toContain('@property string|null $description')
+        ->toContain('@property-read Collection<TestModelTranslation> $translation');
 });

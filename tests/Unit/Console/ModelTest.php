@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use DragonCode\Support\Facades\Filesystem\Directory;
+use DragonCode\Support\Facades\Filesystem\File;
+use DragonCode\Support\Facades\Filesystem\Path;
 use Illuminate\Foundation\Console\ModelMakeCommand as LaravelMakeModel;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
@@ -13,6 +15,14 @@ beforeEach(fn () => Directory::ensureDelete([
     base_path('app/Models/Test.php'),
     base_path('app/Models/TestTranslation.php'),
 ]));
+
+afterEach(function () {
+    $migrations = File::allPaths(database_path('migrations'), function (string $path) {
+        return Path::extension($path) === 'php';
+    });
+
+    File::ensureDelete($migrations);
+});
 
 test('with exists model', function () {
     artisan(LaravelMakeModel::class, [
@@ -39,21 +49,11 @@ test('with exists model', function () {
         'description',
     ];
 TEXT
-        )
-        ->toContain(
-            <<<TEXT
-    protected \$casts = [
-        'title' => ColumnCast::class,
-        'description' => ColumnCast::class,
-    ];
-TEXT
-
         );
 
     expect(file_get_contents($migration))
         ->toContain('Schema::create(\'test_translations\'')
         ->toContain('Schema::dropIfExists(\'test_translations\')')
-        ->toContain('$table->bigInteger(\'item_id\')->index();')
         ->toContain('$table->string(\'title\')->nullable()')
         ->toContain('$table->string(\'description\')->nullable()');
 

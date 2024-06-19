@@ -32,7 +32,10 @@ abstract class TestCase extends BaseTestCase
         $config->set('app.locale', FakeValue::LocaleMain);
         $config->set('app.fallback_locale', FakeValue::LocaleFallback);
 
-        $config->set(Name::Hidden() . '.models.directory', __DIR__ . '/Fixtures/Models');
+        $config->set(Name::Hidden() . '.models.directory', [
+            __DIR__ . '/Fixtures/Models',
+            base_path('app'),
+        ]);
     }
 
     protected function defineDatabaseMigrations(): void

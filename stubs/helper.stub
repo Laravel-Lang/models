@@ -3,10 +3,12 @@
 
 namespace {{namespace}} {
 
+    use {{translationNamespace}};
     use Illuminate\Database\Eloquent\Model;
     
     /**
 {{properties}}
+     * @property-read {{translationModel}} $translation
      */
     class {{model}} extends Model {}
 }
