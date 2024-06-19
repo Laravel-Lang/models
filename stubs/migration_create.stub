@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use {{modelNamespace}};
 
 return new class extends Migration {
     public function up(): void
@@ -19,6 +20,8 @@ return new class extends Migration {
 {{columns}}
 
             $table->unique(['item_id', 'locale']);
+
+            $table->foreignIdFor({{model}}::class, 'item_id')->constrained()->cascadeOnDelete();
         });
     }
 
