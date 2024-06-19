@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 abstract class Translation extends Model
 {
+    public $timestamps = false;
+
     protected function casts(): array
     {
         return $this->casts;
