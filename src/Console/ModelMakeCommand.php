@@ -11,7 +11,6 @@ use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Services\ClassMap;
 
-use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
@@ -56,19 +55,15 @@ class ModelMakeCommand extends Command
 
     protected function model(): ?string
     {
-        $model = $this->resolveModelClass(
-            $this->askTranslationModel()
-        );
+        $name = $this->askTranslationModel();
 
-        if (! $model) {
-            if (! $this->ascToCreate()) {
-                return null;
-            }
-
-            $this->createBaseModel($model);
+        if ($model = $this->resolveModelClass($name)) {
+            return $model;
         }
 
-        return $model;
+        $this->createBaseModel($name);
+
+        return $name;
     }
 
     protected function columns(): array
@@ -109,11 +104,6 @@ class ModelMakeCommand extends Command
         }
 
         return null;
-    }
-
-    protected function ascToCreate(): bool
-    {
-        return confirm('No model with this namespace was found. Do you want to create it?', true);
     }
 
     protected function resolveModelClass(string $model): ?string
