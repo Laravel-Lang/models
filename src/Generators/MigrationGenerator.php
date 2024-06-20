@@ -13,8 +13,9 @@ class MigrationGenerator extends Generator
     protected function data(): array
     {
         return [
-            'table'   => $this->getTable(),
-            'columns' => $this->getColumns(),
+            'baseTable' => $this->getBaseTable(),
+            'table'     => $this->getTable(),
+            'columns'   => $this->getColumns(),
         ];
     }
 
@@ -26,6 +27,11 @@ class MigrationGenerator extends Generator
     protected function getTable(): string
     {
         return $this->translationModel()->getTable();
+    }
+
+    protected function getBaseTable(): string
+    {
+        return $this->baseModel()->getTable();
     }
 
     protected function getColumns(): array

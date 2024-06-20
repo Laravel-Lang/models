@@ -55,7 +55,8 @@ TEXT
         ->toContain('Schema::create(\'test_translations\'')
         ->toContain('Schema::dropIfExists(\'test_translations\')')
         ->toContain('$table->string(\'title\')->nullable()')
-        ->toContain('$table->string(\'description\')->nullable()');
+        ->toContain('$table->string(\'description\')->nullable()')
+        ->toContain('->constrained(\'tests\')');
 
     expect($migration)->toBeReadableFile();
     expect($helper)->toBeReadableFile();
