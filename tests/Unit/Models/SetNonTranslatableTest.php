@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 
 test('non-translatable attribute', function () {
     $key = fake()->word;
@@ -19,5 +19,5 @@ test('non-translatable attribute', function () {
 test('not translatable attribute', function () {
     $model = fakeModel();
 
-    $model->setTranslation('foo', 'foo', LocaleValue::LocaleUninstalled);
+    $model->setTranslation('foo', 'foo', FakeValue::LocaleUninstalled);
 })->throws(AttributeIsNotTranslatableException::class);

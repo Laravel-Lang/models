@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use LaravelLang\Models\Console\ModelMakeCommand;
 use LaravelLang\Models\Console\ModelsHelperCommand;
 
 class ServiceProvider extends BaseServiceProvider
@@ -21,6 +22,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->commands([
             ModelsHelperCommand::class,
+            ModelMakeCommand::class,
         ]);
     }
 

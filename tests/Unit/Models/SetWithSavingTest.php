@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Models\Exceptions\UnavailableLocaleException;
-use LaravelLang\Models\Models\Translation;
-use Tests\Constants\LocaleValue;
-use Tests\Fixtures\Models\TestModel;
+use Tests\Constants\FakeValue;
+use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
@@ -17,28 +15,30 @@ test('main locale', function () {
     $model = fakeModel(main: $oldText);
 
     expect($model->title)->toBeString()->toBe($oldText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($oldText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($oldText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($oldText);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($oldText);
 
-    // Change that
-    $model->setTranslation(LocaleValue::ColumnTitle, $newText);
+    // That one
+    $model->setTranslation(FakeValue::ColumnTitle, $newText);
     $model->save();
 
     expect($model->title)->toBeString()->toBe($newText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($newText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe($newText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($newText);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($newText);
 
     // Check database
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleMain => $oldText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleMain => $newText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
@@ -49,28 +49,30 @@ test('fallback locale', function () {
     $model = fakeModel(fallback: $oldText);
 
     expect($model->title)->toBeString()->toBe($oldText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($oldText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($oldText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($oldText);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($oldText);
 
-    // Change that
-    $model->setTranslation(LocaleValue::ColumnTitle, $newText, LocaleValue::LocaleFallback);
+    // That one
+    $model->setTranslation(FakeValue::ColumnTitle, $newText, FakeValue::LocaleFallback);
     $model->save();
 
     expect($model->title)->toBeString()->toBe($newText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBe($newText);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe($newText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($newText);
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($newText);
 
     // Check database
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleFallback => $oldText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleFallback,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleFallback => $newText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleFallback,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
@@ -81,75 +83,45 @@ test('custom locale', function () {
     $model = fakeModel(custom: $oldText);
 
     expect($model->title)->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($oldText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($oldText);
 
-    // Change that
-    $model->setTranslation(LocaleValue::ColumnTitle, $newText, LocaleValue::LocaleCustom);
+    // That one
+    $model->setTranslation(FakeValue::ColumnTitle, $newText, FakeValue::LocaleCustom);
     $model->save();
 
     expect($model->title)->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBe($newText);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($newText);
 
     // Check database
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleCustom => $oldText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleCustom,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([LocaleValue::LocaleCustom => $newText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleCustom,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
-test('empties', function () {
+test('mixed symbols', function (mixed $source, mixed $saved) {
     $model = fakeModel();
 
-    $model->setTranslation(LocaleValue::ColumnTitle, null, LocaleValue::LocaleMain);
-    $model->setTranslation(LocaleValue::ColumnTitle, '', LocaleValue::LocaleFallback);
-    $model->setTranslation(LocaleValue::ColumnTitle, ' ', LocaleValue::LocaleCustom);
-
+    $model->setTranslation(FakeValue::ColumnTitle, $source, FakeValue::LocaleMain);
     $model->save();
 
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($saved);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => null,
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle => $saved,
     ]);
-});
-
-test('numeric', function () {
-    $model = fakeModel();
-
-    $model->setTranslation(LocaleValue::ColumnTitle, 0, LocaleValue::LocaleMain);
-    $model->setTranslation(LocaleValue::ColumnTitle, 0.01, LocaleValue::LocaleFallback);
-
-    $model->save();
-
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBe(0);
-    expect($model->getTranslation(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBe(0.01);
-
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-
-        'content' => jsonEncode([
-            LocaleValue::LocaleMain     => 0,
-            LocaleValue::LocaleFallback => 0.01,
-        ]),
-    ]);
-});
-
-test('unknown locale', function () {
-    $model = fakeModel();
-
-    $model->setTranslation(LocaleValue::ColumnTitle, 'foo', LocaleValue::LocaleUninstalled);
-})->throws(UnavailableLocaleException::class);
+})->with('mixed-values');

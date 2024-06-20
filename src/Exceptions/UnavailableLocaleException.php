@@ -23,6 +23,6 @@ class UnavailableLocaleException extends Exception
 
     protected function available(): string
     {
-        return Locales::installed()->pluck('locale.code')->filter()->implode(', ');
+        return Locales::installed()->pluck('code')->filter()->implode(', ');
     }
 }

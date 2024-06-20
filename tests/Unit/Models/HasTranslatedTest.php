@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use Tests\Constants\LocaleValue;
+use Tests\Constants\FakeValue;
 
 test('main', function () {
     $model = fakeModel(
         main: fake()->paragraph
     );
 
-    expect($model->hasTranslated(LocaleValue::ColumnTitle))->toBeTrue();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeTrue();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeFalse();
+    expect($model->hasTranslated(FakeValue::ColumnTitle))->toBeTrue();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeTrue();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeFalse();
 });
 
 test('fallback', function () {
@@ -19,9 +19,9 @@ test('fallback', function () {
         fallback: fake()->paragraph
     );
 
-    expect($model->hasTranslated(LocaleValue::ColumnTitle))->toBeTrue();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeFalse();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeTrue();
+    expect($model->hasTranslated(FakeValue::ColumnTitle))->toBeTrue();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeFalse();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeTrue();
 });
 
 test('custom', function () {
@@ -29,8 +29,8 @@ test('custom', function () {
         custom: fake()->paragraph
     );
 
-    expect($model->hasTranslated(LocaleValue::ColumnTitle))->toBeFalse();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleMain))->toBeFalse();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleFallback))->toBeFalse();
-    expect($model->hasTranslated(LocaleValue::ColumnTitle, LocaleValue::LocaleCustom))->toBeTrue();
+    expect($model->hasTranslated(FakeValue::ColumnTitle))->toBeFalse();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeFalse();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeFalse();
+    expect($model->hasTranslated(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeTrue();
 });

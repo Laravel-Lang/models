@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
+use LaravelLang\Config\Facades\Config;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
-use LaravelLang\Models\Data\ContentData;
+use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
-use LaravelLang\Models\Models\Translation;
+use LaravelLang\Models\Services\Registry;
+use LaravelLang\Models\Services\Relation;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
@@ -26,50 +29,37 @@ trait HasTranslations
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
-            // @var \LaravelLang\Models\HasTranslations $model
-            $model->translation?->setAttribute('model_id', $model->getKey());
-            $model->translation?->save();
+            // @var HasTranslations|Model $model
+            Relation::resolveKey($model);
 
-            if (! $model->translation) {
-                $model->setRelation('translation', $model->translation()->make());
-            }
+            $model->translations?->each?->save();
         });
-
-        static::deleting(function (Model $model) {
-            // @var \LaravelLang\Models\HasTranslations $model
-            return $model->translation?->delete() ?? $model->translation()->delete();
-        });
-
-        if (method_exists(static::class, 'forceDeleted')) {
-            static::forceDeleted(function (Model $model) {
-                // @var \LaravelLang\Models\HasTranslations $model
-                return $model->translation?->forceDelete() ?? $model->translation()->forceDelete();
-            });
-        }
-
-        if (method_exists(static::class, 'restored')) {
-            static::restored(function (Model $model) {
-                // @var \LaravelLang\Models\HasTranslations $model
-                $model->translation()->onlyTrashed()?->restore();
-            });
-        }
     }
 
-    public function translation(): MorphOne
+    protected static function translationModelName(): string
     {
-        return $this->morphOne(Translation::class, 'model');
+        return static::class . Config::shared()->models->suffix;
     }
 
-    public function setTranslation(
-        string $column,
-        array|ContentData|float|int|string|null $value,
-        Locale|string|null $locale = null
-    ): static {
-        $this->validateTranslationColumn($column, $locale, true);
+    public function translations(): HasMany
+    {
+        return $this->hasMany(static::translationModelName(), 'item_id')->afterQuery(
+            fn (Collection $items) => $items->keyBy('locale')
+        );
+    }
 
-        if (is_null($this->translation)) {
-            $this->setRelation('translation', $this->translation()->make());
-        }
+    public function hasTranslated(string $column, Locale|string|null $locale = null): bool
+    {
+        $this->validateTranslation($column, $locale);
+
+        return filled($this->getTranslation($column, $locale));
+    }
+
+    public function setTranslation(string $column, mixed $value, Locale|string|null $locale = null): static
+    {
+        $this->validateTranslation($column, $locale);
+
+        Relation::initialize($this);
 
         TranslationHasBeenSetEvent::dispatch(
             $this,
@@ -79,23 +69,37 @@ trait HasTranslations
             $value
         );
 
-        $this->translation->content->set($column, $value, $locale);
+        $this->translation($locale)->setAttribute($column, $value);
 
         return $this;
     }
 
-    public function getTranslation(string $column, Locale|string|null $locale = null): float|int|string|null
-    {
-        $this->validateTranslationColumn($column, $locale);
+    public function setTranslations(
+        string $column,
+        iterable $values
+    ): static {
+        foreach ($values as $locale => $value) {
+            $this->validateTranslation($column, $locale);
 
-        return $this->translation?->content?->get($column, $locale);
+            $this->setTranslation($column, $value, $locale);
+        }
+
+        return $this;
     }
 
-    public function hasTranslated(string $column, Locale|string|null $locale = null): bool
+    public function getTranslation(string $column, Locale|string|null $locale = null): mixed
     {
-        $this->validateTranslationColumn($column, $locale);
+        $this->validateTranslation($column, $locale);
 
-        return $this->translation->content?->has($column, $locale) ?? false;
+        if (! $locale) {
+            $current  = Locales::getCurrent()->code;
+            $fallback = Locales::getFallback()->code;
+
+            return $this->translation($current)->getAttribute($column)
+                ?? $this->translation($fallback)->getAttribute($column);
+        }
+
+        return $this->translation($locale)->getAttribute($column);
     }
 
     public function isTranslatable(string $column): bool
@@ -103,25 +107,25 @@ trait HasTranslations
         return in_array($column, $this->translatable(), true);
     }
 
-    public function forgetTranslation(string $column, Locale|string|null $locale = null): void
+    public function forgetTranslation(Locale|string $locale): void
     {
-        $this->validateTranslationColumn($column, $locale);
+        $this->validateTranslationLocale($locale);
 
-        $this->translation->content?->forget($column, $locale);
+        $locale = Locales::get($locale)->code;
 
-        TranslationHasBeenForgetEvent::dispatch($this, $column, $locale?->value ?? $locale);
+        $this->translation($locale)->delete();
+        $this->translations->forget($locale);
+
+        TranslationHasBeenForgetEvent::dispatch($this, $locale);
     }
 
     public function forgetAllTranslations(): void
     {
-        $this->translation?->setAttribute('content', new ContentData([]));
+        $this->translations->each->delete();
+
+        Relation::clear($this);
 
         AllTranslationsHasBeenForgetEvent::dispatch($this);
-    }
-
-    public function translatable(): array
-    {
-        return [];
     }
 
     public function getAttribute($key): mixed
@@ -133,6 +137,15 @@ trait HasTranslations
         return parent::getAttribute($key);
     }
 
+    public function setAttribute($key, $value): Model
+    {
+        if ($this->isTranslatable($key)) {
+            return $this->setTranslation($key, $value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
     public function newInstance($attributes = [], $exists = false): static
     {
         $basic        = Arr::except($attributes, $this->translatable());
@@ -141,22 +154,48 @@ trait HasTranslations
         $model = parent::newInstance($basic, $exists);
 
         foreach ($translatable as $key => $value) {
-            $model->setTranslation($key, $value);
+            is_iterable($value)
+                ? $model->setTranslations($key, $value)
+                : $model->setTranslation($key, $value);
         }
 
         return $model;
     }
 
-    protected function validateTranslationColumn(
-        string $column,
-        Locale|string|null $locale,
-        bool $withInstalled = false
-    ): void {
+    public function translatable(): array
+    {
+        return Registry::get(__METHOD__, function () {
+            return (new (static::translationModelName())())->translatable();
+        });
+    }
+
+    protected function translation(Locale|string|null $locale = null): Translation
+    {
+        $code = Locales::get($locale)->code;
+
+        if (! $this->translations->has($code)) {
+            $this->translations->put($code, Relation::initializeLocale($this, $code));
+        }
+
+        return $this->translations->get($code);
+    }
+
+    protected function validateTranslation(string $column, Locale|string|null $locale): void
+    {
+        $this->validateTranslationColumn($column);
+        $this->validateTranslationLocale($locale);
+    }
+
+    protected function validateTranslationColumn(string $column): void
+    {
         if (! $this->isTranslatable($column)) {
             throw new AttributeIsNotTranslatableException($column, $this);
         }
+    }
 
-        if ($locale && ! $withInstalled && ! Locales::isInstalled($locale)) {
+    protected function validateTranslationLocale(Locale|string|null $locale): void
+    {
+        if ($locale && ! Locales::isInstalled($locale)) {
             throw new UnavailableLocaleException($locale);
         }
     }

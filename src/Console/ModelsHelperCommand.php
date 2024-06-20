@@ -7,12 +7,14 @@ namespace LaravelLang\Models\Console;
 use DragonCode\Support\Facades\Filesystem\Directory;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
+use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMap;
-use LaravelLang\Models\Services\HelperGenerator;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(name: 'lang:models:helper')]
 class ModelsHelperCommand extends Command
 {
-    protected $signature = 'lang:models';
+    protected $signature = 'lang:models:helper {model?}';
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
@@ -36,6 +38,10 @@ class ModelsHelperCommand extends Command
 
     protected function models(): array
     {
+        if ($model = $this->argument('model')) {
+            return [ltrim($model, '\\')];
+        }
+
         return ClassMap::get();
     }
 
