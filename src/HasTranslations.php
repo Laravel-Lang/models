@@ -70,15 +70,14 @@ trait HasTranslations
     {
         return $this->hasMany(static::translationModelName(), 'item_id');
     }
-    //
-    //public function hasTranslated(string $column, Locale|string|null $locale = null): bool
-    //{
-    //    $this->validateTranslationColumn($column, $locale);
-    //
-    //    return $this->translation->content?->has($column, $locale) ?? false;
-    //}
-    //
-    //
+
+    public function hasTranslated(string $column, Locale|string|null $locale = null): bool
+    {
+        $this->validateTranslationColumn($column, $locale);
+
+        return filled($this->getTranslation($column, $locale));
+    }
+
     public function setTranslation(
         string $column,
         array|float|int|string|null $value,
