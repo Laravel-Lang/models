@@ -110,6 +110,63 @@ test('array', function () {
     ]);
 });
 
+test('collection', function () {
+    assertDatabaseEmpty(TestModel::class);
+    assertDatabaseEmpty(TestModelTranslation::class);
+
+    $model = TestModel::create([
+        'key' => 'foo',
+
+        FakeValue::ColumnTitle => collect([
+            FakeValue::LocaleMain     => 'qwerty 10',
+            FakeValue::LocaleFallback => 'qwerty 11',
+            FakeValue::LocaleCustom   => 'qwerty 12',
+        ]),
+
+        FakeValue::ColumnDescription => collect([
+            FakeValue::LocaleMain     => 'qwerty 20',
+            FakeValue::LocaleFallback => 'qwerty 21',
+            FakeValue::LocaleCustom   => 'qwerty 22',
+        ]),
+    ]);
+
+    expect($model->key)->toBeString()->toBe('foo');
+    expect($model->title)->toBeString()->toBe('qwerty 10');
+    expect($model->description)->toBeString()->toBe('qwerty 20');
+
+    assertDatabaseHas(TestModel::class, [
+        'id'  => $model->id,
+        'key' => $model->key,
+    ]);
+
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+
+        'locale' => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle       => 'qwerty 10',
+        FakeValue::ColumnDescription => 'qwerty 20',
+    ]);
+
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+
+        'locale' => FakeValue::LocaleFallback,
+
+        FakeValue::ColumnTitle       => 'qwerty 11',
+        FakeValue::ColumnDescription => 'qwerty 21',
+    ]);
+
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+
+        'locale' => FakeValue::LocaleCustom,
+
+        FakeValue::ColumnTitle       => 'qwerty 12',
+        FakeValue::ColumnDescription => 'qwerty 22',
+    ]);
+});
+
 test('uninstalled', function () {
     TestModel::create([
         'key' => 'foo',

@@ -80,7 +80,7 @@ trait HasTranslations
 
     public function setTranslation(
         string $column,
-        array|float|int|string|null $value,
+        float|int|string|null $value,
         Locale|string|null $locale = null
     ): static {
         $this->validateTranslationColumn($column, $locale);
@@ -102,7 +102,7 @@ trait HasTranslations
 
     public function setTranslations(
         string $column,
-        array $values
+        iterable $values
     ): static {
         foreach ($values as $locale => $value) {
             $this->validateTranslationColumn($column, $locale);
@@ -176,7 +176,7 @@ trait HasTranslations
         $model = parent::newInstance($basic, $exists);
 
         foreach ($translatable as $key => $value) {
-            is_array($value)
+            is_iterable($value)
                 ? $model->setTranslations($key, $value)
                 : $model->setTranslation($key, $value);
         }
