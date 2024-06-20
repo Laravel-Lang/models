@@ -24,12 +24,19 @@ class Relation
             if (! $model->translations?->has($locale->code)) {
                 $model->translations->put($locale->code, static::initializeLocale($model, $locale->code));
             }
+
+            static::setAttributes($model, $model->translations->get($locale->code), $locale->code);
         });
     }
 
     public static function initializeLocale(Model $model, string $locale): Translation
     {
-        return (new (static::modelName($model))())
+        return static::setAttributes($model, new (static::modelName($model))(), $locale);
+    }
+
+    protected static function setAttributes(Model $model, Translation $translation, string $locale): Translation
+    {
+        return $translation
             ->setAttribute('item_id', $model->getKey())
             ->setAttribute('locale', $locale);
     }

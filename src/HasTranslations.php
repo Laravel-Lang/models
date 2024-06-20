@@ -30,7 +30,9 @@ trait HasTranslations
         });
 
         static::saved(function (Model $model) {
-            /** @var \LaravelLang\Models\HasTranslations $model */
+            /** @var HasTranslations|Model $model */
+            Relation::initializeModel($model);
+
             $model->translations?->each?->save();
         });
         //
@@ -58,8 +60,6 @@ trait HasTranslations
     {
         return static::class . Config::shared()->models->suffix;
     }
-
-    //
 
     public function initializeHasTranslations(): void
     {
@@ -97,6 +97,19 @@ trait HasTranslations
         );
 
         $this->translation($locale)->setAttribute($column, $value);
+
+        return $this;
+    }
+
+    public function setTranslations(
+        string $column,
+        array $values
+    ): static {
+        foreach ($values as $locale => $value) {
+            $this->validateTranslationColumn($column, $locale);
+
+            $this->setTranslation($column, $value, $locale);
+        }
 
         return $this;
     }
@@ -147,7 +160,14 @@ trait HasTranslations
         return parent::getAttribute($key);
     }
 
-    //
+    public function setAttribute($key, $value): Model
+    {
+        if ($this->isTranslatable($key)) {
+            return $this->setTranslation($key, $value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
 
     public function newInstance($attributes = [], $exists = false): static
     {
@@ -157,7 +177,9 @@ trait HasTranslations
         $model = parent::newInstance($basic, $exists);
 
         foreach ($translatable as $key => $value) {
-            $model->setTranslation($key, $value);
+            is_array($value)
+                ? $model->setTranslations($key, $value)
+                : $model->setTranslation($key, $value);
         }
 
         return $model;
