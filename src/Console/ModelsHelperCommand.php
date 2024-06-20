@@ -9,7 +9,9 @@ use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMap;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(name: 'lang:models:helper')]
 class ModelsHelperCommand extends Command
 {
     protected $signature = 'lang:models:helper {model?}';

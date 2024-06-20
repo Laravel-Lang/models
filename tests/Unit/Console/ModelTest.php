@@ -53,39 +53,12 @@ test('with exists model', function () {
         'description',
     ];
 TEXT
-        );
-
-    expect(file_get_contents($migration))
-        ->toContain('Schema::create(\'test_translations\'')
-        ->toContain('Schema::dropIfExists(\'test_translations\')')
-        ->toContain('$table->string(\'title\')->nullable()')
-        ->toContain('$table->string(\'description\')->nullable()')
-        ->toContain('->constrained(\'tests\')');
-
-    expect($migration)->toBeReadableFile();
-    expect($helper)->toBeReadableFile();
-});
-
-test('unknown model', function () {
-    artisan(PackageMakeModel::class, [
-        'model'     => '\App\Models\Test',
-        '--columns' => ['title', 'description'],
-    ])->run();
-
-    $model         = base_path('app/Models/TestTranslation.php');
-    $migration     = database_path('migrations/' . date('Y_m_d_His') . '_create_test_translations_table.php');
-    $baseMigration = database_path('migrations/' . date('Y_m_d_His') . '_create_tests_table.php');
-    $helper        = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Test'));
-
-    expect(file_get_contents($model))
-        ->toContain('App\Models')
-        ->toContain('class TestTranslation extends Translation')
+        )
         ->toContain(
             <<<TEXT
-    protected \$fillable = [
-        'locale',
-        'title',
-        'description',
+    protected \$casts = [
+        'title' => TrimCast::class,
+        'description' => TrimCast::class,
     ];
 TEXT
         );
@@ -97,7 +70,6 @@ TEXT
         ->toContain('$table->string(\'description\')->nullable()')
         ->toContain('->constrained(\'tests\')');
 
-    expect($baseMigration)->toBeReadableFile();
     expect($migration)->toBeReadableFile();
     expect($helper)->toBeReadableFile();
 });

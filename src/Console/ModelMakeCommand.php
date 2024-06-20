@@ -10,11 +10,13 @@ use Illuminate\Support\Str;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Services\ClassMap;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
 
+#[AsCommand(name: 'make:model:localization')]
 class ModelMakeCommand extends Command
 {
     protected $signature = 'make:model:localization {model} {--columns=*}';
