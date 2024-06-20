@@ -12,12 +12,12 @@ beforeEach(function () {
         'key' => fake()->word,
 
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'qwerty 10',
+            FakeValue::LocaleMain     => 'qwerty 10',
             FakeValue::LocaleFallback => 'qwerty 11',
         ],
 
         FakeValue::ColumnDescription => [
-            FakeValue::LocaleMain => 'qwerty 20',
+            FakeValue::LocaleMain     => 'qwerty 20',
             FakeValue::LocaleFallback => 'qwerty 21',
         ],
     ]);

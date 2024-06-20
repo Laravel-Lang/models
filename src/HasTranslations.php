@@ -29,7 +29,7 @@ trait HasTranslations
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
-            /** @var HasTranslations|Model $model */
+            // @var HasTranslations|Model $model
             Relation::resolveKey($model);
 
             $model->translations?->each?->save();

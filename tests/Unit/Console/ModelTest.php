@@ -46,21 +46,21 @@ test('with exists model', function () {
         ->toContain('App\Models')
         ->toContain('class TestTranslation extends Translation')
         ->toContain(
-            <<<TEXT
-    protected \$fillable = [
-        'locale',
-        'title',
-        'description',
-    ];
-TEXT
+            <<<'TEXT'
+                    protected $fillable = [
+                        'locale',
+                        'title',
+                        'description',
+                    ];
+                TEXT
         )
         ->toContain(
-            <<<TEXT
-    protected \$casts = [
-        'title' => TrimCast::class,
-        'description' => TrimCast::class,
-    ];
-TEXT
+            <<<'TEXT'
+                    protected $casts = [
+                        'title' => TrimCast::class,
+                        'description' => TrimCast::class,
+                    ];
+                TEXT
         );
 
     expect(file_get_contents($migration))

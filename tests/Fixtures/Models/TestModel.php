@@ -13,7 +13,7 @@ use LaravelLang\Models\HasTranslations;
  * @property string $key
  * @property string|null $title
  * @property string|null $description
- * @property-read Collection<TestModelTranslation> $translations
+ * @property Collection<TestModelTranslation> $translations
  */
 class TestModel extends Model
 {
