@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Locales\Data\LocaleData;
-use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use Tests\Constants\FakeValue;
 use Tests\Fixtures\Models\TestModel;
@@ -11,6 +9,7 @@ use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseEmpty;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
 
 test('single', function () {
     assertDatabaseEmpty(TestModel::class);
@@ -41,16 +40,20 @@ test('single', function () {
         FakeValue::ColumnDescription => 'qwerty 20',
     ]);
 
-    Locales::installed()
-        ->reject(fn (LocaleData $data) => $data->code === FakeValue::LocaleMain)
-        ->each(fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
-            'item_id' => $model->id,
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
 
-            'locale' => $data->code,
+        'locale' => FakeValue::LocaleFallback,
 
-            FakeValue::ColumnTitle       => null,
-            FakeValue::ColumnDescription => null,
-        ]));
+        FakeValue::ColumnTitle       => null,
+        FakeValue::ColumnDescription => null,
+    ]);
+
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+
+        'locale' => FakeValue::LocaleCustom,
+    ]);
 });
 
 test('array', function () {

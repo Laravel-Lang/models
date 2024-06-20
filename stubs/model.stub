@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
+use LaravelLang\Models\Casts\TrimCast;
 use LaravelLang\Models\Eloquent\Translation;
 
 class {{model}}{{suffix}} extends Translation
@@ -11,5 +12,9 @@ class {{model}}{{suffix}} extends Translation
     protected $fillable = [
         'locale',
 {{fillable}}
+    ];
+
+    protected $casts = [
+{{casts}}
     ];
 }

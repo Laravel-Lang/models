@@ -13,11 +13,14 @@ class ModelGenerator extends Generator
 
     protected string $fillables = '        \'%s\',';
 
+    protected string $casts = '        \'%s\' => TrimCast::class,';
+
     protected function data(): array
     {
         return [
             'suffix'   => $this->modelSuffix(),
             'fillable' => $this->getFillable(),
+            'casts'    => $this->getCasts(),
         ];
     }
 
@@ -34,6 +37,13 @@ class ModelGenerator extends Generator
     {
         return array_map(function (string $attribute) {
             return sprintf($this->fillables, $attribute);
+        }, $this->columns);
+    }
+
+    protected function getCasts(): array
+    {
+        return array_map(function (string $attribute) {
+            return sprintf($this->casts, $attribute);
         }, $this->columns);
     }
 

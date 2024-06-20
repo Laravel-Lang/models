@@ -6,32 +6,37 @@ namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Collection as DBCollection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use LaravelLang\Config\Facades\Config;
-use LaravelLang\Locales\Data\LocaleData;
-use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Eloquent\Translation;
 
 class Relation
 {
-    public static function initializeModel(Model $model): void
+    public static function initialize(Model $model): Model
     {
-        if (blank($model->translations) && blank($model->load('translations')->translations)) {
-            $model->setRelation('translations', new DBCollection());
+        if (blank($model->translations)) {
+            $translations = $model->load('translations')->translations ?? new DBCollection();
+
+            $model->setRelation('translations', $translations);
         }
 
-        static::locales()->each(function (LocaleData $locale) use ($model) {
-            if (! $model->translations?->has($locale->code)) {
-                $model->translations->put($locale->code, static::initializeLocale($model, $locale->code));
-            }
-
-            static::setAttributes($model, $model->translations->get($locale->code), $locale->code);
-        });
+        return $model;
     }
 
     public static function initializeLocale(Model $model, string $locale): Translation
     {
         return static::setAttributes($model, new (static::modelName($model))(), $locale);
+    }
+
+    public static function resolveKey(Model $model): void
+    {
+        $model->translations->each(
+            fn (Translation $item) => $item->forceFill(['item_id' => $model->getKey()])
+        );
+    }
+
+    public static function clear(Model $model): void
+    {
+        $model->setRelation('translations', new DBCollection());
     }
 
     protected static function setAttributes(Model $model, Translation $translation, string $locale): Translation
@@ -44,10 +49,5 @@ class Relation
     protected static function modelName(Model $model): string
     {
         return get_class($model) . Config::shared()->models->suffix;
-    }
-
-    protected static function locales(): Collection
-    {
-        return Locales::installed();
     }
 }

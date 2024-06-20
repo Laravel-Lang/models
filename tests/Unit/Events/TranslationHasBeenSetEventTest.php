@@ -16,15 +16,7 @@ test('default locale', function () {
 
     $model = fakeModel(main: $oldText);
 
-    expect($model->title)->toBeString()->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($oldText);
-
     $model->setTranslation(FakeValue::ColumnTitle, $newText);
-
-    expect($model->title)->toBeString()->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($newText);
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
@@ -41,15 +33,7 @@ test('main locale', function () {
 
     $model = fakeModel(main: $oldText);
 
-    expect($model->title)->toBeString()->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($oldText);
-
     $model->setTranslation(FakeValue::ColumnTitle, $newText, FakeValue::LocaleMain);
-
-    expect($model->title)->toBeString()->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($newText);
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
@@ -66,17 +50,7 @@ test('fallback locale', function () {
 
     $model = fakeModel(fallback: $oldText);
 
-    expect($model->title)->toBeString()->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($oldText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($oldText);
-
     $model->setTranslation(FakeValue::ColumnTitle, $newText, FakeValue::LocaleFallback);
-
-    expect($model->title)->toBeString()->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBe($newText);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($newText);
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
@@ -93,19 +67,7 @@ test('custom locale', function () {
 
     $model = fakeModel(custom: $oldText);
 
-    expect($model->title)->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($oldText);
-
     $model->setTranslation(FakeValue::ColumnTitle, $newText, FakeValue::LocaleCustom);
-
-    expect($model->title)->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($newText);
 
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()

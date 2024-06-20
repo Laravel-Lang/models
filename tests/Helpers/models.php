@@ -22,11 +22,13 @@ function fakeModel(
     return $model;
 }
 
-function fakeTranslation(TestModel $model, ?string $text = null, ?string $fallback = null, ?string $custom = null): void
+function fakeTranslation(TestModel $model, ?string $text, ?string $fallback, ?string $custom): void
 {
-    $model->setTranslation(FakeValue::ColumnTitle, $text, FakeValue::LocaleMain);
-    $model->setTranslation(FakeValue::ColumnTitle, $fallback, FakeValue::LocaleFallback);
-    $model->setTranslation(FakeValue::ColumnTitle, $custom, FakeValue::LocaleCustom);
+    $model->setTranslations(FakeValue::ColumnTitle, [
+        FakeValue::LocaleMain     => $text,
+        FakeValue::LocaleFallback => $fallback,
+        FakeValue::LocaleCustom   => $custom,
+    ])->save();
 }
 
 function findFakeModel(): TestModel

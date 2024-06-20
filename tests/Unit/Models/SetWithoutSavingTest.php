@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Models\Eloquent\Translation;
 use Tests\Constants\FakeValue;
-use Tests\Fixtures\Models\TestModel;
+use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseEmpty;
 use function Pest\Laravel\assertDatabaseHas;
@@ -28,16 +27,18 @@ test('main locale', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($newText);
 
     // Check database
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleMain => $oldText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleMain => $newText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleMain,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
@@ -59,16 +60,18 @@ test('fallback locale', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe($newText);
 
     // Check database
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleFallback => $oldText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleFallback,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleFallback => $newText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleFallback,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
@@ -90,41 +93,27 @@ test('custom locale', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($newText);
 
     // Check database
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleCustom => $oldText]),
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleCustom,
+
+        FakeValue::ColumnTitle => $oldText,
     ]);
 
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'content'    => jsonEncode([FakeValue::LocaleCustom => $newText]),
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => FakeValue::LocaleCustom,
+
+        FakeValue::ColumnTitle => $newText,
     ]);
 });
 
-test('empties', function () {
+test('mixed symbols', function (mixed $source, mixed $saved) {
     $model = fakeModel();
 
-    $model->setTranslation(FakeValue::ColumnTitle, null, FakeValue::LocaleMain);
-    $model->setTranslation(FakeValue::ColumnTitle, '', FakeValue::LocaleFallback);
-    $model->setTranslation(FakeValue::ColumnTitle, ' ', FakeValue::LocaleCustom);
+    $model->setTranslation(FakeValue::ColumnTitle, $source, FakeValue::LocaleMain);
 
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
+    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe($saved);
 
-    assertDatabaseEmpty(Translation::class);
-});
-
-test('numeric', function () {
-    $model = fakeModel();
-
-    $model->setTranslation(FakeValue::ColumnTitle, 0, FakeValue::LocaleMain);
-    $model->setTranslation(FakeValue::ColumnTitle, 0.01, FakeValue::LocaleFallback);
-
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBe(0);
-    expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBe(0.01);
-
-    assertDatabaseEmpty(Translation::class);
-});
+    assertDatabaseEmpty(TestModelTranslation::class);
+})->with('mixed-values');
