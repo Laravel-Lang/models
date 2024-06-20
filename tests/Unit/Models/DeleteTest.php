@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-use LaravelLang\Models\Eloquent\Translation;
+use LaravelLang\Locales\Data\LocaleData;
+use LaravelLang\Locales\Facades\Locales;
 use Tests\Fixtures\Models\TestModel;
+use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
@@ -16,11 +18,12 @@ test('soft delete', function () {
         'deleted_at' => null,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => null,
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 
     $model->delete();
 
@@ -29,11 +32,12 @@ test('soft delete', function () {
         'deleted_at' => now(),
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => now(),
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 });
 
 test('force delete', function () {
@@ -44,11 +48,12 @@ test('force delete', function () {
         'deleted_at' => null,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => null,
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 
     $model->forceDelete();
 
@@ -56,9 +61,8 @@ test('force delete', function () {
         'id' => $model->id,
     ]);
 
-    assertDatabaseMissing(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
+    assertDatabaseMissing(TestModelTranslation::class, [
+        'item_id' => $model->id,
     ]);
 });
 
@@ -70,11 +74,12 @@ test('restore', function () {
         'deleted_at' => null,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => null,
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 
     $model->delete();
 
@@ -83,11 +88,12 @@ test('restore', function () {
         'deleted_at' => now(),
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => now(),
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 
     $model->restore();
 
@@ -96,9 +102,10 @@ test('restore', function () {
         'deleted_at' => null,
     ]);
 
-    assertDatabaseHas(Translation::class, [
-        'model_type' => TestModel::class,
-        'model_id'   => $model->id,
-        'deleted_at' => null,
-    ]);
+    Locales::installed()->each(
+        fn (LocaleData $data) => assertDatabaseHas(TestModelTranslation::class, [
+            'item_id' => $model->id,
+            'locale'  => $data->code,
+        ])
+    );
 });

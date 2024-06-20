@@ -35,25 +35,6 @@ trait HasTranslations
 
             $model->translations?->each?->save();
         });
-        //
-        //    static::deleting(function (Model $model) {
-        //        // @var \LaravelLang\Models\HasTranslations $model
-        //        return $model->translation?->delete() ?? $model->translation()->delete();
-        //    });
-        //
-        //    if (method_exists(static::class, 'forceDeleted')) {
-        //        static::forceDeleted(function (Model $model) {
-        //            // @var \LaravelLang\Models\HasTranslations $model
-        //            return $model->translation?->forceDelete() ?? $model->translation()->forceDelete();
-        //        });
-        //    }
-        //
-        //    if (method_exists(static::class, 'restored')) {
-        //        static::restored(function (Model $model) {
-        //            // @var \LaravelLang\Models\HasTranslations $model
-        //            $model->translation()->onlyTrashed()?->restore();
-        //        });
-        //    }
     }
 
     protected static function translationModelName(): string

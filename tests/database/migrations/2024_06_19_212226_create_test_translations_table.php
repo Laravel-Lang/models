@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('test_model_translations', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignIdFor(TestModel::class, 'item_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(TestModel::class, 'item_id')
+                ->constrained('test_models')
+                ->cascadeOnDelete();
 
             $table->string('locale');
 
