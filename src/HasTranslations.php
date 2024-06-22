@@ -11,17 +11,13 @@ use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
-use LaravelLang\Models\Concerns\HasValidations;
 use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
-use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
-use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
+use LaravelLang\Models\Services\Attribute;
 use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
 use function app;
-use function filled;
 use function in_array;
 use function is_iterable;
 
@@ -31,7 +27,6 @@ use function is_iterable;
  */
 trait HasTranslations
 {
-    use HasValidations;
     use ModelLoader;
     use HasNames;
 
@@ -42,35 +37,21 @@ trait HasTranslations
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
     {
-        $this->validateTranslation($column, $locale);
-
-        return filled($this->getTranslation($column, $locale));
+        return Attribute::of($this, $column, $locale)
+            ->validate()
+            ->has();
     }
 
-    public function setTranslation(string $column, mixed $value, Locale|LocaleData|string|null $locale = null): static
+    public function setTranslation(string $column, mixed $value, Locale|LocaleData|string|null $locale = null): Model
     {
-        $locale = $this->validateTranslation($column, $locale);
-
-        Relation::initialize($this);
-
-        TranslationHasBeenSetEvent::dispatch(
-            $this,
-            $column,
-            $locale?->locale ?? null,
-            $this->getTranslation($column, $locale),
-            $value
-        );
-
-        $this->translation($locale)->setAttribute($column, $value);
-
-        return $this;
+        return Attribute::of($this, $column, $locale)
+            ->validate()
+            ->set($value);
     }
 
     public function setTranslations(string $column, iterable $values): static
     {
         foreach ($values as $locale => $value) {
-            $locale = $this->validateTranslation($column, $locale);
-
             $this->setTranslation($column, $value, $locale);
         }
 
@@ -79,17 +60,9 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|LocaleData|string|null $locale = null): mixed
     {
-        $data = $this->validateTranslation($column, $locale);
-
-        if (! $locale) {
-            $current  = Locales::getCurrent();
-            $fallback = Locales::getFallback();
-
-            return $this->translation($current)->getAttribute($column)
-                ?? $this->translation($fallback)->getAttribute($column);
-        }
-
-        return $this->translation($data)->getAttribute($column);
+        return Attribute::of($this, $column, $locale)
+            ->validate()
+            ->get();
     }
 
     public function isTranslatable(string $column): bool
@@ -97,23 +70,16 @@ trait HasTranslations
         return in_array($column, $this->translatable(), true);
     }
 
-    public function forgetTranslation(Locale|LocaleData|string $locale): void
+    public function forgetTranslation(Locale|LocaleData|string $locale): Model
     {
-        $locale = $this->validateTranslationLocale($locale);
-
-        $this->translation($locale)->delete();
-        $this->translations->forget($locale->locale->value);
-
-        TranslationHasBeenForgetEvent::dispatch($this, $locale?->locale);
+        return Attribute::of($this, locale: $locale)
+            ->validateLocale()
+            ->forget();
     }
 
-    public function forgetAllTranslations(): void
+    public function forgetAllTranslations(): Model
     {
-        $this->translations()->delete();
-
-        Relation::clear($this);
-
-        AllTranslationsHasBeenForgetEvent::dispatch($this);
+        return Attribute::of($this)->forgetAll();
     }
 
     public function getAttribute($key): mixed
@@ -167,7 +133,7 @@ trait HasTranslations
         });
     }
 
-    protected function translation(?LocaleData $locale): Translation
+    public function translation(?LocaleData $locale): Translation
     {
         $locale ??= Locales::getCurrent();
 
