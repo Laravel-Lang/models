@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
 use App\Models\TestModelTranslation;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
@@ -66,6 +67,18 @@ test('without translations model', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
+});
+
+test('lazy loading', function () {
+    $model1 = fakeModel(main: 'Foo');
+    $model2 = fakeModel(main: 'Bar');
+
+    TestModel::query()->get()->each(
+        fn (TestModel $model) => match ($model->getKey()) {
+            $model1->getKey() => expect($model->title)->toBe('Foo'),
+            $model2->getKey() => expect($model->title)->toBe('Bar'),
+        }
+    );
 });
 
 test('non-translatable attribute', function () {
