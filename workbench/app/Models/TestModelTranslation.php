@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\Models;
+namespace App\Models;
 
 use LaravelLang\Models\Casts\TrimCast;
 use LaravelLang\Models\Eloquent\Translation;

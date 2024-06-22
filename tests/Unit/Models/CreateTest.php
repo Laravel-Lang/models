@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
+use App\Models\TestModelTranslation;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use Tests\Constants\FakeValue;
-use Tests\Fixtures\Models\TestModel;
-use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseEmpty;
 use function Pest\Laravel\assertDatabaseHas;
