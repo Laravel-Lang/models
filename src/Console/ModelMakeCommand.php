@@ -23,7 +23,7 @@ use function Laravel\Prompts\text;
 #[AsCommand(name: 'make:model:localization')]
 class ModelMakeCommand extends Command
 {
-    protected $signature = 'make:model:localization {model} {--columns=*}';
+    protected $signature = 'make:model:localization {model?} {--columns=*}';
 
     protected $description = 'Creates a model for storing translations';
 
