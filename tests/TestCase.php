@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Config\Repository;
+use Illuminate\Support\Facades\ParallelTesting;
 use LaravelLang\Config\Enums\Name;
 use LaravelLang\Config\ServiceProvider as ConfigServiceProvider;
 use LaravelLang\Locales\ServiceProvider as LocalesServiceProvider;
@@ -26,16 +27,17 @@ abstract class TestCase extends BaseTestCase
 
     protected function defineEnvironment($app): void
     {
-        /** @var Repository $config */
-        $config = $app['config'];
+        tap($app['config'], function (Repository $config) {
+            $config->set('app.locale', FakeValue::LocaleMain);
+            $config->set('app.fallback_locale', FakeValue::LocaleFallback);
 
-        $config->set('app.locale', FakeValue::LocaleMain);
-        $config->set('app.fallback_locale', FakeValue::LocaleFallback);
+            $config->set(Name::Hidden() . '.models.directory', [
+                __DIR__ . '/Fixtures/Models',
+                base_path('app'),
+            ]);
 
-        $config->set(Name::Hidden() . '.models.directory', [
-            __DIR__ . '/Fixtures/Models',
-            base_path('app'),
-        ]);
+            $config->set('testing.parallel_token', ParallelTesting::token());
+        });
     }
 
     protected function defineDatabaseMigrations(): void
