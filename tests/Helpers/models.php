@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
 use Tests\Constants\FakeValue;
-use Tests\Fixtures\Models\TestModel;
 
 function fakeModel(
     ?string $key = null,

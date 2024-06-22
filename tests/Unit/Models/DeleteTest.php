@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
+use App\Models\TestModelTranslation;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
-use Tests\Fixtures\Models\TestModel;
-use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;

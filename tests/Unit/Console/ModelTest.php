@@ -5,6 +5,7 @@ declare(strict_types=1);
 use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Filesystem\Path;
 use Illuminate\Foundation\Console\ModelMakeCommand as LaravelMakeModel;
+use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
 
@@ -17,7 +18,14 @@ beforeEach(fn () => File::ensureDelete([
 
 afterEach(function () {
     $migrations = File::allPaths(database_path('migrations'), function (string $path) {
-        return Path::extension($path) === 'php';
+        if (Path::extension($path) !== 'php') {
+            return false;
+        }
+
+        return ! Str::contains($path, [
+            '2024_06_11_031722_create_test_table',
+            '2024_06_19_212226_create_test_translations_table',
+        ]);
     });
 
     File::ensureDelete($migrations);
@@ -43,7 +51,7 @@ test('with exists model', function () {
 
     $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');
 
-    expect($migrations)->toHaveCount(1);
+    expect($migrations)->toHaveCount(3);
 
     expect(file_get_contents($model))
         ->toContain('App\Models')
@@ -66,7 +74,7 @@ test('with exists model', function () {
                 TEXT
         );
 
-    expect(file_get_contents($migrations[0]))
+    expect(file_get_contents($migrations[2]))
         ->toContain('Schema::create(\'test_translations\'')
         ->toContain('Schema::dropIfExists(\'test_translations\')')
         ->toContain('$table->string(\'title\')->nullable()')

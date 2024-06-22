@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
 use Illuminate\Support\Facades\Event;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use Tests\Constants\FakeValue;
-use Tests\Fixtures\Models\TestModel;
 
 beforeEach(fn () => TestModel::create([
     'key' => fake()->word,

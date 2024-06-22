@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
+use App\Models\TestModelTranslation;
 use DragonCode\Support\Facades\Filesystem\Directory;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelsHelperCommand;
-use Tests\Fixtures\Models\TestModel;
-use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\artisan;
 
@@ -28,7 +28,7 @@ test('generate many models', function () {
     expect($path)->toBeReadableFile();
 
     expect(file_get_contents($path))
-        ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('namespace App\Models {')
         ->toContain('use ' . TestModelTranslation::class . ';')
         ->toContain('class TestModel extends Model {}')
         ->toContain('@property string|null $title')
@@ -52,7 +52,7 @@ test('generate one model', function () {
     expect($path)->toBeReadableFile();
 
     expect(file_get_contents($path))
-        ->toContain('namespace Tests\Fixtures\Models {')
+        ->toContain('namespace App\Models {')
         ->toContain('use ' . TestModelTranslation::class . ';')
         ->toContain('class TestModel extends Model {}')
         ->toContain('@property string|null $title')

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModelTranslation;
 use Tests\Constants\FakeValue;
-use Tests\Fixtures\Models\TestModelTranslation;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
