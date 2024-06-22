@@ -21,11 +21,7 @@ class TrimCast implements CastsAttributes
 
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        if (is_bool($value) || is_null($value)) {
-            return $value;
-        }
-
-        if (is_numeric($value)) {
+        if (is_bool($value) || is_numeric($value) || is_null($value)) {
             return $value;
         }
 
