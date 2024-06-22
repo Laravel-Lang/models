@@ -3,6 +3,11 @@ providers:
     - LaravelLang\Config\ServiceProvider
     - LaravelLang\Locales\ServiceProvider
     - LaravelLang\Models\ServiceProvider
-migrations:
-    - ./workbench/database/migrations/2024_06_11_031722_create_test_table.php
-    - ./workbench/database/migrations/2024_06_19_212226_create_test_translations_table.php
+workbench:
+    welcome: false
+    install: false
+    discovers:
+        web: false
+        api: false
+        commands: false
+        views: false

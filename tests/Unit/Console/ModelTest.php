@@ -23,8 +23,8 @@ afterEach(function () {
         }
 
         return ! Str::contains($path, [
-            '2024_06_11_031722_create_test_table',
-            '2024_06_19_212226_create_test_translations_table',
+            '2024_06_11_031722_create_fixture_test_models_table',
+            '2024_06_19_212226_create_fixture_test_model_translations_table',
         ]);
     });
 
@@ -51,7 +51,7 @@ test('with exists model', function () {
 
     $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');
 
-    expect($migrations)->toHaveCount(3);
+    expect($migrations)->toHaveCount(1);
 
     $fillableMatches = collect(['locale', 'title', 'description'])
         ->map(fn (string $column) => sprintf('(\s+\'%s\',\r?\n?)', $column))
@@ -67,7 +67,7 @@ test('with exists model', function () {
         ->toMatch(sprintf('/protected\s\$fillable\s=\s\[\r?\n?%s\s+];/', $fillableMatches))
         ->toMatch(sprintf('/protected\s\$casts\s=\s\[\n?\r?%s\s+];/', $castsMatches));
 
-    expect(file_get_contents($migrations[2]))
+    expect(file_get_contents($migrations[0]))
         ->toContain('Schema::create(\'test_translations\'')
         ->toContain('Schema::dropIfExists(\'test_translations\')')
         ->toContain('$table->string(\'title\')->nullable()')
