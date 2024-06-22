@@ -12,6 +12,10 @@ use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
+use function array_filter;
+use function array_merge;
+use function class_exists;
+use function compact;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;

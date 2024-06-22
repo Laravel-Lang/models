@@ -11,6 +11,12 @@ use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Eloquent\Translation;
 
+use function collect;
+use function file_get_contents;
+use function implode;
+use function is_array;
+use function ltrim;
+
 abstract class Generator
 {
     protected string $stub;

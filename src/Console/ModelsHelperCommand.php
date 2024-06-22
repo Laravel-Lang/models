@@ -11,6 +11,8 @@ use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
+use function ltrim;
+
 #[AsCommand(name: 'lang:models:helper')]
 class ModelsHelperCommand extends Command
 {

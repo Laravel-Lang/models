@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Eloquent\Translation;
 
+use function blank;
+use function get_class;
+
 class Relation
 {
     public static function initialize(Model $model): Model

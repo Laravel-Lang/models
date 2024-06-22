@@ -7,6 +7,11 @@ namespace LaravelLang\Models\Casts;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
+use function is_bool;
+use function is_null;
+use function is_numeric;
+use function trim;
+
 class TrimCast implements CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
