@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\TestModel;
 use App\Models\TestModelTranslation;
+use LaravelLang\LocaleList\Locale;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use Tests\Constants\FakeValue;
 
@@ -34,25 +35,22 @@ test('single', function () {
     assertDatabaseHas(TestModelTranslation::class, [
         'item_id' => $model->id,
 
-        'locale' => FakeValue::LocaleMain,
+        'locale' => Locale::French,
 
         FakeValue::ColumnTitle       => 'qwerty 10',
         FakeValue::ColumnDescription => 'qwerty 20',
     ]);
 
-    assertDatabaseHas(TestModelTranslation::class, [
+    assertDatabaseMissing(TestModelTranslation::class, [
         'item_id' => $model->id,
 
-        'locale' => FakeValue::LocaleFallback,
-
-        FakeValue::ColumnTitle       => null,
-        FakeValue::ColumnDescription => null,
+        'locale' => Locale::German,
     ]);
 
     assertDatabaseMissing(TestModelTranslation::class, [
         'item_id' => $model->id,
 
-        'locale' => FakeValue::LocaleCustom,
+        'locale' => Locale::Assamese,
     ]);
 });
 

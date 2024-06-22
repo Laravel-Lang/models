@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
+use LaravelLang\LocaleList\Locale;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use Tests\Constants\FakeValue;
 
@@ -21,7 +22,7 @@ test('default locale', function () {
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
             && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === null
+            && $event->locale          === Locale::French
             && $event->oldValue        === $oldText
             && $event->newValue        === $newText;
     });
@@ -38,7 +39,7 @@ test('main locale', function () {
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
             && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === FakeValue::LocaleMain
+            && $event->locale          === Locale::French
             && $event->oldValue        === $oldText
             && $event->newValue        === $newText;
     });
@@ -55,7 +56,7 @@ test('fallback locale', function () {
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
             && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === FakeValue::LocaleFallback
+            && $event->locale          === Locale::German
             && $event->oldValue        === $oldText
             && $event->newValue        === $newText;
     });
@@ -72,7 +73,7 @@ test('custom locale', function () {
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
             && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === FakeValue::LocaleCustom
+            && $event->locale          === Locale::Assamese
             && $event->oldValue        === $oldText
             && $event->newValue        === $newText;
     });
