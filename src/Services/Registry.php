@@ -8,10 +8,10 @@ use Closure;
 
 class Registry
 {
-    public static array $values = [];
+    protected array $values = [];
 
-    public static function get(string $key, Closure $callback): mixed
+    public function get(string $key, Closure $callback): mixed
     {
-        return static::$values[$key] ?? $callback();
+        return $this->values[$key] ?? $callback();
     }
 }
