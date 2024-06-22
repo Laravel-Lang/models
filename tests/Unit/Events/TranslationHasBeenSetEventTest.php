@@ -22,7 +22,7 @@ test('default locale', function () {
     Event::assertDispatched(function (TranslationHasBeenSetEvent $event) use ($model, $oldText, $newText) {
         return $event->model->getKey() === $model->getKey()
             && $event->column          === FakeValue::ColumnTitle
-            && $event->locale          === Locale::French
+            && $event->locale          === null
             && $event->oldValue        === $oldText
             && $event->newValue        === $newText;
     });

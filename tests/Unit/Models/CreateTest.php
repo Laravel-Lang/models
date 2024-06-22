@@ -41,10 +41,13 @@ test('single', function () {
         FakeValue::ColumnDescription => 'qwerty 20',
     ]);
 
-    assertDatabaseMissing(TestModelTranslation::class, [
+    assertDatabaseHas(TestModelTranslation::class, [
         'item_id' => $model->id,
 
         'locale' => Locale::German,
+
+        FakeValue::ColumnTitle       => null,
+        FakeValue::ColumnDescription => null,
     ]);
 
     assertDatabaseMissing(TestModelTranslation::class, [
