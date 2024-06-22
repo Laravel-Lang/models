@@ -20,6 +20,7 @@ use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
+use function app;
 use function filled;
 use function in_array;
 use function is_iterable;
@@ -167,7 +168,7 @@ trait HasTranslations
 
     public function translatable(): array
     {
-        return Registry::get(__METHOD__, function () {
+        return app(Registry::class)->get(__METHOD__, function () {
             return (new (static::translationModelName())())->translatable();
         });
     }
