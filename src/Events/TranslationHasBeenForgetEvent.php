@@ -6,6 +6,7 @@ namespace LaravelLang\Models\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
+use LaravelLang\LocaleList\Locale;
 
 class TranslationHasBeenForgetEvent
 {
@@ -13,6 +14,6 @@ class TranslationHasBeenForgetEvent
 
     public function __construct(
         public Model $model,
-        public ?string $locale
+        public ?Locale $locale
     ) {}
 }

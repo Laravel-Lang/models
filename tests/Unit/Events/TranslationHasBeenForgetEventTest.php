@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\TestModel;
 use Illuminate\Support\Facades\Event;
+use LaravelLang\LocaleList\Locale;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use Tests\Constants\FakeValue;
 
@@ -30,6 +31,6 @@ test('forget locale', function () {
 
     Event::assertDispatched(function (TranslationHasBeenForgetEvent $event) use ($model) {
         return $event->model->getKey() === $model->getKey()
-            && $event->locale          === FakeValue::LocaleMain;
+            && $event->locale          === Locale::French;
     });
 });
