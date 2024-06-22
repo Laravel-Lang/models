@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
@@ -21,6 +20,8 @@ use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
 use function app;
+use function array_merge;
+use function array_unique;
 use function filled;
 use function in_array;
 use function is_iterable;
@@ -45,11 +46,14 @@ trait HasTranslations
         return static::class . Config::shared()->models->suffix;
     }
 
+    public function initializeHasTranslations(): void
+    {
+        $this->with = array_unique(array_merge($this->with, ['translations']));
+    }
+
     public function translations(): HasMany
     {
-        return $this->hasMany(static::translationModelName(), 'item_id')->afterQuery(
-            fn (Collection $items) => $items->keyBy('locale')
-        );
+        return $this->hasMany(static::translationModelName(), 'item_id');
     }
 
     public function hasTranslated(string $column, Locale|string|null $locale = null): bool
@@ -148,6 +152,16 @@ trait HasTranslations
         }
 
         return parent::setAttribute($key, $value);
+    }
+
+    public function setRelation($relation, $value): static
+    {
+        $this->relations[$relation] = match ($relation) {
+            'translations' => $value->keyBy('locale'),
+            default        => $value
+        };
+
+        return $this;
     }
 
     public function newInstance($attributes = [], $exists = false): static

@@ -23,9 +23,10 @@
     19 => 'Illuminate\\Translation\\TranslationServiceProvider',
     20 => 'Illuminate\\Validation\\ValidationServiceProvider',
     21 => 'Illuminate\\View\\ViewServiceProvider',
-    22 => 'LaravelLang\\Config\\ServiceProvider',
-    23 => 'LaravelLang\\Locales\\ServiceProvider',
-    24 => 'LaravelLang\\Models\\ServiceProvider',
+    22 => 'App\\Providers\\AppServiceProvider',
+    23 => 'LaravelLang\\Config\\ServiceProvider',
+    24 => 'LaravelLang\\Locales\\ServiceProvider',
+    25 => 'LaravelLang\\Models\\ServiceProvider',
   ),
   'eager' => 
   array (
@@ -39,9 +40,10 @@
     7 => 'Illuminate\\Pagination\\PaginationServiceProvider',
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
-    10 => 'LaravelLang\\Config\\ServiceProvider',
-    11 => 'LaravelLang\\Locales\\ServiceProvider',
-    12 => 'LaravelLang\\Models\\ServiceProvider',
+    10 => 'App\\Providers\\AppServiceProvider',
+    11 => 'LaravelLang\\Config\\ServiceProvider',
+    12 => 'LaravelLang\\Locales\\ServiceProvider',
+    13 => 'LaravelLang\\Models\\ServiceProvider',
   ),
   'deferred' => 
   array (
