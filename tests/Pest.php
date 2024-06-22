@@ -8,6 +8,7 @@ use Orchestra\Testbench\Concerns\WithWorkbench;
 use Tests\Constants\FakeValue;
 
 uses(Tests\TestCase::class, RefreshDatabase::class, WithWorkbench::class)
+    ->compact()
     ->beforeEach(function () {
         Directory::ensureDirectory(lang_path(FakeValue::LocaleMain));
         Directory::ensureDirectory(lang_path(FakeValue::LocaleFallback));
