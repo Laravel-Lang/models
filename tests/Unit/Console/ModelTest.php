@@ -53,26 +53,19 @@ test('with exists model', function () {
 
     expect($migrations)->toHaveCount(3);
 
+    $fillableMatches = collect(['locale', 'title', 'description'])
+        ->map(fn (string $column) => sprintf('(\s+\'%s\',\r?\n?)', $column))
+        ->implode('');
+
+    $castsMatches = collect(['title', 'description'])
+        ->map(fn (string $column) => sprintf('(\s+\'%s\'\s=>\sTrimCast::class,\r?\n?)', $column))
+        ->implode('');
+
     expect(file_get_contents($model))
         ->toContain('App\Models')
         ->toContain('class TestTranslation extends Translation')
-        ->toContain(
-            <<<'TEXT'
-                    protected $fillable = [
-                        'locale',
-                        'title',
-                        'description',
-                    ];
-                TEXT
-        )
-        ->toContain(
-            <<<'TEXT'
-                    protected $casts = [
-                        'title' => TrimCast::class,
-                        'description' => TrimCast::class,
-                    ];
-                TEXT
-        );
+        ->toMatch(sprintf('/protected\s\$fillable\s=\s\[\r?\n?%s\s+];/', $fillableMatches))
+        ->toMatch(sprintf('/protected\s\$casts\s=\s\[\n?\r?%s\s+];/', $castsMatches));
 
     expect(file_get_contents($migrations[2]))
         ->toContain('Schema::create(\'test_translations\'')
