@@ -8,6 +8,8 @@ use Exception;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 
+use function sprintf;
+
 class UnavailableLocaleException extends Exception
 {
     public function __construct(Locale|string|null $locale)

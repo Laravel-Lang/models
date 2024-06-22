@@ -20,6 +20,10 @@ use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
+use function filled;
+use function in_array;
+use function is_iterable;
+
 /**
  * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
  * @mixin \Illuminate\Database\Eloquent\Model
@@ -29,7 +33,6 @@ trait HasTranslations
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
-            // @var HasTranslations|Model $model
             Relation::resolveKey($model);
 
             $model->translations?->each?->save();

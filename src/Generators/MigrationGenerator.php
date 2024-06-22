@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
+use function array_map;
+use function database_path;
+use function date;
+use function sprintf;
+
 class MigrationGenerator extends Generator
 {
     protected string $stub = __DIR__ . '/../../stubs/migration.stub';

@@ -11,6 +11,9 @@ use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\HasTranslations;
 
+use function collect;
+use function ltrim;
+
 class ClassMap
 {
     public static function get(): array

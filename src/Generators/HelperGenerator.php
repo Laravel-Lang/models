@@ -7,6 +7,10 @@ namespace LaravelLang\Models\Generators;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 
+use function array_map;
+use function md5;
+use function sprintf;
+
 class HelperGenerator extends Generator
 {
     protected string $stub = __DIR__ . '/../../stubs/helper.stub';

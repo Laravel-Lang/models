@@ -7,6 +7,10 @@ namespace LaravelLang\Models\Generators;
 use DragonCode\Support\Facades\Filesystem\Path;
 use LaravelLang\Models\Services\ClassMap;
 
+use function array_map;
+use function dirname;
+use function sprintf;
+
 class ModelGenerator extends Generator
 {
     protected string $stub = __DIR__ . '/../../stubs/model.stub';
