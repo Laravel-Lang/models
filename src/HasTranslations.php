@@ -124,7 +124,7 @@ trait HasTranslations
 
     public function forgetAllTranslations(): void
     {
-        $this->translations->each->delete();
+        $this->translations()->delete();
 
         Relation::clear($this);
 
