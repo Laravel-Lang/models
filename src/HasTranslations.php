@@ -7,11 +7,12 @@ namespace LaravelLang\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
-use LaravelLang\Config\Facades\Config;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasNames;
 use LaravelLang\Models\Concerns\HasValidations;
+use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
@@ -20,8 +21,6 @@ use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
 use function app;
-use function array_merge;
-use function array_unique;
 use function filled;
 use function in_array;
 use function is_iterable;
@@ -33,29 +32,12 @@ use function is_iterable;
 trait HasTranslations
 {
     use HasValidations;
-
-    public static function bootHasTranslations(): void
-    {
-        static::saved(function (Model $model) {
-            Relation::resolveKey($model);
-
-            $model->translations?->each?->save();
-        });
-    }
-
-    protected static function translationModelName(): string
-    {
-        return static::class . Config::shared()->models->suffix;
-    }
-
-    public function initializeHasTranslations(): void
-    {
-        $this->with = array_unique(array_merge($this->with, ['translations']));
-    }
+    use ModelLoader;
+    use HasNames;
 
     public function translations(): HasMany
     {
-        return $this->hasMany(static::translationModelName(), 'item_id');
+        return $this->hasMany($this->translationModelName(), 'item_id');
     }
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
@@ -84,10 +66,8 @@ trait HasTranslations
         return $this;
     }
 
-    public function setTranslations(
-        string $column,
-        iterable $values
-    ): static {
+    public function setTranslations(string $column, iterable $values): static
+    {
         foreach ($values as $locale => $value) {
             $locale = $this->validateTranslation($column, $locale);
 
@@ -183,7 +163,7 @@ trait HasTranslations
     public function translatable(): array
     {
         return app(Registry::class)->get(__METHOD__, function () {
-            return (new (static::translationModelName())())->translatable();
+            return (new ($this->translationModelName())())->translatable();
         });
     }
 
