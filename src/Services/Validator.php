@@ -14,10 +14,7 @@ use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 class Validator
 {
     /**
-     * @param  \Illuminate\Database\Eloquent\Model|\LaravelLang\Models\HasTranslations  $model
-     * @param  string  $column
-     *
-     * @return string
+     * @param  Model|\LaravelLang\Models\HasTranslations  $model
      */
     public static function column(Model $model, string $column): string
     {
