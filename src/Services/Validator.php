@@ -14,7 +14,9 @@ use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 class Validator
 {
     /**
-     * @param  Model|\LaravelLang\Models\HasTranslations  $model
+     * @param  Attribute|\LaravelLang\Models\HasTranslations  $model
+     *
+     * @throws \LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException
      */
     public static function column(Model $model, string $column): string
     {
@@ -25,19 +27,12 @@ class Validator
         return $column;
     }
 
-    public static function locale(Locale|LocaleData|string|null $value): ?LocaleData
+    public static function locale(Locale|LocaleData|string|null $locale): ?LocaleData
     {
-        $locale = static::resolveLocale($value);
-
-        if ($value && ! Locales::isInstalled($value)) {
+        if ($locale && ! Locales::isInstalled($locale)) {
             throw new UnavailableLocaleException($locale->code ?? null);
         }
 
-        return $locale;
-    }
-
-    protected static function resolveLocale(Locale|LocaleData|string|null $locale): ?LocaleData
-    {
-        return $locale ? Locales::get($locale) : null;
+        return null;
     }
 }
