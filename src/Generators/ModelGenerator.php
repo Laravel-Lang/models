@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Generators;
 
 use DragonCode\Support\Facades\Filesystem\Path;
+use Illuminate\Support\Str;
 use LaravelLang\Models\Services\ClassMap;
 
 use function array_map;
@@ -15,9 +16,13 @@ class ModelGenerator extends Generator
 {
     protected string $stub = __DIR__ . '/../../stubs/model.stub';
 
-    protected string $fillables = '        \'%s\',';
+    protected string $fillables = '\'%s\',';
 
-    protected string $casts = '        \'%s\' => TrimCast::class,';
+    protected int $fillablePad = 8;
+
+    protected string $casts = '\'%s\' => TrimCast::class,';
+
+    protected int $castsPad = 12;
 
     protected function data(): array
     {
@@ -40,14 +45,14 @@ class ModelGenerator extends Generator
     protected function getFillable(): array
     {
         return array_map(function (string $attribute) {
-            return sprintf($this->fillables, $attribute);
+            return $this->pad(sprintf($this->fillables, $attribute), $this->fillablePad);
         }, $this->columns);
     }
 
     protected function getCasts(): array
     {
         return array_map(function (string $attribute) {
-            return sprintf($this->casts, $attribute);
+            return $this->pad(sprintf($this->casts, $attribute), $this->castsPad);
         }, $this->columns);
     }
 
@@ -59,5 +64,12 @@ class ModelGenerator extends Generator
     protected function extension(string $path): string
     {
         return Path::extension($path);
+    }
+
+    protected function pad(string $value, int $length): string
+    {
+        return Str::of($value)
+            ->padLeft(Str::length($value) + $length, ' ')
+            ->toString();
     }
 }
