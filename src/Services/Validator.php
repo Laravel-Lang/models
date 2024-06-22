@@ -16,7 +16,7 @@ class Validator
     /**
      * @param  Attribute|\LaravelLang\Models\HasTranslations  $model
      *
-     * @throws \LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException
+     * @throws AttributeIsNotTranslatableException
      */
     public static function column(Model $model, string $column): string
     {
