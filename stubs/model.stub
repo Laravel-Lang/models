@@ -14,7 +14,10 @@ class {{model}}{{suffix}} extends Translation
 {{fillable}}
     ];
 
-    protected $casts = [
+    protected function casts(): array
+    {
+        return [
 {{casts}}
-    ];
+        ];
+    }
 }

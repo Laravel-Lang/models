@@ -54,18 +54,23 @@ test('with exists model', function () {
     expect($migrations)->toHaveCount(1);
 
     $fillableMatches = collect(['locale', 'title', 'description'])
-        ->map(fn (string $column) => sprintf('(\s+\'%s\',\r?\n?)', $column))
+        ->map(fn (string $column) => sprintf('(\s{8}\'%s\',\r?\n?)', $column))
         ->implode('');
 
     $castsMatches = collect(['title', 'description'])
-        ->map(fn (string $column) => sprintf('(\s+\'%s\'\s=>\sTrimCast::class,\r?\n?)', $column))
+        ->map(fn (string $column) => sprintf('(\s{12}\'%s\'\s=>\sTrimCast::class,\r?\n?)', $column))
         ->implode('');
 
     expect(file_get_contents($model))
         ->toContain('App\Models')
         ->toContain('class TestTranslation extends Translation')
         ->toMatch(sprintf('/protected\s\$fillable\s=\s\[\r?\n?%s\s+];/', $fillableMatches))
-        ->toMatch(sprintf('/protected\s\$casts\s=\s\[\n?\r?%s\s+];/', $castsMatches));
+        ->toMatch(
+            sprintf(
+                '/\s{4}protected\s+function\s+casts\(\):\sarray\r?\n?\s{4}\{\r?\n?\s{8}return\s\[\r?\n?%s\s{8}\];\r?\n?\s{4}\}/',
+                $castsMatches
+            )
+        );
 
     expect(file_get_contents($migrations[0]))
         ->toContain('Schema::create(\'test_translations\'')
