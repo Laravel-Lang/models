@@ -38,9 +38,12 @@ test('with exists model', function () {
         '--columns' => ['title', 'description'],
     ])->run();
 
-    $model     = base_path('app/Models/TestTranslation.php');
-    $migration = database_path('migrations/' . date('Y_m_d_His') . '_create_test_translations_table.php');
-    $helper    = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Test'));
+    $model  = base_path('app/Models/TestTranslation.php');
+    $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Test'));
+
+    $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');
+
+    expect($migrations)->toHaveCount(1);
 
     expect(file_get_contents($model))
         ->toContain('App\Models')
@@ -63,13 +66,12 @@ test('with exists model', function () {
                 TEXT
         );
 
-    expect(file_get_contents($migration))
+    expect(file_get_contents($migrations[0]))
         ->toContain('Schema::create(\'test_translations\'')
         ->toContain('Schema::dropIfExists(\'test_translations\')')
         ->toContain('$table->string(\'title\')->nullable()')
         ->toContain('$table->string(\'description\')->nullable()')
         ->toContain('->constrained(\'tests\')');
 
-    expect($migration)->toBeReadableFile();
     expect($helper)->toBeReadableFile();
 });
