@@ -11,12 +11,11 @@ use LaravelLang\Config\Facades\Config;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasValidations;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
-use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
-use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
 
@@ -33,6 +32,8 @@ use function is_iterable;
  */
 trait HasTranslations
 {
+    use HasValidations;
+
     public static function bootHasTranslations(): void
     {
         static::saved(function (Model $model) {
@@ -73,7 +74,7 @@ trait HasTranslations
         TranslationHasBeenSetEvent::dispatch(
             $this,
             $column,
-            $locale->locale,
+            $locale?->locale ?? null,
             $this->getTranslation($column, $locale),
             $value
         );
@@ -186,41 +187,14 @@ trait HasTranslations
         });
     }
 
-    protected function translation(LocaleData $locale): Translation
+    protected function translation(?LocaleData $locale): Translation
     {
+        $locale ??= Locales::getCurrent();
+
         if (! $this->translations->has($locale->locale->value)) {
             $this->translations->put($locale->locale->value, Relation::initializeLocale($this, $locale));
         }
 
         return $this->translations->get($locale->locale->value);
-    }
-
-    protected function validateTranslation(string $column, Locale|LocaleData|string|null $locale): LocaleData
-    {
-        $this->validateTranslationColumn($column);
-        $this->validateTranslationLocale($locale);
-
-        return $this->resolveLocale($locale);
-    }
-
-    protected function validateTranslationColumn(string $column): void
-    {
-        if (! $this->isTranslatable($column)) {
-            throw new AttributeIsNotTranslatableException($column, $this);
-        }
-    }
-
-    protected function validateTranslationLocale(Locale|LocaleData|string|null $locale): LocaleData
-    {
-        if ($locale && ! Locales::isInstalled($locale)) {
-            throw new UnavailableLocaleException($locale);
-        }
-
-        return $this->resolveLocale($locale);
-    }
-
-    protected function resolveLocale(Locale|LocaleData|string|null $locale): LocaleData
-    {
-        return Locales::get($locale);
     }
 }
