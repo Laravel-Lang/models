@@ -25,9 +25,4 @@ return new class extends Migration {
             $table->unique(['item_id', 'locale']);
         });
     }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('test_model_translations');
-    }
 };

@@ -5,14 +5,11 @@ namespace Tests;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\ParallelTesting;
 use LaravelLang\Config\Enums\Name;
-use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Tests\Constants\FakeValue;
 
 abstract class TestCase extends BaseTestCase
 {
-    use WithWorkbench;
-
     protected function defineEnvironment($app): void
     {
         tap($app['config'], function (Repository $config) {
@@ -24,7 +21,23 @@ abstract class TestCase extends BaseTestCase
                 base_path('app'),
             ]);
 
-            $config->set('testing.parallel_token', ParallelTesting::token());
+            $config->set(
+                Name::Shared() . '.models.helpers',
+                __DIR__ . '/../workbench/vendor/_laravel_lang/' . $this->parallelToken()
+            );
         });
+    }
+
+    protected function defineDatabaseMigrations(): void
+    {
+        $this->loadMigrationsFrom([
+            database_path(),
+            __DIR__ . '/../workbench/database/migrations',
+        ]);
+    }
+
+    protected function parallelToken(): string
+    {
+        return (string) ParallelTesting::token() ?: '0';
     }
 }
