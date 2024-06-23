@@ -41,7 +41,10 @@ abstract class Generator
 
     public function generate(): void
     {
-        $this->store($this->filename(), $this->make());
+        if ($filename = $this->filename()) {
+            $this->store($filename, $this->make());
+            $this->finish($filename);
+        }
     }
 
     protected function make(): string
@@ -50,6 +53,8 @@ abstract class Generator
             ->replaceFormat($this->resolveData(), '{{%s}}')
             ->toString();
     }
+
+    protected function finish(string $path): void {}
 
     protected function baseData(): array
     {

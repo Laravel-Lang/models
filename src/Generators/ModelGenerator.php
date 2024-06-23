@@ -23,6 +23,11 @@ class ModelGenerator extends Generator
 
     protected int $castsPad = 12;
 
+    protected function finish(string $path): void
+    {
+        require $path;
+    }
+
     protected function data(): array
     {
         return [
