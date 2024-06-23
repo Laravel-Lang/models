@@ -12,7 +12,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 use function array_filter;
 use function array_merge;
+use function class_exists;
 use function compact;
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
@@ -27,7 +29,14 @@ class ModelMakeCommand extends Command
 
     public function handle(): void
     {
-        $model   = $this->model();
+        $model = $this->model();
+
+        if (! $this->validatedModel($model)) {
+            error("The model at `$model` namespace was not found.");
+
+            return;
+        }
+
         $columns = $this->columns();
 
         $this->generateModel($model, $columns);
@@ -50,16 +59,21 @@ class ModelMakeCommand extends Command
         $this->call(ModelsHelperCommand::class, compact('model'));
     }
 
-    protected function model(): string
+    protected function model(): ?string
     {
         if ($model = $this->argument('model')) {
             return $model;
         }
 
         return select(
-            label  : 'Select the model for which you want to create a translation repository:',
+            label  : 'Select a model to create a translation repository:',
             options: $this->models()
         );
+    }
+
+    protected function validatedModel(string $model): ?string
+    {
+        return class_exists($model) ? $model : null;
     }
 
     protected function columns(): array
