@@ -44,7 +44,7 @@ class ModelsHelperCommand extends Command
             return [ltrim($model, '\\')];
         }
 
-        return ClassMap::get();
+        return ClassMap::translatable();
     }
 
     protected function cleanUp(): void
