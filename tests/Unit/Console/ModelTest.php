@@ -12,8 +12,8 @@ use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
 use function Pest\Laravel\artisan;
 
 beforeEach(fn () => File::ensureDelete([
-    base_path('app/Models/Test.php'),
-    base_path('app/Models/TestTranslation.php'),
+    base_path('app/Models/Some.php'),
+    base_path('app/Models/SomeTranslation.php'),
 ]));
 
 afterEach(function () {
@@ -29,25 +29,20 @@ afterEach(function () {
     });
 
     File::ensureDelete($migrations);
-
-    File::ensureDelete([
-        base_path('app/Models/Test.php'),
-        base_path('app/Models/TestTranslation.php'),
-    ]);
 });
 
-test('with exists model', function () {
+test('from scratch', function () {
     artisan(LaravelMakeModel::class, [
-        'name' => 'Test',
+        'name' => 'Some',
     ])->run();
 
     artisan(PackageMakeModel::class, [
-        'model'     => '\App\Models\Test',
+        'model'     => '\App\Models\Some',
         '--columns' => ['title', 'description'],
     ])->run();
 
-    $model  = base_path('app/Models/TestTranslation.php');
-    $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Test'));
+    $model  = base_path('app/Models/SomeTranslation.php');
+    $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Some'));
 
     $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');
 
@@ -63,7 +58,7 @@ test('with exists model', function () {
 
     expect(file_get_contents($model))
         ->toContain('App\Models')
-        ->toContain('class TestTranslation extends Translation')
+        ->toContain('class SomeTranslation extends Translation')
         ->toMatch(sprintf('/protected\s\$fillable\s=\s\[\r?\n?%s\s+];/', $fillableMatches))
         ->toMatch(
             sprintf(
@@ -73,11 +68,11 @@ test('with exists model', function () {
         );
 
     expect(file_get_contents($migrations[0]))
-        ->toContain('Schema::create(\'test_translations\'')
-        ->toContain('Schema::dropIfExists(\'test_translations\')')
+        ->toContain('Schema::create(\'some_translations\'')
+        ->toContain('Schema::dropIfExists(\'some_translations\')')
         ->toContain('$table->string(\'title\')->nullable()')
         ->toContain('$table->string(\'description\')->nullable()')
-        ->toContain('->constrained(\'tests\')');
+        ->toContain('->constrained(\'somes\')');
 
     expect($helper)->toBeReadableFile();
 });
