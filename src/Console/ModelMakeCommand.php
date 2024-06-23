@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
@@ -75,6 +76,15 @@ class ModelMakeCommand extends Command
     }
 
     protected function model(): ?string
+    {
+        if ($class = $this->askModel()) {
+            return Str::start($class, '\\');
+        }
+
+        return null;
+    }
+
+    protected function askModel(): ?string
     {
         if ($model = $this->argument('model')) {
             return $model;

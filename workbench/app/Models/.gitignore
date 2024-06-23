@@ -1,0 +1,5 @@
+*
+
+!.gitignore
+!TestModel.php
+!TestModelTranslation.php
