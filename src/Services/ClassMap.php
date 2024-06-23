@@ -6,8 +6,10 @@ namespace LaravelLang\Models\Services;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use DragonCode\Support\Facades\Instances\Instance;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use LaravelLang\Config\Facades\Config;
+use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\HasTranslations;
 
 use function collect;
@@ -15,7 +17,7 @@ use function ltrim;
 
 class ClassMap
 {
-    public static function get(): array
+    public static function translatable(): array
     {
         return collect(static::map())
             ->keys()
@@ -28,6 +30,16 @@ class ClassMap
         return collect(static::map())
             ->filter(static fn (string $path, string $name) => $name === ltrim($class, '\\'))
             ->first();
+    }
+
+    public static function available(): array
+    {
+        return collect(static::map())
+            ->keys()
+            ->filter(static fn (string $name) => static::canTranslatable($name))
+            ->sort()
+            ->values()
+            ->all();
     }
 
     protected static function map(): array
@@ -54,5 +66,11 @@ class ClassMap
     protected static function isTranslatable(string $class): bool
     {
         return Instance::of($class, HasTranslations::class);
+    }
+
+    protected static function canTranslatable(string $class): bool
+    {
+        return Instance::of($class, Model::class)
+            && ! Instance::of($class, Translation::class);
     }
 }
