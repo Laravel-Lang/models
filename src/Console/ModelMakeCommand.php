@@ -9,7 +9,6 @@ use Illuminate\Foundation\Console\ModelMakeCommand as BaseMakeCommand;
 use Illuminate\Support\Str;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
-use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 use function array_filter;
@@ -17,7 +16,6 @@ use function array_merge;
 use function class_exists;
 use function compact;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
 
 #[AsCommand(name: 'make:model:localization')]
@@ -63,13 +61,11 @@ class ModelMakeCommand extends Command
     {
         $name = $this->askTranslationModel();
 
-        if ($model = $this->resolveModelClass($name)) {
-            return $model;
-        }
+        $model = $this->resolveModelClass($name);
 
-        $this->createBaseModel($name);
+        $this->createBaseModel($model);
 
-        return $name;
+        return $model;
     }
 
     protected function columns(): array
@@ -91,28 +87,22 @@ class ModelMakeCommand extends Command
             return $model;
         }
 
-        return search(
+        return text(
             'Specify the model name for which you want to create a translation repository:',
-            fn (string $value) => $this->findModel($value),
-            'E.g. Post'
+            'E.g. Post or App\Models\Post'
         );
     }
 
-    protected function findModel(string $value): array
+    protected function askColumns(array $columns = []): array
     {
-        return ClassMap::find($value);
-    }
-
-    protected function askColumns(array $columns = []): ?array
-    {
-        if ($column = text('Enter a column name', hint: 'Or press Enter for continue')) {
+        if ($column = text('Enter a column name or press Enter for continue')) {
             return array_filter(array_merge([$column], $this->askColumns($columns)));
         }
 
-        return null;
+        return [];
     }
 
-    protected function resolveModelClass(string $model): ?string
+    protected function resolveModelClass(string $model): string
     {
         $model = Str::of($model)
             ->replace('/', '\\')
@@ -131,16 +121,18 @@ class ModelMakeCommand extends Command
             }
         }
 
-        return null;
+        return '\App\Models' . $model;
     }
 
     protected function createBaseModel(string $model): void
     {
-        $this->call(BaseMakeCommand::class, [
-            'name'        => Str::after($model, 'App\\Models\\'),
-            '--migration' => true,
-            '--factory'   => true,
-            '--seed'      => true,
-        ]);
+        if (! class_exists($model)) {
+            $this->call(BaseMakeCommand::class, [
+                'name'        => Str::after($model, 'App\\Models\\'),
+                '--migration' => true,
+                '--factory'   => true,
+                '--seed'      => true,
+            ]);
+        }
     }
 }
