@@ -13,10 +13,10 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 use function ltrim;
 
-#[AsCommand(name: 'lang:models:helper')]
+#[AsCommand(name: 'lang:models-helper')]
 class ModelsHelperCommand extends Command
 {
-    protected $signature = 'lang:models:helper {model?}';
+    protected $signature = 'lang:models-helper {model?}';
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
