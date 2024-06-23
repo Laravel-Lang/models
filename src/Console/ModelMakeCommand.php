@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
+use LaravelLang\Models\Generators\ParentGenerator;
 use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
@@ -47,6 +48,7 @@ class ModelMakeCommand extends Command
 
         $columns = $this->columns();
 
+        $this->attachToParent($model);
         $this->generateModel($model, $columns);
         $this->generateMigration($model, $columns);
         $this->generateHelper($model);
@@ -60,6 +62,11 @@ class ModelMakeCommand extends Command
     protected function generateMigration(string $model, array $columns): void
     {
         MigrationGenerator::of($model, $columns)->generate();
+    }
+
+    protected function attachToParent(string $model): void
+    {
+        ParentGenerator::of($model)->generate();
     }
 
     protected function generateHelper(string $model): void
