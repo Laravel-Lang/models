@@ -7,7 +7,6 @@ namespace LaravelLang\Models\Services;
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\HasTranslations;
 
@@ -21,14 +20,6 @@ class ClassMap
         return collect(static::map())
             ->keys()
             ->filter(static fn (string $class) => static::isTranslatable($class))
-            ->all();
-    }
-
-    public static function find(string $value): array
-    {
-        return collect(static::map())
-            ->keys()
-            ->filter(static fn (string $class) => static::contains($class, $value))
             ->all();
     }
 
@@ -63,10 +54,5 @@ class ClassMap
     protected static function isTranslatable(string $class): bool
     {
         return Instance::of($class, HasTranslations::class);
-    }
-
-    protected static function contains(string $class, string $needle): bool
-    {
-        return Str::of($class)->lower()->contains(strtolower($needle));
     }
 }

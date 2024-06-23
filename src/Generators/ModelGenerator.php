@@ -6,6 +6,7 @@ namespace LaravelLang\Models\Generators;
 
 use DragonCode\Support\Facades\Filesystem\Path;
 use Illuminate\Support\Str;
+use LaravelLang\Models\Exceptions\UnknownModelPathException;
 use LaravelLang\Models\Services\ClassMap;
 
 use function array_map;
@@ -58,7 +59,11 @@ class ModelGenerator extends Generator
 
     protected function path(): string
     {
-        return ClassMap::path($this->model);
+        if ($path = ClassMap::path($this->model)) {
+            return $path;
+        }
+
+        throw new UnknownModelPathException($this->model);
     }
 
     protected function extension(string $path): string
