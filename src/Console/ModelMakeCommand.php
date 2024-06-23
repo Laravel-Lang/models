@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
+use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 use function array_filter;
 use function array_merge;
-use function class_exists;
 use function compact;
-use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
 #[AsCommand(name: 'make:model-translation')]
@@ -28,12 +27,7 @@ class ModelMakeCommand extends Command
 
     public function handle(): void
     {
-        if (! $model = $this->model()) {
-            info('You haven\'t selected a model.');
-
-            return;
-        }
-
+        $model   = $this->model();
         $columns = $this->columns();
 
         $this->generateModel($model, $columns);
@@ -56,13 +50,16 @@ class ModelMakeCommand extends Command
         $this->call(ModelsHelperCommand::class, compact('model'));
     }
 
-    protected function model(): ?string
+    protected function model(): string
     {
-        $name = $this->askTranslationModel();
+        if ($model = $this->argument('model')) {
+            return $model;
+        }
 
-        $model = $this->resolveModelClass($name);
-
-        return class_exists($model) ? $model : null;
+        return select(
+            label  : 'Select the model for which you want to create a translation repository:',
+            options: $this->models()
+        );
     }
 
     protected function columns(): array
@@ -78,16 +75,9 @@ class ModelMakeCommand extends Command
         return $this->columns;
     }
 
-    protected function askTranslationModel(): string
+    protected function models(): array
     {
-        if ($model = $this->argument('model')) {
-            return $model;
-        }
-
-        return text(
-            'Specify the model name for which you want to create a translation repository:',
-            'E.g. Post or App\Models\Post'
-        );
+        return ClassMap::available();
     }
 
     protected function askColumns(array $columns = []): array
@@ -97,27 +87,5 @@ class ModelMakeCommand extends Command
         }
 
         return [];
-    }
-
-    protected function resolveModelClass(string $model): string
-    {
-        $model = Str::of($model)
-            ->replace('/', '\\')
-            ->start('\\')
-            ->toString();
-
-        $values = [
-            $model,
-            '\App' . $model,
-            '\App\Models' . $model,
-        ];
-
-        foreach ($values as $value) {
-            if (class_exists($value)) {
-                return $value;
-            }
-        }
-
-        return '\App\Models' . $model;
     }
 }
