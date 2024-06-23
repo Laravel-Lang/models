@@ -37,7 +37,7 @@ class ParentGenerator extends Generator
     {
         return Str::of($this->template())
             ->replaceMatches('/(namespace\s+.+;\r?\n?)/', '$1' . PHP_EOL . 'use ' . HasTranslations::class . ';')
-            ->replaceMatches('/(class\s+.+\r?\n?\s*\{\r?\n?)/', '$1' . PHP_EOL . 'use HasTranslations;' . PHP_EOL)
+            ->replaceMatches('/(class\s+.+\r?\n?\s*\{\r?\n?)/', '$1    use HasTranslations;' . PHP_EOL)
             ->toString();
     }
 
