@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Console\ModelMakeCommand as BaseMakeCommand;
 use Illuminate\Support\Str;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
@@ -63,9 +62,7 @@ class ModelMakeCommand extends Command
 
         $model = $this->resolveModelClass($name);
 
-        $this->createBaseModel($model);
-
-        return $model;
+        return class_exists($model) ? $model : null;
     }
 
     protected function columns(): array
@@ -122,17 +119,5 @@ class ModelMakeCommand extends Command
         }
 
         return '\App\Models' . $model;
-    }
-
-    protected function createBaseModel(string $model): void
-    {
-        if (! class_exists($model)) {
-            $this->call(BaseMakeCommand::class, [
-                'name'        => Str::after($model, 'App\\Models\\'),
-                '--migration' => true,
-                '--factory'   => true,
-                '--seed'      => true,
-            ]);
-        }
     }
 }
