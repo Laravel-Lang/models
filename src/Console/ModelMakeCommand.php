@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
+use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Services\ClassMap;
@@ -17,6 +18,7 @@ use function compact;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\warning;
 
 #[AsCommand(name: 'make:model-translation')]
 class ModelMakeCommand extends Command
@@ -33,6 +35,12 @@ class ModelMakeCommand extends Command
 
         if (! $this->validatedModel($model)) {
             error("The model at `$model` namespace was not found.");
+
+            return;
+        }
+
+        if ($this->hasTranslation($model)) {
+            warning('The specified model already has a translation repository.');
 
             return;
         }
@@ -74,6 +82,11 @@ class ModelMakeCommand extends Command
     protected function validatedModel(string $model): ?string
     {
         return class_exists($model) ? $model : null;
+    }
+
+    protected function hasTranslation(string $model): bool
+    {
+        return class_exists($model . Config::shared()->models->suffix);
     }
 
     protected function columns(): array
