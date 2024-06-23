@@ -17,10 +17,10 @@ use function compact;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\text;
 
-#[AsCommand(name: 'make:model:localization')]
+#[AsCommand(name: 'make:model-translation')]
 class ModelMakeCommand extends Command
 {
-    protected $signature = 'make:model:localization {model?} {--columns=*}';
+    protected $signature = 'make:model-translation {model?} {--columns=*}';
 
     protected $description = 'Creates a model for storing translations';
 
