@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Eloquent\Translation;
+use LaravelLang\Models\Exceptions\UnknownModelPathException;
+use LaravelLang\Models\Services\ClassMap;
 
 use function collect;
 use function file_get_contents;
@@ -114,5 +116,14 @@ abstract class Generator
     protected function template(): string
     {
         return file_get_contents($this->stub);
+    }
+
+    protected function path(): string
+    {
+        if ($path = ClassMap::path($this->model)) {
+            return $path;
+        }
+
+        throw new UnknownModelPathException($this->model);
     }
 }
