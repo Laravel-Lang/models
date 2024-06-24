@@ -1,9 +1,9 @@
 laravel: ./workbench
 providers:
-    - App\Providers\AppServiceProvider
     - LaravelLang\Config\ServiceProvider
     - LaravelLang\Locales\ServiceProvider
     - LaravelLang\Models\ServiceProvider
+    - App\Providers\AppServiceProvider
 workbench:
     welcome: false
     install: false

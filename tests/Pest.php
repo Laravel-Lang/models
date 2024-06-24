@@ -10,6 +10,8 @@ use Tests\Constants\FakeValue;
 uses(Tests\TestCase::class, RefreshDatabase::class, WithWorkbench::class)
     ->compact()
     ->beforeEach(function () {
+        Directory::ensureDirectory(database_path());
+
         Directory::ensureDirectory(lang_path(FakeValue::LocaleMain));
         Directory::ensureDirectory(lang_path(FakeValue::LocaleFallback));
         Directory::ensureDirectory(lang_path(FakeValue::LocaleCustom));
