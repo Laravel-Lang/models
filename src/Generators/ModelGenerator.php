@@ -21,7 +21,7 @@ class ModelGenerator extends Generator
 
     protected string $casts = '\'%s\' => TrimCast::class,';
 
-    protected int $castsPad = 12;
+    protected int $castsPad = 8;
 
     protected function finish(string $path): void
     {

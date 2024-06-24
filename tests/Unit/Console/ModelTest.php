@@ -53,7 +53,7 @@ test('from scratch', function () {
         ->implode('');
 
     $castsMatches = collect(['title', 'description'])
-        ->map(fn (string $column) => sprintf('(\s{12}\'%s\'\s=>\sTrimCast::class,\r?\n?)', $column))
+        ->map(fn (string $column) => sprintf('(\s{8}\'%s\'\s=>\sTrimCast::class,\r?\n?)', $column))
         ->implode('');
 
     expect(file_get_contents($model))
@@ -62,7 +62,7 @@ test('from scratch', function () {
         ->toMatch(sprintf('/protected\s\$fillable\s=\s\[\r?\n?%s\s+];/', $fillableMatches))
         ->toMatch(
             sprintf(
-                '/\s{4}protected\s+function\s+casts\(\):\sarray\r?\n?\s{4}\{\r?\n?\s{8}return\s\[\r?\n?%s\s{8}\];\r?\n?\s{4}\}/',
+                '/\s{4}protected\s+\$casts\s+=\s+\[\r?\n?%s\r?\n?\s{4}\]/',
                 $castsMatches
             )
         );

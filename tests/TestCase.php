@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Foundation\Application;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\ParallelTesting;
 use LaravelLang\Config\Enums\Name;
@@ -10,6 +11,11 @@ use Tests\Constants\FakeValue;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected function resolveApplication(): Application
+    {
+        return new Application($this->getBasePath());
+    }
+
     protected function defineEnvironment($app): void
     {
         tap($app['config'], function (Repository $config) {
