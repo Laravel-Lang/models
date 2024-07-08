@@ -20,7 +20,6 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole() || $this->app->runningUnitTests()) {
             $this->bootCommands();
-            $this->bootMigrations();
         }
     }
 
@@ -30,13 +29,6 @@ class ServiceProvider extends BaseServiceProvider
             ModelsHelperCommand::class,
             ModelMakeCommand::class,
         ]);
-    }
-
-    protected function bootMigrations(): void
-    {
-        $this->loadMigrationsFrom(
-            __DIR__ . '/../database/migrations'
-        );
     }
 
     protected function registry(): void
