@@ -12,6 +12,7 @@ use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
 use LaravelLang\Models\Concerns\ModelLoader;
+use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\Attribute;
 use LaravelLang\Models\Services\Registry;
@@ -32,7 +33,8 @@ trait HasTranslations
 
     public function translations(): HasMany
     {
-        return $this->hasMany($this->translationModelName(), 'item_id');
+        return $this->hasMany($this->translationModelName(), 'item_id')
+            ->tap(new FilterTranslationsScope());
     }
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
