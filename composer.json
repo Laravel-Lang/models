@@ -41,7 +41,7 @@
         "dragon-code/support": "^6.13",
         "illuminate/database": "^10.0 || ^11.0",
         "illuminate/support": "^10.0 || ^11.0",
-        "laravel-lang/config": "^1.6",
+        "laravel-lang/config": "^1.9",
         "laravel-lang/locales": "^2.9.2",
         "laravel/prompts": "^0.1.24"
     },

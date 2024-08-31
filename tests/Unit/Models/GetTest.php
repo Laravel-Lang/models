@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\TestModel;
 use App\Models\TestModelTranslation;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use LaravelLang\Config\Enums\Name;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use Tests\Constants\FakeValue;
@@ -69,17 +72,43 @@ test('without translations model', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBeNull();
 });
 
-test('lazy loading', function () {
+test('lazy loading', function (bool $enabled, int $count, array $locales) {
+    config()->set(Name::Shared() . '.models.filter.enabled', $enabled);
+
+    $hasNonFilteredQuery = false;
+    $hasFilteredQuery    = false;
+
+    DB::listen(function (QueryExecuted $query) use (&$hasNonFilteredQuery, &$hasFilteredQuery) {
+        if (Str::is('select * where *."item_id" = ? and *."item_id" is not null', $query->sql)) {
+            $hasNonFilteredQuery = true;
+        }
+
+        if (Str::is('select * where *."item_id" = ? and *."item_id" is not null and "locale" in (?, ?)', $query->sql)) {
+            $hasFilteredQuery = true;
+        }
+    });
+
     $model1 = fakeModel(main: 'Foo');
     $model2 = fakeModel(main: 'Bar');
 
-    TestModel::query()->get()->each(
-        fn (TestModel $model) => match ($model->getKey()) {
-            $model1->getKey() => expect($model->title)->toBe('Foo'),
-            $model2->getKey() => expect($model->title)->toBe('Bar'),
-        }
-    );
-});
+    $model1->load('translations');
+    $model2->load('translations');
+
+    expect($model1->relationLoaded('translations'))->toBeTrue();
+    expect($model2->relationLoaded('translations'))->toBeTrue();
+
+    expect($model1->translations()->count())->toBe($count);
+    expect($model2->translations()->count())->toBe($count);
+
+    expect($model1->translations->count())->toBe($count);
+    expect($model2->translations->count())->toBe($count);
+
+    expect($model1->translations->pluck('locale')->sort()->values()->all())->toBe($locales);
+    expect($model2->translations->pluck('locale')->sort()->values()->all())->toBe($locales);
+
+    expect($hasNonFilteredQuery)->toBe(! $enabled);
+    expect($hasFilteredQuery)->toBe($enabled);
+})->with('locales-filter');
 
 test('non-translatable attribute', function () {
     $key = fake()->word;
