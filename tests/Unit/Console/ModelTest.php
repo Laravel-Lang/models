@@ -41,7 +41,7 @@ test('from scratch', function () {
         '--columns' => ['title', 'description'],
     ])->run();
 
-    $model  = base_path('app/Models/SomeTranslation.php');
+    $model = base_path('app/Models/SomeTranslation.php');
     $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Some'));
 
     $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');

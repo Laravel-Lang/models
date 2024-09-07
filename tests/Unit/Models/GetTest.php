@@ -76,7 +76,7 @@ test('lazy loading', function (bool $enabled, int $count, array $locales) {
     config()->set(Name::Shared() . '.models.filter.enabled', $enabled);
 
     $hasNonFilteredQuery = false;
-    $hasFilteredQuery    = false;
+    $hasFilteredQuery = false;
 
     DB::listen(function (QueryExecuted $query) use (&$hasNonFilteredQuery, &$hasFilteredQuery) {
         if (Str::is('select * where *."item_id" = ? and *."item_id" is not null', $query->sql)) {
