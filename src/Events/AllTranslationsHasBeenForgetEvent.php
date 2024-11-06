@@ -13,5 +13,6 @@ class AllTranslationsHasBeenForgetEvent
 
     public function __construct(
         public Model $model
-    ) {}
+    ) {
+    }
 }

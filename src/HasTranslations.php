@@ -120,7 +120,7 @@ trait HasTranslations
 
     public function newInstance($attributes = [], $exists = false): static
     {
-        $basic        = Arr::except($attributes, $this->translatable());
+        $basic = Arr::except($attributes, $this->translatable());
         $translatable = Arr::only($attributes, $this->translatable());
 
         $model = parent::newInstance($basic, $exists);

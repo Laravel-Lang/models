@@ -18,5 +18,6 @@ class TranslationHasBeenSetEvent
         public ?Locale $locale,
         public mixed $oldValue,
         public mixed $newValue,
-    ) {}
+    ) {
+    }
 }

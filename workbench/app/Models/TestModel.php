@@ -18,7 +18,7 @@ use LaravelLang\Models\HasTranslations;
  * @property Collection<TestModelTranslation> $translationsRaw
  *
  * @method  HasMany translations
- * @method  HasMany translationsRaw()
+ * @method HasMany translationsRaw()
  */
 class TestModel extends Model
 {
