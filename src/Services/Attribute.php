@@ -96,7 +96,7 @@ class Attribute
 
     public function forgetAll(): Model
     {
-        $this->model->translations()->delete();
+        $this->model->translationsRaw()->delete();
 
         Relation::clear($this->model);
 
