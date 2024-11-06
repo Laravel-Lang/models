@@ -33,8 +33,14 @@ trait HasTranslations
 
     public function translations(): HasMany
     {
-        return $this->hasMany($this->translationModelName(), 'item_id')
-            ->tap(new FilterTranslationsScope());
+        return $this->translationsRaw()->tap(
+            new FilterTranslationsScope()
+        );
+    }
+
+    public function translationsRaw(): HasMany
+    {
+        return $this->hasMany($this->translationModelName(), 'item_id');
     }
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
@@ -114,7 +120,7 @@ trait HasTranslations
 
     public function newInstance($attributes = [], $exists = false): static
     {
-        $basic = Arr::except($attributes, $this->translatable());
+        $basic        = Arr::except($attributes, $this->translatable());
         $translatable = Arr::only($attributes, $this->translatable());
 
         $model = parent::newInstance($basic, $exists);

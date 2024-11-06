@@ -32,8 +32,7 @@ abstract class Generator
     public function __construct(
         protected string $model,
         protected array $columns
-    ) {
-    }
+    ) {}
 
     public static function of(string $model, array $columns = []): static
     {
@@ -55,9 +54,7 @@ abstract class Generator
             ->toString();
     }
 
-    protected function finish(string $path): void
-    {
-    }
+    protected function finish(string $path): void {}
 
     protected function baseData(): array
     {

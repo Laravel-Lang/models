@@ -33,6 +33,6 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function registry(): void
     {
-        $this->app->singleton(Registry::class, fn () => new Registry());
+        $this->app->singleton(Registry::class);
     }
 }

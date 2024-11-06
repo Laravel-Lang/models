@@ -40,7 +40,7 @@ class ModelGenerator extends Generator
     protected function filename(): string
     {
         $directory = dirname($path = $this->path());
-        $filename = $this->getModel() . $this->modelSuffix();
+        $filename  = $this->getModel() . $this->modelSuffix();
         $extension = $this->extension($path);
 
         return $directory . '/' . $filename . '.' . $extension;

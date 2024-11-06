@@ -24,8 +24,7 @@ class Attribute
         protected EloquentModel $model,
         protected ?string $column = null,
         protected Locale|LocaleData|string|null $locale = null
-    ) {
-    }
+    ) {}
 
     public static function of(
         EloquentModel $model,
@@ -96,7 +95,7 @@ class Attribute
 
     public function forgetAll(): Model
     {
-        $this->model->translations()->delete();
+        $this->model->translationsRaw()->delete();
 
         Relation::clear($this->model);
 
