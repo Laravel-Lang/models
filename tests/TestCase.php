@@ -9,11 +9,14 @@ use LaravelLang\Config\Enums\Name;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Tests\Constants\FakeValue;
 
+use function base_path;
+use function Orchestra\Testbench\workbench_path;
+
 abstract class TestCase extends BaseTestCase
 {
     protected function resolveApplication(): Application
     {
-        return new Application($this->getBasePath());
+        return new Application(workbench_path());
     }
 
     protected function defineEnvironment($app): void
