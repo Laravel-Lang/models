@@ -118,20 +118,20 @@ trait HasTranslations
         return $this;
     }
 
-    public function newInstance($attributes = [], $exists = false): static
+    public function fill(array $attributes): static
     {
         $basic = Arr::except($attributes, $this->translatable());
         $translatable = Arr::only($attributes, $this->translatable());
 
-        $model = parent::newInstance($basic, $exists);
+        parent::fill($basic);
 
         foreach ($translatable as $key => $value) {
             is_iterable($value)
-                ? $model->setTranslations($key, $value)
-                : $model->setTranslation($key, $value);
+                ? $this->setTranslations($key, $value)
+                : $this->setTranslation($key, $value);
         }
 
-        return $model;
+        return $this;
     }
 
     public function translatable(): array
