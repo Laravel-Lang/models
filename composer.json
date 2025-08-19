@@ -85,11 +85,6 @@
         }
     },
     "scripts": {
-        "post-update-cmd": [
-            "vendor/bin/codestyle pint 8.2",
-            "vendor/bin/codestyle editorconfig",
-            "composer normalize"
-        ],
         "style": "vendor/bin/pint --parallel",
         "test": "vendor/bin/pest --parallel"
     }
