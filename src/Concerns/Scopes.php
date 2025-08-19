@@ -6,6 +6,9 @@ namespace LaravelLang\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @mixin \LaravelLang\Models\Concerns\HasNames
+ */
 trait Scopes
 {
     public function scopeTranslated(Builder $query): void
@@ -26,10 +29,10 @@ trait Scopes
     public function scopeWhereTranslation(Builder $query, string $translationField, $value, ?string $locale = null, string $method = 'whereHas', string $operator = '='): void
     {
         $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
-            $query->where($this->getTranslationsTable().'.'.$translationField, $operator, $value);
+            $query->where($this->getTranslationTable().'.'.$translationField, $operator, $value);
 
             if ($locale) {
-                $query->where($this->getTranslationsTable().'.locale', $operator, $locale);
+                $query->where($this->getTranslationTable().'.locale', $operator, $locale);
             }
         });
     }
@@ -37,10 +40,5 @@ trait Scopes
     public function scopeWhereTranslationLike(Builder $query, string $translationField, $value, ?string $locale = null): void
     {
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'whereHas', 'LIKE');
-    }
-
-    protected function getTranslationsTable(): string
-    {
-        return (new ($this->translationModelName())())->getTable();
     }
 }

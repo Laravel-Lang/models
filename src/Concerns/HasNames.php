@@ -12,4 +12,9 @@ trait HasNames
     {
         return static::class . Config::shared()->models->suffix;
     }
+
+    public function getTranslationTable(): string
+    {
+        return (new ($this->translationModelName())())->getTable();
+    }
 }
