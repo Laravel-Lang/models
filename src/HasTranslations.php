@@ -10,8 +10,6 @@ use Illuminate\Support\Arr;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
-use LaravelLang\Models\Concerns\HasNames;
-use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\Attribute;
@@ -28,8 +26,9 @@ use function is_iterable;
  */
 trait HasTranslations
 {
-    use ModelLoader;
-    use HasNames;
+    use Concerns\ModelLoader;
+    use Concerns\HasNames;
+    use Concerns\Scopes;
 
     public function translations(): HasMany
     {

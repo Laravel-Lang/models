@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\TestModel;
 use App\Models\TestModelTranslation;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
@@ -123,3 +124,146 @@ test('not translatable attribute', function () {
 
     $model->getTranslation('foo');
 })->throws(AttributeIsNotTranslatableException::class);
+
+test('translated scope returns records with at least one translation', function () {
+    $text = fake()->paragraph;
+
+    TestModel::create(['key' => FakeValue::LocaleFallback]);
+    TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => $text,
+        ]
+    ]);
+
+    expect(TestModel::translated()->count())->toBe(1);
+    expect(TestModel::translated()->first()->{FakeValue::ColumnTitle})->toBe($text);
+});
+
+test('whereTranslation filters by translation', function () {
+    $text = 'Hello world';
+
+    $model = TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => $text,
+        ]
+    ]);
+
+    expect(TestModel::whereTranslation(FakeValue::ColumnTitle, 'Hello')->count())->toBeEmpty();
+    expect(TestModel::whereTranslation(FakeValue::ColumnTitle, 'Hello world')->first()->id)->toBe($model->id);
+});
+
+test('or whereTranslation filters by translation', function () {
+    $model1 = TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'Texte en français',
+        ]
+    ]);
+    $model2 = TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleFallback => 'Text auf Deutsch',
+        ]
+    ]);
+
+    $result = TestModel::query()
+        ->whereTranslation(FakeValue::ColumnTitle, 'Texte en français')
+        ->orWhereTranslation(FakeValue::ColumnTitle, 'Text auf Deutsch')
+        ->get();
+
+
+    expect($result->count())->toBe(2);
+    expect($result->first()->id)->toBe($model1->id);
+    expect($result->last()->id)->toBe($model2->id);
+});
+
+test('where translation filters by translation and locale', function () {
+    $text = 'Hello world';
+
+    $model1 = TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => $text,
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleFallback => $text,
+        ]
+    ]);
+
+    expect(TestModel::whereTranslation(FakeValue::ColumnTitle, $text)->count())->toBe(2);
+
+    $result = TestModel::query()
+        ->whereTranslation(FakeValue::ColumnTitle, $text, FakeValue::LocaleMain)
+        ->get();
+
+    expect($result->count())->toBe(1);
+    expect($result->first()->id)->toBe($model1->id);
+});
+
+test('whereTranslationLike filters by translation', function () {
+    $text = 'Hello world';
+
+    TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => $text,
+        ]
+    ]);
+
+    expect(TestModel::whereTranslationLike(FakeValue::ColumnTitle, 'wor')->count())->toBe(0);
+    expect(TestModel::whereTranslationLike(FakeValue::ColumnTitle, '%wor%')->count())->toBe(1);
+});
+
+test('or whereTranslationLike filters by translation', function () {
+    $model1 = TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'Texte en français',
+        ]
+    ]);
+    $model2 = TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleFallback => 'Text auf Deutsch',
+        ]
+    ]);
+
+    $result = TestModel::query()
+        ->whereTranslationLike(FakeValue::ColumnTitle, '%français')
+        ->orWhereTranslationLike(FakeValue::ColumnTitle, '%Deutsch')
+        ->get();
+
+    expect($result->count())->toBe(2);
+    expect($result->first()->id)->toBe($model1->id);
+    expect($result->last()->id)->toBe($model2->id);
+});
+
+test('whereTranslationLike filters by translation and locale', function () {
+    $text = 'Hello world';
+
+    $model1 = TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => $text,
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleFallback => $text,
+        ]
+    ]);
+
+    expect(TestModel::query()->whereTranslationLike(FakeValue::ColumnTitle, '%world%')->count())->toBe(2);
+
+
+    $result = TestModel::query()->whereTranslationLike(FakeValue::ColumnTitle, '%world%', FakeValue::LocaleMain)->get();
+
+    expect($result->count())->toBe(1);
+    expect($result->first()->id)->toBe($model1->id);
+});
