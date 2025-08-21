@@ -267,3 +267,71 @@ test('whereTranslationLike filters by translation and locale', function () {
     expect($result->count())->toBe(1);
     expect($result->first()->id)->toBe($model1->id);
 });
+
+test('orderByTranslation sorts by key asc', function () {
+    TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'A',
+            FakeValue::LocaleFallback => 'D',
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'B',
+            FakeValue::LocaleFallback => 'C',
+        ]
+    ]);
+
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc')->get()->first()->key)->toBe(FakeValue::LocaleMain);
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc', FakeValue::LocaleFallback)->get()->first()->key)->toBe(FakeValue::LocaleFallback);
+});
+
+test('orderByTranslation sorts by key desc', function () {
+    TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'A',
+            FakeValue::LocaleFallback => 'D',
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'B',
+            FakeValue::LocaleFallback => 'C',
+        ]
+    ]);
+
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc')->get()->first()->key)->toBe(FakeValue::LocaleFallback);
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc', FakeValue::LocaleFallback)->get()->first()->key)->toBe(FakeValue::LocaleMain);
+});
+
+test('orderByTranslation sorts by key asc even if locale is missing', function () {
+    TestModel::create([
+        'key' => FakeValue::LocaleMain,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'Pommes de Terre',
+            FakeValue::LocaleFallback => 'Kartoffeln',
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleFallback,
+        FakeValue::ColumnTitle => [
+            FakeValue::LocaleMain => 'Fraises',
+            FakeValue::LocaleFallback => 'Erdbeeren',
+        ]
+    ]);
+    TestModel::create([
+        'key' => FakeValue::LocaleCustom
+    ]);
+
+    $orderInFrench = TestModel::orderByTranslation(FakeValue::ColumnTitle)->get();
+    expect($orderInFrench->pluck(FakeValue::ColumnTitle)->toArray())->toBe([null, 'Fraises', 'Pommes de Terre']);
+
+    app()->setLocale(FakeValue::LocaleFallback);
+    $orderInDeutsch = TestModel::orderByTranslation(FakeValue::ColumnTitle, 'desc')->get();
+    expect($orderInDeutsch->pluck(FakeValue::ColumnTitle)->toArray())->toBe(['Kartoffeln', 'Erdbeeren', null]);
+});
+

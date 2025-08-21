@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
+use LaravelLang\Locales\Facades\Locales;
 
 /**
  * @mixin \LaravelLang\Models\Concerns\HasNames
@@ -41,4 +42,22 @@ trait Scopes
     {
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'whereHas', 'LIKE');
     }
+
+    public function scopeOrderByTranslation(Builder $query, string $translationField, string $sortMethod = 'asc', ?string $locale = null): void
+    {
+        $table = $this->getTable();
+        $translationTable = $this->getTranslationTable();
+        $locale ??= Locales::getCurrent()->code;
+
+        $query
+            ->orderBy(
+                (new ($this->translationModelName())())
+                    ->query()
+                    ->select($translationField)
+                    ->where($translationTable . '.locale', $locale)
+                    ->whereColumn($translationTable . '.item_id', $table . '.id'),
+                $sortMethod
+            );
+    }
+
 }
