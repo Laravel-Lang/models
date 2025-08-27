@@ -7,6 +7,8 @@ namespace LaravelLang\Models\Generators;
 use Illuminate\Support\Str;
 use LaravelLang\Models\HasTranslations;
 
+use function file_get_contents;
+
 class ParentGenerator extends Generator
 {
     protected ?string $template = null;
@@ -25,7 +27,7 @@ class ParentGenerator extends Generator
 
     protected function template(): string
     {
-        return $this->template ??= \file_get_contents($this->path());
+        return $this->template ??= file_get_contents($this->path());
     }
 
     protected function data(): array

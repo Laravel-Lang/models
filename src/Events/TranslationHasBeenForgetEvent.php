@@ -15,6 +15,5 @@ class TranslationHasBeenForgetEvent
     public function __construct(
         public Model $model,
         public ?Locale $locale
-    ) {
-    }
+    ) {}
 }

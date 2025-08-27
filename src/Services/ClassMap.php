@@ -55,7 +55,7 @@ class ClassMap
 
     protected static function generator(): ClassMapGenerator
     {
-        return new ClassMapGenerator();
+        return new ClassMapGenerator;
     }
 
     protected static function modelsPath(): array

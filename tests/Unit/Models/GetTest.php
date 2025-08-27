@@ -77,7 +77,7 @@ test('lazy loading', function (bool $enabled, int $count, array $locales) {
     config()->set(Name::Shared() . '.models.filter.enabled', $enabled);
 
     $hasNonFilteredQuery = false;
-    $hasFilteredQuery = false;
+    $hasFilteredQuery    = false;
 
     DB::listen(function (QueryExecuted $query) use (&$hasNonFilteredQuery, &$hasFilteredQuery) {
         if (Str::is('select * where *."item_id" = ? and *."item_id" is not null', $query->sql)) {
@@ -130,10 +130,10 @@ test('translated scope returns records with at least one translation', function 
 
     TestModel::create(['key' => FakeValue::LocaleFallback]);
     TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => $text,
-        ]
+        ],
     ]);
 
     expect(TestModel::translated()->count())->toBe(1);
@@ -144,10 +144,10 @@ test('whereTranslation filters by translation', function () {
     $text = 'Hello world';
 
     $model = TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => $text,
-        ]
+        ],
     ]);
 
     expect(TestModel::whereTranslation(FakeValue::ColumnTitle, 'Hello')->count())->toBeEmpty();
@@ -156,23 +156,22 @@ test('whereTranslation filters by translation', function () {
 
 test('or whereTranslation filters by translation', function () {
     $model1 = TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => 'Texte en français',
-        ]
+        ],
     ]);
     $model2 = TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleFallback => 'Text auf Deutsch',
-        ]
+        ],
     ]);
 
     $result = TestModel::query()
         ->whereTranslation(FakeValue::ColumnTitle, 'Texte en français')
         ->orWhereTranslation(FakeValue::ColumnTitle, 'Text auf Deutsch')
         ->get();
-
 
     expect($result->count())->toBe(2);
     expect($result->first()->id)->toBe($model1->id);
@@ -183,16 +182,16 @@ test('where translation filters by translation and locale', function () {
     $text = 'Hello world';
 
     $model1 = TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => $text,
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleFallback => $text,
-        ]
+        ],
     ]);
 
     expect(TestModel::whereTranslation(FakeValue::ColumnTitle, $text)->count())->toBe(2);
@@ -209,10 +208,10 @@ test('whereTranslationLike filters by translation', function () {
     $text = 'Hello world';
 
     TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => $text,
-        ]
+        ],
     ]);
 
     expect(TestModel::whereTranslationLike(FakeValue::ColumnTitle, 'wor')->count())->toBe(0);
@@ -221,16 +220,16 @@ test('whereTranslationLike filters by translation', function () {
 
 test('or whereTranslationLike filters by translation', function () {
     $model1 = TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => 'Texte en français',
-        ]
+        ],
     ]);
     $model2 = TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleFallback => 'Text auf Deutsch',
-        ]
+        ],
     ]);
 
     $result = TestModel::query()
@@ -247,20 +246,19 @@ test('whereTranslationLike filters by translation and locale', function () {
     $text = 'Hello world';
 
     $model1 = TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleMain => $text,
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
             FakeValue::LocaleFallback => $text,
-        ]
+        ],
     ]);
 
     expect(TestModel::query()->whereTranslationLike(FakeValue::ColumnTitle, '%world%')->count())->toBe(2);
-
 
     $result = TestModel::query()->whereTranslationLike(FakeValue::ColumnTitle, '%world%', FakeValue::LocaleMain)->get();
 
@@ -270,18 +268,18 @@ test('whereTranslationLike filters by translation and locale', function () {
 
 test('orderByTranslation sorts by key asc', function () {
     TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'A',
+            FakeValue::LocaleMain     => 'A',
             FakeValue::LocaleFallback => 'D',
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'B',
+            FakeValue::LocaleMain     => 'B',
             FakeValue::LocaleFallback => 'C',
-        ]
+        ],
     ]);
 
     expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc')->get()->first()->key)->toBe(FakeValue::LocaleMain);
@@ -290,18 +288,18 @@ test('orderByTranslation sorts by key asc', function () {
 
 test('orderByTranslation sorts by key desc', function () {
     TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'A',
+            FakeValue::LocaleMain     => 'A',
             FakeValue::LocaleFallback => 'D',
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'B',
+            FakeValue::LocaleMain     => 'B',
             FakeValue::LocaleFallback => 'C',
-        ]
+        ],
     ]);
 
     expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc')->get()->first()->key)->toBe(FakeValue::LocaleFallback);
@@ -310,21 +308,21 @@ test('orderByTranslation sorts by key desc', function () {
 
 test('orderByTranslation sorts by key asc even if locale is missing', function () {
     TestModel::create([
-        'key' => FakeValue::LocaleMain,
+        'key'                  => FakeValue::LocaleMain,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'Pommes de Terre',
+            FakeValue::LocaleMain     => 'Pommes de Terre',
             FakeValue::LocaleFallback => 'Kartoffeln',
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleFallback,
+        'key'                  => FakeValue::LocaleFallback,
         FakeValue::ColumnTitle => [
-            FakeValue::LocaleMain => 'Fraises',
+            FakeValue::LocaleMain     => 'Fraises',
             FakeValue::LocaleFallback => 'Erdbeeren',
-        ]
+        ],
     ]);
     TestModel::create([
-        'key' => FakeValue::LocaleCustom
+        'key' => FakeValue::LocaleCustom,
     ]);
 
     $orderInFrench = TestModel::orderByTranslation(FakeValue::ColumnTitle)->get();
@@ -334,4 +332,3 @@ test('orderByTranslation sorts by key asc even if locale is missing', function (
     $orderInDeutsch = TestModel::orderByTranslation(FakeValue::ColumnTitle, 'desc')->get();
     expect($orderInDeutsch->pluck(FakeValue::ColumnTitle)->toArray())->toBe(['Kartoffeln', 'Erdbeeren', null]);
 });
-

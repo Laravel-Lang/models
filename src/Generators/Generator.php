@@ -32,8 +32,7 @@ abstract class Generator
     public function __construct(
         protected string $model,
         protected array $columns
-    ) {
-    }
+    ) {}
 
     public static function of(string $model, array $columns = []): static
     {
@@ -55,9 +54,7 @@ abstract class Generator
             ->toString();
     }
 
-    protected function finish(string $path): void
-    {
-    }
+    protected function finish(string $path): void {}
 
     protected function baseData(): array
     {
@@ -101,14 +98,14 @@ abstract class Generator
 
     protected function baseModel(): Model
     {
-        return $this->registry[$this->model] ??= new $this->model();
+        return $this->registry[$this->model] ??= new $this->model;
     }
 
     protected function translationModel(): Translation
     {
         $model = $this->translationModelNamespace();
 
-        return $this->registry[$model] ??= new $model();
+        return $this->registry[$model] ??= new $model;
     }
 
     protected function translationModelNamespace(): string
