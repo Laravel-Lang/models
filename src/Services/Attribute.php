@@ -24,8 +24,7 @@ class Attribute
         protected EloquentModel $model,
         protected ?string $column = null,
         protected Locale|LocaleData|string|null $locale = null
-    ) {
-    }
+    ) {}
 
     public static function of(
         EloquentModel $model,

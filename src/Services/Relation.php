@@ -18,7 +18,7 @@ class Relation
     public static function initialize(Model $model): Model
     {
         if (blank($model->translations)) {
-            $translations = $model->load('translations')->translations ?? new DBCollection();
+            $translations = $model->load('translations')->translations ?? new DBCollection;
 
             $model->setRelation('translations', $translations);
         }
@@ -44,7 +44,7 @@ class Relation
 
     public static function clear(Model $model): void
     {
-        $model->setRelation('translations', new DBCollection());
+        $model->setRelation('translations', new DBCollection);
     }
 
     protected static function setAttributes(Model $model, Translation $translation, LocaleData $locale): Translation

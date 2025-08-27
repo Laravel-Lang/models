@@ -30,10 +30,10 @@ trait Scopes
     public function scopeWhereTranslation(Builder $query, string $translationField, $value, ?string $locale = null, string $method = 'whereHas', string $operator = '='): void
     {
         $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
-            $query->where($this->getTranslationTable().'.'.$translationField, $operator, $value);
+            $query->where($this->getTranslationTable() . '.' . $translationField, $operator, $value);
 
             if ($locale) {
-                $query->where($this->getTranslationTable().'.locale', $operator, $locale);
+                $query->where($this->getTranslationTable() . '.locale', $operator, $locale);
             }
         });
     }
@@ -45,7 +45,7 @@ trait Scopes
 
     public function scopeOrderByTranslation(Builder $query, string $translationField, string $sortMethod = 'asc', ?string $locale = null): void
     {
-        $table = $this->getTable();
+        $table            = $this->getTable();
         $translationTable = $this->getTranslationTable();
         $locale ??= Locales::getCurrent()->code;
 
@@ -59,5 +59,4 @@ trait Scopes
                 $sortMethod
             );
     }
-
 }

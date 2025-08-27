@@ -26,14 +26,14 @@ use function is_iterable;
  */
 trait HasTranslations
 {
-    use Concerns\ModelLoader;
     use Concerns\HasNames;
+    use Concerns\ModelLoader;
     use Concerns\Scopes;
 
     public function translations(): HasMany
     {
         return $this->translationsRaw()->tap(
-            new FilterTranslationsScope()
+            new FilterTranslationsScope
         );
     }
 
@@ -119,7 +119,7 @@ trait HasTranslations
 
     public function fill(array $attributes): static
     {
-        $basic = Arr::except($attributes, $this->translatable());
+        $basic        = Arr::except($attributes, $this->translatable());
         $translatable = Arr::only($attributes, $this->translatable());
 
         parent::fill($basic);
