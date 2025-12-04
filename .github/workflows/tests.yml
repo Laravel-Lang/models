@@ -19,6 +19,9 @@ jobs:
             matrix:
                 php: [ "8.2", "8.3", "8.4", "8.5" ]
                 laravel: [ "10.0", "11.0", "12.0" ]
+                exclude:
+                    -   php: "8.5"
+                        laravel: "10.0"
         
         name: PHP ${{ matrix.php }}, Laravel ${{ matrix.laravel }}
 
