@@ -5,14 +5,17 @@ declare(strict_types=1);
 use App\Models\TestModel;
 use App\Models\TestModelTranslation;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Enums\Name;
+use LaravelLang\LocaleList\Locale;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Models\Exceptions\UnavailableLocaleException;
 use Tests\Constants\FakeValue;
 
 use function Pest\Laravel\assertDatabaseEmpty;
+use function Pest\Laravel\assertDatabaseHas;
 
 test('main locale', function () {
     $text = fake()->paragraph;
@@ -52,6 +55,38 @@ test('custom locale', function () {
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleMain))->toBeNull();
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleFallback))->toBeNull();
     expect($model->getTranslation(FakeValue::ColumnTitle, FakeValue::LocaleCustom))->toBe($text);
+});
+
+test('aliased locale', function () {
+    config([
+        'app.locale' => 'zh_CN',
+
+        'localization.aliases' => [
+            Locale::Chinese->value => 'zh',
+        ],
+    ]);
+
+    app(Filesystem::class)->ensureDirectoryExists(
+        lang_path('zh')
+    );
+
+    $text = fake()->paragraph;
+
+    $model = fakeModel();
+
+    $model->setTranslation(FakeValue::ColumnTitle, $text, 'zh');
+    $model->save();
+
+    expect($model->title)->toBeString()->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, Locale::Chinese->value))->toBeString()->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle, 'zh'))->toBeString()->toBe($text);
+    expect($model->getTranslation(FakeValue::ColumnTitle))->toBeString()->toBe($text);
+
+    assertDatabaseHas(TestModelTranslation::class, [
+        'item_id' => $model->id,
+        'locale'  => Locale::Chinese->value,
+        'title'   => $text,
+    ]);
 });
 
 test('uninstalled', function () {
@@ -282,8 +317,13 @@ test('orderByTranslation sorts by key asc', function () {
         ],
     ]);
 
-    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc')->get()->first()->key)->toBe(FakeValue::LocaleMain);
-    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc', FakeValue::LocaleFallback)->get()->first()->key)->toBe(FakeValue::LocaleFallback);
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc')->get()->first()->key)->toBe(
+        FakeValue::LocaleMain
+    );
+    expect(
+        TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'asc', FakeValue::LocaleFallback)->get()->first(
+        )->key
+    )->toBe(FakeValue::LocaleFallback);
 });
 
 test('orderByTranslation sorts by key desc', function () {
@@ -302,8 +342,13 @@ test('orderByTranslation sorts by key desc', function () {
         ],
     ]);
 
-    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc')->get()->first()->key)->toBe(FakeValue::LocaleFallback);
-    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc', FakeValue::LocaleFallback)->get()->first()->key)->toBe(FakeValue::LocaleMain);
+    expect(TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc')->get()->first()->key)->toBe(
+        FakeValue::LocaleFallback
+    );
+    expect(
+        TestModel::query()->orderByTranslation(FakeValue::ColumnTitle, 'desc', FakeValue::LocaleFallback)->get()->first(
+        )->key
+    )->toBe(FakeValue::LocaleMain);
 });
 
 test('orderByTranslation sorts by key asc even if locale is missing', function () {
