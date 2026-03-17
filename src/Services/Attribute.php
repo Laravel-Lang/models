@@ -15,9 +15,7 @@ use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 
 use function filled;
 
-/**
- * @property EloquentModel|\LaravelLang\Models\HasTranslations $model
- */
+/** @property EloquentModel|\LaravelLang\Models\HasTranslations $model */
 class Attribute
 {
     public function __construct(
