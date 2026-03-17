@@ -7,9 +7,7 @@ namespace LaravelLang\Models\Concerns;
 use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Locales\Facades\Locales;
 
-/**
- * @mixin \LaravelLang\Models\Concerns\HasNames
- */
+/** @mixin \LaravelLang\Models\Concerns\HasNames */
 trait Scopes
 {
     public function scopeTranslated(Builder $query): void
