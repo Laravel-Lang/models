@@ -14,7 +14,7 @@ use Tests\Constants\FakeValue;
 use function base_path;
 use function Orchestra\Testbench\workbench_path;
 
-abstract class TestCase extends BaseTestCase
+abstract class ModelsTestCase extends BaseTestCase
 {
     protected function resolveApplication(): Application
     {

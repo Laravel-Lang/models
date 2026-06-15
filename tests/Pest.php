@@ -9,7 +9,7 @@ use LaravelLang\Config\Facades\Config;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Tests\Constants\FakeValue;
 
-uses(Tests\TestCase::class, RefreshDatabase::class, WithWorkbench::class)
+uses(Tests\RoutesTestCase::class, RefreshDatabase::class, WithWorkbench::class)
     ->compact()
     ->beforeEach(function () {
         Directory::ensureDirectory(database_path());
