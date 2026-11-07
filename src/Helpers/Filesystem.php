@@ -14,6 +14,7 @@ use function is_link;
 use function mkdir;
 use function realpath;
 use function rmdir;
+use function rtrim;
 use function unlink;
 
 /** The few filesystem operations the package needs, built on native PHP only. */
@@ -54,8 +55,11 @@ final class Filesystem
     public static function ensureDeleteDirectory(array|string $paths): void
     {
         foreach ((array) $paths as $path) {
-            if (is_link($path)) {
-                unlink($path);
+            // `is_link('link/')` is false, so a trailing separator would make us traverse the target.
+            $link = rtrim($path, '\\/');
+
+            if ($link !== '' && is_link($link)) {
+                unlink($link);
 
                 continue;
             }
