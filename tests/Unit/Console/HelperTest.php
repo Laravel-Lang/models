@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Models\TestModel;
 use App\Models\TestModelTranslation;
-use DragonCode\Support\Facades\Filesystem\Directory;
+use Illuminate\Filesystem\Filesystem;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Console\ModelsHelperCommand;
 
 use function Pest\Laravel\artisan;
 
-beforeEach(fn () => Directory::ensureDelete(
+beforeEach(fn () => (new Filesystem)->deleteDirectory(
     Config::shared()->models->helpers
 ));
 

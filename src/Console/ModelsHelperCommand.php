@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Console;
 
-use DragonCode\Support\Facades\Filesystem\Directory;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Generators\HelperGenerator;
+use LaravelLang\Models\Helpers\Filesystem;
 use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
 
@@ -49,7 +49,7 @@ class ModelsHelperCommand extends Command
 
     protected function cleanUp(): void
     {
-        Directory::ensureDelete(
+        Filesystem::ensureDeleteDirectory(
             Config::shared()->models->helpers
         );
     }

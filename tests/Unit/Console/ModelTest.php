@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use DragonCode\Support\Facades\Filesystem\File;
-use DragonCode\Support\Facades\Filesystem\Path;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\ModelMakeCommand as LaravelMakeModel;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Facades\Config;
@@ -11,24 +10,21 @@ use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
 
 use function Pest\Laravel\artisan;
 
-beforeEach(fn () => File::ensureDelete([
+beforeEach(fn () => (new Filesystem)->delete([
     base_path('app/Models/Some.php'),
     base_path('app/Models/SomeTranslation.php'),
 ]));
 
 afterEach(function () {
-    $migrations = File::allPaths(database_path('migrations'), function (string $path) {
-        if (Path::extension($path) !== 'php') {
-            return false;
-        }
-
-        return ! Str::contains($path, [
+    $migrations = array_filter(
+        glob(database_path('migrations/*.php')) ?: [],
+        fn (string $path) => ! Str::contains($path, [
             '2024_06_11_031722_create_fixture_test_models_table',
             '2024_06_19_212226_create_fixture_test_model_translations_table',
-        ]);
-    });
+        ])
+    );
 
-    File::ensureDelete($migrations);
+    (new Filesystem)->delete($migrations);
 });
 
 test('from scratch', function () {
@@ -44,7 +40,7 @@ test('from scratch', function () {
     $model  = base_path('app/Models/SomeTranslation.php');
     $helper = sprintf('%s/_ide_helper_models_%s.php', Config::shared()->models->helpers, md5('App\Models\Some'));
 
-    $migrations = File::allPaths(database_path('migrations'), fn (string $path) => Path::extension($path) === 'php');
+    $migrations = glob(database_path('migrations/*.php')) ?: [];
 
     expect($migrations)->toHaveCount(1);
 

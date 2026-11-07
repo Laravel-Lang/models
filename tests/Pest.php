@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use DragonCode\Support\Facades\Filesystem\Directory;
-use DragonCode\Support\Facades\Filesystem\File;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelLang\Config\Facades\Config;
 use Orchestra\Testbench\Concerns\WithWorkbench;
@@ -12,17 +11,21 @@ use Tests\Constants\FakeValue;
 uses(Tests\TestCase::class, RefreshDatabase::class, WithWorkbench::class)
     ->compact()
     ->beforeEach(function () {
-        Directory::ensureDirectory(database_path());
+        $files = new Filesystem;
 
-        Directory::ensureDirectory(lang_path(FakeValue::LocaleMain));
-        Directory::ensureDirectory(lang_path(FakeValue::LocaleFallback));
-        Directory::ensureDirectory(lang_path(FakeValue::LocaleCustom));
+        $files->ensureDirectoryExists(database_path());
 
-        Directory::ensureDelete(Config::shared()->models->helpers);
+        $files->ensureDirectoryExists(lang_path(FakeValue::LocaleMain));
+        $files->ensureDirectoryExists(lang_path(FakeValue::LocaleFallback));
+        $files->ensureDirectoryExists(lang_path(FakeValue::LocaleCustom));
 
-        File::ensureDelete(lang_path('en.json'));
+        $files->deleteDirectory(Config::shared()->models->helpers);
+
+        $files->delete(lang_path('en.json'));
     })
     ->afterAll(function () {
-        Directory::ensureDelete(lang_path());
-        Directory::ensureDelete(database_path());
+        $files = new Filesystem;
+
+        $files->deleteDirectory(lang_path());
+        $files->deleteDirectory(database_path());
     })->in(__DIR__);

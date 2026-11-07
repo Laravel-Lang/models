@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Services;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
-use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use LaravelLang\Config\Facades\Config;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\HasTranslations;
 
+use function class_exists;
+use function class_uses;
 use function collect;
+use function is_a;
 use function ltrim;
 
 class ClassMap
@@ -65,12 +67,24 @@ class ClassMap
 
     protected static function isTranslatable(string $class): bool
     {
-        return Instance::of($class, HasTranslations::class);
+        return class_exists($class) && static::usesTrait($class, HasTranslations::class);
     }
 
     protected static function canTranslatable(string $class): bool
     {
-        return Instance::of($class, Model::class)
-            && ! Instance::of($class, Translation::class);
+        return is_a($class, Model::class, true)
+            && ! is_a($class, Translation::class, true);
+    }
+
+    /** Checks the traits used by the class itself, including the traits nested in them. */
+    protected static function usesTrait(string $class, string $trait): bool
+    {
+        foreach (class_uses($class) as $used) {
+            if ($used === $trait || static::usesTrait($used, $trait)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
