@@ -10,12 +10,21 @@ use LaravelLang\Models\Console\ModelMakeCommand as PackageMakeModel;
 
 use function Pest\Laravel\artisan;
 
-beforeEach(fn () => (new Filesystem)->delete([
-    base_path('app/Models/Some.php'),
-    base_path('app/Models/SomeTranslation.php'),
-]));
+beforeEach(function () {
+    lockModelsDirectory();
+
+    (new Filesystem)->delete([
+        base_path('app/Models/Some.php'),
+        base_path('app/Models/SomeTranslation.php'),
+    ]);
+});
 
 afterEach(function () {
+    (new Filesystem)->delete([
+        base_path('app/Models/Some.php'),
+        base_path('app/Models/SomeTranslation.php'),
+    ]);
+
     $migrations = array_filter(
         glob(database_path('migrations/*.php')) ?: [],
         fn (string $path) => ! Str::contains($path, [
@@ -25,6 +34,8 @@ afterEach(function () {
     );
 
     (new Filesystem)->delete($migrations);
+
+    unlockModelsDirectory();
 });
 
 test('from scratch', function () {

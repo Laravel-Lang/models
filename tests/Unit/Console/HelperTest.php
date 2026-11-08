@@ -10,9 +10,13 @@ use LaravelLang\Models\Console\ModelsHelperCommand;
 
 use function Pest\Laravel\artisan;
 
-beforeEach(fn () => (new Filesystem)->deleteDirectory(
-    Config::shared()->models->helpers
-));
+beforeEach(function () {
+    lockModelsDirectory();
+
+    (new Filesystem)->deleteDirectory(Config::shared()->models->helpers);
+});
+
+afterEach(fn () => unlockModelsDirectory());
 
 test('generate many models', function () {
     $path = sprintf(
