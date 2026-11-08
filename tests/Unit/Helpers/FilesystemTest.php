@@ -80,3 +80,14 @@ test('ensure delete directory does not follow symlinks with a trailing separator
     expect(is_link($this->root . '/link'))->toBeFalse();
     expect($this->root . '/target/file.txt')->toBeFile();
 });
+
+test('ensure delete directory does not follow symlinks with a trailing dot component', function (string $suffix) {
+    Filesystem::store($this->root . '/target/file.txt', 'foo');
+
+    symlink($this->root . '/target', $this->root . '/link');
+
+    Filesystem::ensureDeleteDirectory($this->root . '/link' . $suffix);
+
+    expect(is_link($this->root . '/link'))->toBeFalse();
+    expect($this->root . '/target/file.txt')->toBeFile();
+})->with(['/.', '/./', '//.//.']);
