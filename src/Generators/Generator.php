@@ -31,7 +31,7 @@ abstract class Generator
 
     public function __construct(
         protected string $model,
-        protected array $columns
+        protected array $columns,
     ) {}
 
     public static function of(string $model, array $columns = []): static
