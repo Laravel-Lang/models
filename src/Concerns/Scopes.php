@@ -41,11 +41,15 @@ trait Scopes
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'whereHas', 'LIKE');
     }
 
-    public function scopeOrderByTranslation(Builder $query, string $translationField, string $sortMethod = 'asc', ?string $locale = null): void
-    {
-        $table            = $this->getTable();
+    public function scopeOrderByTranslation(
+        Builder $query,
+        string $translationField,
+        string $sortMethod = 'asc',
+        ?string $locale = null,
+    ): void {
+        $table = $this->getTable();
         $translationTable = $this->getTranslationTable();
-        $locale ??= Locales::getCurrent()->code;
+        $locale ??= Locales::getCurrent()->locale->value;
 
         $query
             ->orderBy(
