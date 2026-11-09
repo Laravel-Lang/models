@@ -28,7 +28,7 @@ class Relation
 
     public static function initializeLocale(Model $model, LocaleData $locale): Translation
     {
-        if ($item = $model->translationsRaw()->where('locale', $locale->code)->first()) {
+        if ($item = $model->translationsRaw()->where('locale', $locale->locale->value)->first()) {
             return static::setAttributes($model, $item, $locale);
         }
 
