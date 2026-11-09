@@ -31,20 +31,20 @@ class ModelMakeCommand extends Command
 
     protected array $columns = ['locale', 'title', 'description'];
 
-    public function handle(): void
+    public function handle(): int
     {
         $model = $this->model();
 
         if (! $this->validatedModel($model)) {
             error("The model at `$model` namespace was not found.");
 
-            return;
+            return self::FAILURE;
         }
 
         if ($this->hasTranslation($model)) {
             warning('The specified model already has a translation repository.');
 
-            return;
+            return self::FAILURE;
         }
 
         $columns = $this->columns();
@@ -53,6 +53,8 @@ class ModelMakeCommand extends Command
         $this->generateModel($model, $columns);
         $this->generateMigration($model, $columns);
         $this->generateHelper($model);
+        
+        return self::SUCCESS;
     }
 
     protected function generateModel(string $model, array $columns): void
