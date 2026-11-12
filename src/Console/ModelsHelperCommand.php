@@ -22,6 +22,7 @@ class ModelsHelperCommand extends Command
 
     public function handle(): void
     {
+        
         $this->cleanUp();
         $this->process();
     }
