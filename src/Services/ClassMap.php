@@ -8,7 +8,7 @@ use Composer\ClassMapGenerator\ClassMapGenerator;
 use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use LaravelLang\Config\Services\PrivateConfig;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\HasTranslations;
 
@@ -60,7 +60,7 @@ class ClassMap
 
     protected static function modelsPath(): array
     {
-        return Arr::wrap(app(PrivateConfig::class)->modelsDirectory);
+        return Arr::wrap(app(ModelConfig::class)->directories);
     }
 
     protected static function isTranslatable(string $class): bool
