@@ -6,7 +6,7 @@ namespace LaravelLang\Models\Console;
 
 use DragonCode\Support\Facades\Filesystem\Directory;
 use Illuminate\Console\Command;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMap;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -50,7 +50,7 @@ class ModelsHelperCommand extends Command
     protected function cleanUp(): void
     {
         Directory::ensureDelete(
-            Config::shared()->models->helpers
+            app(ModelConfig::class)->helpers
         );
     }
 }

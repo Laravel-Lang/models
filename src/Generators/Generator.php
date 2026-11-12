@@ -8,7 +8,7 @@ use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Exceptions\UnknownModelPathException;
 use LaravelLang\Models\Services\ClassMap;
@@ -115,7 +115,7 @@ abstract class Generator
 
     protected function modelSuffix(): string
     {
-        return Config::shared()->models->suffix;
+        return app(ModelConfig::class)->suffix;
     }
 
     protected function template(): string

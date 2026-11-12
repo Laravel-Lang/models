@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Generators;
 
 use Illuminate\Support\Str;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 
 use function array_map;
 use function md5;
@@ -30,7 +30,7 @@ class HelperGenerator extends Generator
 
     protected function filename(): string
     {
-        return Config::shared()->models->helpers . '/_ide_helper_models_' . $this->getHash() . '.php';
+        return app(ModelConfig::class)->helpers . '/_ide_helper_models_' . $this->getHash() . '.php';
     }
 
     protected function getProperties(): array

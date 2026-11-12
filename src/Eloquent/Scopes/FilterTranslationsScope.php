@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Eloquent\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Locales\Facades\Locales;
 
 use function array_unique;
@@ -21,7 +21,7 @@ class FilterTranslationsScope
 
     protected function enabled(): bool
     {
-        return Config::shared()->models->filter->enabled;
+        return app(ModelConfig::class)->filter;
     }
 
     protected function locales(): array

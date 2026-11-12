@@ -6,7 +6,7 @@ namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Collection as DBCollection;
 use Illuminate\Database\Eloquent\Model;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Models\Eloquent\Translation;
 
@@ -56,6 +56,6 @@ class Relation
 
     protected static function modelName(Model $model): string
     {
-        return get_class($model) . Config::shared()->models->suffix;
+        return get_class($model) . app(ModelConfig::class)->suffix;
     }
 }

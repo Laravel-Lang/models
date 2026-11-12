@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 
 trait HasNames
 {
     public function translationModelName(): string
     {
-        return static::class . Config::shared()->models->suffix;
+        return static::class . app(ModelConfig::class)->suffix;
     }
 
     public function getTranslationTable(): string

@@ -6,7 +6,7 @@ namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
@@ -53,7 +53,7 @@ class ModelMakeCommand extends Command
         $this->generateModel($model, $columns);
         $this->generateMigration($model, $columns);
         $this->generateHelper($model);
-        
+
         return self::SUCCESS;
     }
 
@@ -105,7 +105,7 @@ class ModelMakeCommand extends Command
 
     protected function hasTranslation(string $model): bool
     {
-        return class_exists($model . Config::shared()->models->suffix);
+        return class_exists($model . app(ModelConfig::class)->suffix);
     }
 
     protected function columns(): array
