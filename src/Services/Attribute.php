@@ -6,12 +6,14 @@ namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use LaravelLang\Config\Services\AliasConfig;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 
+use function app;
 use function filled;
 
 /** @property EloquentModel|\LaravelLang\Models\HasTranslations $model */
@@ -19,8 +21,9 @@ class Attribute
 {
     public function __construct(
         protected EloquentModel $model,
-        protected ?string $column = null,
-        protected Locale|string|null $locale = null,
+        protected ?string $column,
+        protected Locale|string|null $locale,
+        protected AliasConfig $aliasConfig,
     ) {}
 
     public static function of(
@@ -28,7 +31,7 @@ class Attribute
         ?string $column = null,
         Locale|string|null $locale = null,
     ): static {
-        return new static($model, $column, $locale);
+        return new static($model, $column, $locale, app(AliasConfig::class));
     }
 
     public function validate(): static
@@ -134,11 +137,15 @@ class Attribute
 
     protected function currentLocale(): string
     {
-        return Locales::current();
+        return $this->aliasConfig->from(
+            Locales::current()
+        );
     }
 
     protected function fallbackLocale(): string
     {
-        return Locales::fallback();
+        return $this->aliasConfig->from(
+            Locales::fallback()
+        );
     }
 }

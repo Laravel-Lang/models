@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
-use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Exceptions\AttributeIsNotTranslatableException;
-use LaravelLang\Models\Exceptions\UnavailableLocaleException;
+use LaravelLang\NativeLocaleNames\LocaleData;
 
 class Validator
 {
@@ -30,7 +30,7 @@ class Validator
     public static function locale(Locale|LocaleData|string|null $locale): ?LocaleData
     {
         if ($locale && ! Locales::isInstalled($locale)) {
-            throw new UnavailableLocaleException($locale->code ?? null);
+            throw new UnknownLocaleException($locale);
         }
 
         return null;
