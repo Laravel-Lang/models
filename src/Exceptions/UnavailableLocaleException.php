@@ -9,6 +9,7 @@ use LaravelLang\Locales\Facades\Locales;
 
 use function sprintf;
 
+/** @deprecated */
 class UnavailableLocaleException extends Exception
 {
     public function __construct(?string $locale)
