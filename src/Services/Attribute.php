@@ -126,12 +126,17 @@ class Attribute
 
     protected function eventForget(): void
     {
-        TranslationHasBeenForgetEvent::dispatch($this->model, $this->alias());
+        TranslationHasBeenForgetEvent::dispatch(
+            $this->model,
+            $this->alias()
+        );
     }
 
     protected function eventForgetAll(): void
     {
-        AllTranslationsHasBeenForgetEvent::dispatch($this->model);
+        AllTranslationsHasBeenForgetEvent::dispatch(
+            $this->model
+        );
     }
 
     protected function locale(): ?string
