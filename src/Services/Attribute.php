@@ -19,6 +19,10 @@ use function filled;
 /** @property EloquentModel|\LaravelLang\Models\HasTranslations $model */
 class Attribute
 {
+    protected ?string $cachedLocale = null;
+
+    protected ?string $cachedAlias = null;
+
     public function __construct(
         protected EloquentModel $model,
         protected ?string $column,
@@ -114,7 +118,7 @@ class Attribute
         TranslationHasBeenSetEvent::dispatch(
             $this->model,
             $this->column,
-            $this->locale(),
+            $this->alias(),
             $this->get(),
             $value
         );
@@ -122,7 +126,7 @@ class Attribute
 
     protected function eventForget(): void
     {
-        TranslationHasBeenForgetEvent::dispatch($this->model, $this->locale());
+        TranslationHasBeenForgetEvent::dispatch($this->model, $this->alias());
     }
 
     protected function eventForgetAll(): void
@@ -132,7 +136,20 @@ class Attribute
 
     protected function locale(): ?string
     {
-        return Locales::info($this->locale)->code;
+        if (! $this->locale) {
+            return null;
+        }
+
+        return $this->cachedLocale ??= $this->aliasConfig->from($this->locale);
+    }
+
+    protected function alias(): ?string
+    {
+        if (! $this->locale) {
+            return null;
+        }
+
+        return $this->cachedAlias ??= $this->aliasConfig->to($this->locale);
     }
 
     protected function currentLocale(): string
