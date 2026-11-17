@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Locales\Facades\Locales;
 
+use function array_unique;
+
 class FilterTranslationsScope
 {
     public function __invoke(Builder $builder): void
@@ -26,6 +28,9 @@ class FilterTranslationsScope
 
     protected function locales(): array
     {
-        return Locales::protects()->all();
+        return array_unique([
+            Locales::fromAlias(Locales::current()),
+            Locales::fromAlias(Locales::fallback()),
+        ]);
     }
 }
