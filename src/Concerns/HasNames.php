@@ -13,6 +13,7 @@ trait HasNames
         return static::class . app(ModelConfig::class)->suffix;
     }
 
+    // TODO: заменить на qualifiedColumn
     public function getTranslationTable(): string
     {
         return (new ($this->translationModelName())())->getTable();

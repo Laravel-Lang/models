@@ -15,18 +15,32 @@ trait Scopes
         $query->has('translations');
     }
 
-    public function scopeOrWhereTranslation(Builder $query, string $translationField, $value, ?string $locale = null): void
-    {
+    public function scopeOrWhereTranslation(
+        Builder $query,
+        string $translationField,
+        $value,
+        ?string $locale = null,
+    ): void {
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'orWhereHas');
     }
 
-    public function scopeOrWhereTranslationLike(Builder $query, string $translationField, $value, ?string $locale = null): void
-    {
+    public function scopeOrWhereTranslationLike(
+        Builder $query,
+        string $translationField,
+        $value,
+        ?string $locale = null,
+    ): void {
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'orWhereHas', 'LIKE');
     }
 
-    public function scopeWhereTranslation(Builder $query, string $translationField, $value, ?string $locale = null, string $method = 'whereHas', string $operator = '='): void
-    {
+    public function scopeWhereTranslation(
+        Builder $query,
+        string $translationField,
+        $value,
+        ?string $locale = null,
+        string $method = 'whereHas',
+        string $operator = '=',
+    ): void {
         $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
             $query->where($this->getTranslationTable() . '.' . $translationField, $operator, $value);
 
@@ -36,8 +50,12 @@ trait Scopes
         });
     }
 
-    public function scopeWhereTranslationLike(Builder $query, string $translationField, $value, ?string $locale = null): void
-    {
+    public function scopeWhereTranslationLike(
+        Builder $query,
+        string $translationField,
+        $value,
+        ?string $locale = null,
+    ): void {
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'whereHas', 'LIKE');
     }
 
@@ -47,9 +65,9 @@ trait Scopes
         string $sortMethod = 'asc',
         ?string $locale = null,
     ): void {
-        $table = $this->getTable();
+        $table            = $this->getTable();
         $translationTable = $this->getTranslationTable();
-        $locale ??= Locales::getCurrent()->locale->value;
+        $locale           ??= Locales::current();
 
         $query
             ->orderBy(

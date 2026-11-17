@@ -7,7 +7,6 @@ namespace LaravelLang\Models\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use LaravelLang\LocaleList\Locale;
-use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
@@ -21,13 +20,13 @@ class Attribute
     public function __construct(
         protected EloquentModel $model,
         protected ?string $column = null,
-        protected Locale|LocaleData|string|null $locale = null
+        protected Locale|string|null $locale = null,
     ) {}
 
     public static function of(
         EloquentModel $model,
         ?string $column = null,
-        Locale|LocaleData|string|null $locale = null
+        Locale|string|null $locale = null,
     ): static {
         return new static($model, $column, $locale);
     }
@@ -84,7 +83,7 @@ class Attribute
         $locale = $this->locale();
 
         $this->model->translation($locale)->delete();
-        $this->model->translations->forget($locale->locale->value);
+        $this->model->translations->forget($locale);
 
         $this->eventForget();
 
@@ -112,7 +111,7 @@ class Attribute
         TranslationHasBeenSetEvent::dispatch(
             $this->model,
             $this->column,
-            $this->locale()?->locale,
+            $this->locale(),
             $this->get(),
             $value
         );
@@ -120,7 +119,7 @@ class Attribute
 
     protected function eventForget(): void
     {
-        TranslationHasBeenForgetEvent::dispatch($this->model, $this->locale()->locale);
+        TranslationHasBeenForgetEvent::dispatch($this->model, $this->locale());
     }
 
     protected function eventForgetAll(): void
@@ -128,18 +127,18 @@ class Attribute
         AllTranslationsHasBeenForgetEvent::dispatch($this->model);
     }
 
-    protected function locale(): ?LocaleData
+    protected function locale(): ?string
     {
-        return $this->locale ? Locales::get($this->locale) : null;
+        return Locales::info($this->locale)->code;
     }
 
-    protected function currentLocale(): LocaleData
+    protected function currentLocale(): string
     {
-        return Locales::getCurrent();
+        return Locales::current();
     }
 
-    protected function fallbackLocale(): LocaleData
+    protected function fallbackLocale(): string
     {
-        return Locales::getFallback();
+        return Locales::fallback();
     }
 }

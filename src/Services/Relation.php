@@ -7,7 +7,6 @@ namespace LaravelLang\Models\Services;
 use Illuminate\Database\Eloquent\Collection as DBCollection;
 use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Config\Services\ModelConfig;
-use LaravelLang\Locales\Data\LocaleData;
 use LaravelLang\Models\Eloquent\Translation;
 
 use function blank;
@@ -26,9 +25,9 @@ class Relation
         return $model;
     }
 
-    public static function initializeLocale(Model $model, LocaleData $locale): Translation
+    public static function initializeLocale(Model $model, string $locale): Translation
     {
-        if ($item = $model->translationsRaw()->where('locale', $locale->locale->value)->first()) {
+        if ($item = $model->translationsRaw()->where('locale', $locale)->first()) {
             return static::setAttributes($model, $item, $locale);
         }
 
@@ -47,11 +46,11 @@ class Relation
         $model->setRelation('translations', new DBCollection);
     }
 
-    protected static function setAttributes(Model $model, Translation $translation, LocaleData $locale): Translation
+    protected static function setAttributes(Model $model, Translation $translation, string $locale): Translation
     {
         return $translation
             ->setAttribute('item_id', $model->getKey())
-            ->setAttribute('locale', $locale->locale->value);
+            ->setAttribute('locale', $locale);
     }
 
     protected static function modelName(Model $model): string

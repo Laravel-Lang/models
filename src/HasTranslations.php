@@ -140,14 +140,14 @@ trait HasTranslations
         });
     }
 
-    public function translation(?LocaleData $locale): Translation
+    public function translation(?string $locale): Translation
     {
-        $locale ??= Locales::getCurrent();
+        $locale ??= Locales::current();
 
-        if (! $this->translations->has($locale->locale->value)) {
-            $this->translations->put($locale->locale->value, Relation::initializeLocale($this, $locale));
+        if (! $this->translations->has($locale)) {
+            $this->translations->put($locale, Relation::initializeLocale($this, $locale));
         }
 
-        return $this->translations->get($locale->locale->value);
+        return $this->translations->get($locale);
     }
 }

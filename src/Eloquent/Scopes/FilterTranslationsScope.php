@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Locales\Facades\Locales;
 
-use function array_unique;
-
 class FilterTranslationsScope
 {
     public function __invoke(Builder $builder): void
     {
-        if ($this->enabled()) {
-            $builder->whereIn('locale', $this->locales());
+        if (! $this->enabled()) {
+            return;
         }
+
+        $builder->whereIn('locale', $this->locales());
     }
 
     protected function enabled(): bool
@@ -26,9 +26,6 @@ class FilterTranslationsScope
 
     protected function locales(): array
     {
-        return array_unique([
-            Locales::getCurrent()->locale->value,
-            Locales::getFallback()->locale->value,
-        ]);
+        return Locales::protects()->all();
     }
 }
