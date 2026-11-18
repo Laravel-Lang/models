@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-use LaravelLang\Config\Services\AliasConfig;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 
-use function app;
 use function filled;
 
-/** @property EloquentModel|\LaravelLang\Models\HasTranslations $model */
+/** @property Model|\LaravelLang\Models\HasTranslations $model */
 class Attribute
 {
     protected ?string $cachedLocale = null;
@@ -24,18 +21,14 @@ class Attribute
     protected ?string $cachedAlias = null;
 
     public function __construct(
-        protected EloquentModel $model,
+        protected Model $model,
         protected ?string $column,
         protected Locale|string|null $locale,
-        protected AliasConfig $aliasConfig,
     ) {}
 
-    public static function of(
-        EloquentModel $model,
-        ?string $column = null,
-        Locale|string|null $locale = null,
-    ): static {
-        return new static($model, $column, $locale, app(AliasConfig::class));
+    public static function of(Model $model, ?string $column = null, Locale|string|null $locale = null): static
+    {
+        return new static($model, $column, $locale);
     }
 
     public function validate(): static
@@ -145,7 +138,7 @@ class Attribute
             return null;
         }
 
-        return $this->cachedLocale ??= $this->aliasConfig->from($this->locale);
+        return $this->cachedLocale ??= Locales::fromAlias($this->locale);
     }
 
     protected function alias(): ?string
@@ -154,20 +147,16 @@ class Attribute
             return null;
         }
 
-        return $this->cachedAlias ??= $this->aliasConfig->to($this->locale);
+        return $this->cachedAlias ??= Locales::toAlias($this->locale);
     }
 
     protected function currentLocale(): string
     {
-        return $this->aliasConfig->from(
-            Locales::current()
-        );
+        return Locales::current(false);
     }
 
     protected function fallbackLocale(): string
     {
-        return $this->aliasConfig->from(
-            Locales::fallback()
-        );
+        return Locales::fallback(false);
     }
 }

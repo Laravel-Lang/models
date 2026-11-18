@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use LaravelLang\Models\Casts\TrimCast;
 use LaravelLang\Models\Eloquent\Translation;
 
+#[Fillable([
+    'locale',
+{{fillable}}
+])]
 class {{model}}{{suffix}} extends Translation
 {
-    protected $fillable = [
-        'locale',
-{{fillable}}
-    ];
-
-    protected $casts = [
+    protected function casts(): array
+    {
+        return [
 {{casts}}
-    ];
+        ];
+    }
 }

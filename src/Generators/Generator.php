@@ -9,8 +9,8 @@ use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Exceptions\UnknownModelPathException;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Exceptions\UnknownModelPathException;
 use LaravelLang\Models\Services\ClassMap;
 
 use function collect;

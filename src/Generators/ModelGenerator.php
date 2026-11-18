@@ -15,13 +15,13 @@ class ModelGenerator extends Generator
 {
     protected string $stub = __DIR__ . '/../../stubs/model.stub';
 
-    protected string $fillables = '\'%s\',';
+    protected string $fillable = '\'%s\',';
 
-    protected int $fillablePad = 8;
+    protected int $fillablePad = 4;
 
     protected string $casts = '\'%s\' => TrimCast::class,';
 
-    protected int $castsPad = 8;
+    protected int $castsPad = 12;
 
     protected function finish(string $path): void
     {
@@ -49,7 +49,7 @@ class ModelGenerator extends Generator
     protected function getFillable(): array
     {
         return array_map(function (string $attribute) {
-            return $this->pad(sprintf($this->fillables, $attribute), $this->fillablePad);
+            return $this->pad(sprintf($this->fillable, $attribute), $this->fillablePad);
         }, $this->columns);
     }
 
@@ -68,7 +68,7 @@ class ModelGenerator extends Generator
     protected function pad(string $value, int $length): string
     {
         return Str::of($value)
-            ->padLeft(Str::length($value) + $length, ' ')
+            ->padLeft(Str::length($value) + $length)
             ->toString();
     }
 }

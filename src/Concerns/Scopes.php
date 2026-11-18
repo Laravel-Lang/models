@@ -42,10 +42,12 @@ trait Scopes
         string $operator = '=',
     ): void {
         $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
-            $query->where($this->getTranslationTable() . '.' . $translationField, $operator, $value);
+            $query->where($this->translationQualifyColumn($translationField), $operator, $value);
 
             if ($locale) {
-                $query->where($this->getTranslationTable() . '.locale', $operator, $locale);
+                $normalized = Locales::fromAlias($locale);
+
+                $query->where($this->translationQualifyColumn('locale'), $operator, $normalized);
             }
         });
     }
@@ -62,20 +64,20 @@ trait Scopes
     public function scopeOrderByTranslation(
         Builder $query,
         string $translationField,
-        string $sortMethod = 'asc',
+        \SortDirection|string $sortMethod = \SortDirection::Ascending,
         ?string $locale = null,
     ): void {
-        $table            = $this->getTable();
-        $translationTable = $this->getTranslationTable();
-        $locale           ??= Locales::current(false);
+        $normalized = $locale
+            ? Locales::fromAlias($locale)
+            : Locales::current(false);
 
         $query
             ->orderBy(
-                (new ($this->translationModelName())())
+                (new ($this->translationModel())())
                     ->query()
                     ->select($translationField)
-                    ->where($translationTable . '.locale', $locale)
-                    ->whereColumn($translationTable . '.item_id', $table . '.id'),
+                    ->where($this->translationQualifyColumn('locale'), $normalized)
+                    ->whereColumn($this->translationQualifyColumn('item_id'), $this->qualifyColumn('id')),
                 $sortMethod
             );
     }

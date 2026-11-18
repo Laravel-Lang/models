@@ -8,14 +8,16 @@ use LaravelLang\Config\Services\ModelConfig;
 
 trait HasNames
 {
-    public function translationModelName(): string
+    public function translationModel(): string
     {
         return static::class . app(ModelConfig::class)->suffix;
     }
 
-    // TODO: заменить на qualifiedColumn
-    public function getTranslationTable(): string
+    public function translationQualifyColumn(string $column): string
     {
-        return (new ($this->translationModelName())())->getTable();
+        /** @var \Illuminate\Database\Eloquent\Model $class */
+        $class = $this->translationModel();
+
+        return (new $class)->qualifyColumn($column);
     }
 }

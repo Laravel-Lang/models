@@ -12,12 +12,9 @@ use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\Attribute;
-use LaravelLang\Models\Services\Registry;
 use LaravelLang\Models\Services\Relation;
-
 use LaravelLang\NativeLocaleNames\LocaleData;
 
-use function app;
 use function in_array;
 use function is_iterable;
 
@@ -40,7 +37,7 @@ trait HasTranslations
 
     public function translationsRaw(): HasMany
     {
-        return $this->hasMany($this->translationModelName(), 'item_id');
+        return $this->hasMany($this->translationModel(), 'item_id');
     }
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
@@ -136,9 +133,10 @@ trait HasTranslations
 
     public function translatable(): array
     {
-        return app(Registry::class)->get(__METHOD__, function () {
-            return (new ($this->translationModelName())())->translatable();
-        });
+        /** @var Translation $class */
+        $class = $this->translationModel();
+
+        return (new $class)->translatable();
     }
 
     public function translation(?string $locale): Translation

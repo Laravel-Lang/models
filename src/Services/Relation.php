@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
-use Illuminate\Database\Eloquent\Collection as DBCollection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Config\Services\ModelConfig;
 use LaravelLang\Models\Eloquent\Translation;
@@ -17,7 +17,7 @@ class Relation
     public static function initialize(Model $model): Model
     {
         if (blank($model->translations)) {
-            $translations = $model->load('translations')->translations ?? new DBCollection;
+            $translations = $model->load('translations')->translations ?? new Collection;
 
             $model->setRelation('translations', $translations);
         }
@@ -43,7 +43,7 @@ class Relation
 
     public static function clear(Model $model): void
     {
-        $model->setRelation('translations', new DBCollection);
+        $model->setRelation('translations', new Collection);
     }
 
     protected static function setAttributes(Model $model, Translation $translation, string $locale): Translation

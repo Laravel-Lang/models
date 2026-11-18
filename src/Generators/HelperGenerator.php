@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use LaravelLang\Config\Services\ModelConfig;
 
 use function array_map;
-use function md5;
+use function hash;
 use function sprintf;
 
 class HelperGenerator extends Generator
@@ -40,7 +40,7 @@ class HelperGenerator extends Generator
 
     protected function getHash(): string
     {
-        return md5($this->model);
+        return hash('xxh128', $this->model);
     }
 
     protected function getTranslatable(): array

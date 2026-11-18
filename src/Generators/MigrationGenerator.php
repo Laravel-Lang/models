@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
+use Illuminate\Support\Carbon;
+
 use function array_map;
 use function database_path;
-use function date;
 use function sprintf;
 
 class MigrationGenerator extends Generator
@@ -26,7 +27,7 @@ class MigrationGenerator extends Generator
 
     protected function filename(): string
     {
-        return database_path(sprintf('migrations/%s_create_%s_table.php', date('Y_m_d_His'), $this->getTable()));
+        return database_path(sprintf('migrations/%s_create_%s_table.php', $this->now(), $this->getTable()));
     }
 
     protected function getTable(): string
@@ -42,5 +43,10 @@ class MigrationGenerator extends Generator
     protected function getColumns(): array
     {
         return array_map(fn (string $attribute) => sprintf($this->column, $attribute), $this->columns);
+    }
+
+    protected function now(): string
+    {
+        return Carbon::now()->format('Y_m_d_His');
     }
 }
