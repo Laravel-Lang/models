@@ -67,7 +67,7 @@ trait Scopes
     ): void {
         $table            = $this->getTable();
         $translationTable = $this->getTranslationTable();
-        $locale           ??= Locales::fromAlias(Locales::current());
+        $locale           ??= Locales::current(false);
 
         $query
             ->orderBy(

@@ -29,8 +29,8 @@ class FilterTranslationsScope
     protected function locales(): array
     {
         return array_unique([
-            Locales::fromAlias(Locales::current()),
-            Locales::fromAlias(Locales::fallback()),
+            Locales::current(false),
+            Locales::fallback(false),
         ]);
     }
 }

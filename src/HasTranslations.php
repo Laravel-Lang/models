@@ -143,12 +143,14 @@ trait HasTranslations
 
     public function translation(?string $locale): Translation
     {
-        $locale ??= Locales::fromAlias();
+        $normalized = $locale
+            ? Locales::fromAlias($locale)
+            : Locales::current(false);
 
-        if (! $this->translations->has($locale)) {
-            $this->translations->put($locale, Relation::initializeLocale($this, $locale));
+        if (! $this->translations->has($normalized)) {
+            $this->translations->put($normalized, Relation::initializeLocale($this, $normalized));
         }
 
-        return $this->translations->get($locale);
+        return $this->translations->get($normalized);
     }
 }
