@@ -91,7 +91,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelLang\\Models\\LaravelLangModelsServiceProvider"
+                "LaravelLang\\Models\\LangModelsServiceProvider"
             ]
         }
     },

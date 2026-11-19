@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use LaravelLang\Models\Console\ModelMakeCommand;
 use LaravelLang\Models\Console\ModelsHelperCommand;
 
-class LaravelLangModelsServiceProvider extends BaseServiceProvider
+class LangModelsServiceProvider extends BaseServiceProvider
 {
     public function boot(): void
     {
