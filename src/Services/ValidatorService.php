@@ -11,7 +11,7 @@ use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
-class Validator
+class ValidatorService
 {
     /**
      * @param  Model|\LaravelLang\Models\HasTranslations  $model

@@ -14,7 +14,7 @@ use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
 use function filled;
 
 /** @property Model|\LaravelLang\Models\HasTranslations $model */
-class Attribute
+class AttributeService
 {
     protected ?string $cachedLocale = null;
 
@@ -41,14 +41,14 @@ class Attribute
 
     public function validateColumn(): static
     {
-        Validator::column($this->model, $this->column);
+        ValidatorService::column($this->model, $this->column);
 
         return $this;
     }
 
     public function validateLocale(): static
     {
-        Validator::locale($this->locale);
+        ValidatorService::locale($this->locale);
 
         return $this;
     }
@@ -94,7 +94,7 @@ class Attribute
     {
         $this->model->translationsRaw()->delete();
 
-        Relation::clear($this->model);
+        RelationService::clear($this->model);
 
         $this->eventForgetAll();
 
@@ -103,7 +103,7 @@ class Attribute
 
     protected function initRelation(): void
     {
-        Relation::initialize($this->model);
+        RelationService::initialize($this->model);
     }
 
     protected function eventSetLocale(mixed $value): void

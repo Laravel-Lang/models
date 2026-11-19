@@ -11,8 +11,8 @@ use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Services\Attribute;
-use LaravelLang\Models\Services\Relation;
+use LaravelLang\Models\Services\AttributeService;
+use LaravelLang\Models\Services\RelationService;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function in_array;
@@ -42,14 +42,14 @@ trait HasTranslations
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
     {
-        return Attribute::of($this, $column, $locale)
+        return AttributeService::of($this, $column, $locale)
             ->validate()
             ->has();
     }
 
     public function setTranslation(string $column, mixed $value, Locale|LocaleData|string|null $locale = null): Model
     {
-        return Attribute::of($this, $column, $locale)
+        return AttributeService::of($this, $column, $locale)
             ->validate()
             ->set($value);
     }
@@ -65,7 +65,7 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|LocaleData|string|null $locale = null): mixed
     {
-        return Attribute::of($this, $column, $locale)
+        return AttributeService::of($this, $column, $locale)
             ->validate()
             ->get();
     }
@@ -77,14 +77,14 @@ trait HasTranslations
 
     public function forgetTranslation(Locale|LocaleData|string $locale): Model
     {
-        return Attribute::of($this, locale: $locale)
+        return AttributeService::of($this, locale: $locale)
             ->validateLocale()
             ->forget();
     }
 
     public function forgetAllTranslations(): Model
     {
-        return Attribute::of($this)->forgetAll();
+        return AttributeService::of($this)->forgetAll();
     }
 
     public function getAttribute($key): mixed
@@ -146,7 +146,7 @@ trait HasTranslations
             : Locales::current(false);
 
         if (! $this->translations->has($normalized)) {
-            $this->translations->put($normalized, Relation::initializeLocale($this, $normalized));
+            $this->translations->put($normalized, RelationService::initializeLocale($this, $normalized));
         }
 
         return $this->translations->get($normalized);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Eloquent\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Locales\Facades\Locales;
 
 class FilterTranslationsScope
@@ -21,7 +21,7 @@ class FilterTranslationsScope
 
     protected function enabled(): bool
     {
-        return app(ModelConfig::class)->filter;
+        return app(ModelLangConfig::class)->filter;
     }
 
     protected function locales(): array

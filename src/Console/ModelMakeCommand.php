@@ -6,11 +6,11 @@ namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
-use LaravelLang\Models\Services\ClassMap;
+use LaravelLang\Models\Services\ClassMapService;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 use function array_filter;
@@ -105,7 +105,7 @@ class ModelMakeCommand extends Command
 
     protected function hasTranslation(string $model): bool
     {
-        return class_exists($model . app(ModelConfig::class)->suffix);
+        return class_exists($model . app(ModelLangConfig::class)->suffix);
     }
 
     protected function columns(): array
@@ -123,7 +123,7 @@ class ModelMakeCommand extends Command
 
     protected function models(): array
     {
-        return ClassMap::available();
+        return ClassMapService::available();
     }
 
     protected function askColumns(array $columns = []): array

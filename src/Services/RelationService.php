@@ -6,13 +6,13 @@ namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Eloquent\Translation;
 
 use function blank;
 use function get_class;
 
-class Relation
+class RelationService
 {
     public static function initialize(Model $model): Model
     {
@@ -55,6 +55,6 @@ class Relation
 
     protected static function modelName(Model $model): string
     {
-        return get_class($model) . app(ModelConfig::class)->suffix;
+        return get_class($model) . app(ModelLangConfig::class)->suffix;
     }
 }

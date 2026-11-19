@@ -8,14 +8,14 @@ use Composer\ClassMapGenerator\ClassMapGenerator;
 use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\HasTranslations;
 
 use function collect;
 use function ltrim;
 
-class ClassMap
+class ClassMapService
 {
     public static function translatable(): array
     {
@@ -60,7 +60,7 @@ class ClassMap
 
     protected static function modelsPath(): array
     {
-        return Arr::wrap(app(ModelConfig::class)->directories);
+        return Arr::wrap(app(ModelLangConfig::class)->directories);
     }
 
     protected static function isTranslatable(string $class): bool

@@ -6,9 +6,9 @@ namespace LaravelLang\Models\Console;
 
 use DragonCode\Support\Facades\Filesystem\Directory;
 use Illuminate\Console\Command;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Generators\HelperGenerator;
-use LaravelLang\Models\Services\ClassMap;
+use LaravelLang\Models\Services\ClassMapService;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 use function ltrim;
@@ -45,13 +45,13 @@ class ModelsHelperCommand extends Command
             return [ltrim($model, '\\')];
         }
 
-        return ClassMap::translatable();
+        return ClassMapService::translatable();
     }
 
     protected function cleanUp(): void
     {
         Directory::ensureDelete(
-            app(ModelConfig::class)->helpers
+            app(ModelLangConfig::class)->helpers
         );
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use LaravelLang\Models\Casts\TrimCast;
+use LaravelLang\Models\Casts\StringTrimCast;
 use LaravelLang\Models\Eloquent\Translation;
 
 #[Fillable([

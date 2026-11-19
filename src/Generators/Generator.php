@@ -8,10 +8,10 @@ use DragonCode\Support\Facades\Filesystem\File;
 use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
-use LaravelLang\Config\Services\ModelConfig;
+use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Exceptions\UnknownModelPathException;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Services\ClassMap;
+use LaravelLang\Models\Services\ClassMapService;
 
 use function collect;
 use function file_get_contents;
@@ -115,7 +115,7 @@ abstract class Generator
 
     protected function modelSuffix(): string
     {
-        return app(ModelConfig::class)->suffix;
+        return app(ModelLangConfig::class)->suffix;
     }
 
     protected function template(): string
@@ -125,7 +125,7 @@ abstract class Generator
 
     protected function path(): string
     {
-        if ($path = ClassMap::path($this->model)) {
+        if ($path = ClassMapService::path($this->model)) {
             return $path;
         }
 
