@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
-use DragonCode\Support\Facades\Filesystem\Path;
 use Illuminate\Support\Str;
 
 use function array_map;
 use function dirname;
+use function pathinfo;
 use function sprintf;
 
 class ModelGenerator extends Generator
@@ -62,7 +62,7 @@ class ModelGenerator extends Generator
 
     protected function extension(string $path): string
     {
-        return Path::extension($path);
+        return pathinfo($path, PATHINFO_EXTENSION);
     }
 
     protected function pad(string $value, int $length): string

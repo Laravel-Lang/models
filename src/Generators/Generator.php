@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
-use DragonCode\Support\Facades\Filesystem\File;
-use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Exceptions\UnknownModelPathException;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\ClassMapService;
 
+use LaravelLang\Models\Services\TemplateService;
+
+use function app;
 use function collect;
 use function file_get_contents;
 use function implode;
@@ -32,11 +34,12 @@ abstract class Generator
     public function __construct(
         protected string $model,
         protected array $columns,
+        protected Filesystem $filesystem,
     ) {}
 
     public static function of(string $model, array $columns = []): static
     {
-        return new static($model, $columns);
+        return new static($model, $columns, app(Filesystem::class));
     }
 
     public function generate(): void
@@ -49,9 +52,11 @@ abstract class Generator
 
     protected function make(): string
     {
-        return Str::of($this->template())
-            ->replaceFormat($this->resolveData(), '{{%s}}')
-            ->toString();
+        return TemplateService::replaceFormat(
+            template: $this->template(),
+            data    : $this->resolveData(),
+            format  : '{{%s}}'
+        );
     }
 
     protected function finish(string $path): void {}
@@ -75,7 +80,7 @@ abstract class Generator
 
     protected function store(string $path, string $content): void
     {
-        File::store($path, $content);
+        $this->filesystem->store($path, $content);
     }
 
     protected function getFqn(): string

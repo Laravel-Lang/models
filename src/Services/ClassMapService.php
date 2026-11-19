@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Services;
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
-use DragonCode\Support\Facades\Instances\Instance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use LaravelLang\Config\Services\ModelLangConfig;
@@ -65,12 +64,12 @@ class ClassMapService
 
     protected static function isTranslatable(string $class): bool
     {
-        return Instance::of($class, HasTranslations::class);
+        return ClassUsesService::usesTrait($class, HasTranslations::class);
     }
 
     protected static function canTranslatable(string $class): bool
     {
-        return Instance::of($class, Model::class)
-            && ! Instance::of($class, Translation::class);
+        return ClassUsesService::usesClass($class, Model::class)
+            && ! ClassUsesService::usesClass($class, Translation::class);
     }
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Console;
 
-use DragonCode\Support\Facades\Filesystem\Directory;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMapService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,10 +20,9 @@ class ModelsHelperCommand extends Command
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
-    public function handle(): void
+    public function handle(Filesystem $filesystem, ModelLangConfig $config): void
     {
-        
-        $this->cleanUp();
+        $this->cleanUp($filesystem, $config);
         $this->process();
     }
 
@@ -48,10 +47,10 @@ class ModelsHelperCommand extends Command
         return ClassMapService::translatable();
     }
 
-    protected function cleanUp(): void
+    protected function cleanUp(Filesystem $filesystem, ModelLangConfig $config): void
     {
-        Directory::ensureDelete(
-            app(ModelLangConfig::class)->helpers
+        $filesystem->ensureDelete(
+            $config->helpers
         );
     }
 }
