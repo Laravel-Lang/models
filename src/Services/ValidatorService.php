@@ -15,10 +15,8 @@ class ValidatorService
 {
     /**
      * @param  Model|\LaravelLang\Models\HasTranslations  $model
-     * @param  string  $column
      *
      * @throws AttributeIsNotTranslatableException
-     * @return string
      */
     public static function column(Model $model, string $column): string
     {

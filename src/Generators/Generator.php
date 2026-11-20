@@ -11,7 +11,6 @@ use LaravelLang\Exceptions\UnknownModelPathException;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\ClassMapService;
-
 use LaravelLang\Models\Services\TemplateService;
 
 use function app;

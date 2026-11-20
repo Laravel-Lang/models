@@ -31,7 +31,7 @@ class ModelGenerator extends Generator
         parent::__construct($model, $columns, $filesystem);
 
         if (! class_exists(Fillable::class)) {
-            $this->stub = __DIR__ . '/../../stubs/model-legacy.stub';
+            $this->stub        = __DIR__ . '/../../stubs/model-legacy.stub';
             $this->fillablePad = 8;
         }
     }

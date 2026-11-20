@@ -25,8 +25,8 @@ use function is_iterable;
 trait HasTranslations
 {
     use Concerns\HasNames;
-    use Concerns\ModelLoader;
     use Concerns\HasScopes;
+    use Concerns\ModelLoader;
 
     public function translations(): HasMany
     {
