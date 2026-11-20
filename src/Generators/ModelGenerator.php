@@ -22,7 +22,7 @@ class ModelGenerator extends Generator
 
     protected int $fillablePad = 4;
 
-    protected string $casts = '\'%s\' => StringTrimCast::class,';
+    protected string $casts = '\'%s\' => TrimStringCast::class,';
 
     protected int $castsPad = 12;
 

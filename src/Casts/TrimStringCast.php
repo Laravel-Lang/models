@@ -12,7 +12,7 @@ use function is_null;
 use function is_numeric;
 use function trim;
 
-final class StringTrimCast implements CastsAttributes
+final class TrimStringCast implements CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): bool|int|float|null|string
     {

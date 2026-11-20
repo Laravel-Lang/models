@@ -26,7 +26,7 @@ trait HasTranslations
 {
     use Concerns\HasNames;
     use Concerns\ModelLoader;
-    use Concerns\Scopes;
+    use Concerns\HasScopes;
 
     public function translations(): HasMany
     {

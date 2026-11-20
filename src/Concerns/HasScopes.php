@@ -9,7 +9,7 @@ use LaravelLang\Locales\Facades\Locales;
 use SortDirection;
 
 /** @mixin \LaravelLang\Models\Concerns\HasNames */
-trait Scopes
+trait HasScopes
 {
     public function scopeTranslated(Builder $query): void
     {
