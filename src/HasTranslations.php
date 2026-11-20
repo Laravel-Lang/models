@@ -46,14 +46,14 @@ trait HasTranslations
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
     {
-        return AttributeService::of($this, $column, $locale)
+        return (new AttributeService($this, $column, $locale))
             ->validate()
             ->has();
     }
 
     public function setTranslation(string $column, mixed $value, Locale|LocaleData|string|null $locale = null): Model
     {
-        return AttributeService::of($this, $column, $locale)
+        return (new AttributeService($this, $column, $locale))
             ->validate()
             ->set($value);
     }
@@ -69,7 +69,7 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|LocaleData|string|null $locale = null): mixed
     {
-        return AttributeService::of($this, $column, $locale)
+        return (new AttributeService($this, $column, $locale))
             ->validate()
             ->get();
     }
@@ -81,14 +81,14 @@ trait HasTranslations
 
     public function forgetTranslation(Locale|LocaleData|string $locale): Model
     {
-        return AttributeService::of($this, locale: $locale)
+        return (new AttributeService($this, locale: $locale))
             ->validateLocale()
             ->forget();
     }
 
     public function forgetAllTranslations(): Model
     {
-        return AttributeService::of($this)->forgetAll();
+        return (new AttributeService($this))->forgetAll();
     }
 
     public function getAttribute($key): mixed

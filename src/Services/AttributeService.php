@@ -24,17 +24,9 @@ class AttributeService
 
     public function __construct(
         protected Model $model,
-        protected ?string $column,
-        protected Locale|LocaleData|string|null $locale,
+        protected ?string $column = null,
+        protected Locale|LocaleData|string|null $locale = null,
     ) {}
-
-    public static function of(
-        Model $model,
-        ?string $column = null,
-        Locale|LocaleData|string|null $locale = null,
-    ): static {
-        return new static($model, $column, $locale);
-    }
 
     public function validate(): static
     {
