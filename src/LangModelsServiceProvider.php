@@ -16,10 +16,6 @@ class LangModelsServiceProvider extends BaseServiceProvider
             return;
         }
 
-        if (! $this->app->runningUnitTests()) {
-            return;
-        }
-
         $this->commands([
             ModelsHelperCommand::class,
             ModelMakeCommand::class,

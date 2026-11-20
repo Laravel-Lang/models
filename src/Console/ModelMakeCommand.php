@@ -29,7 +29,7 @@ class ModelMakeCommand extends Command
 
     protected $description = 'Creates a model for storing translations';
 
-    protected array $columns = ['locale', 'title', 'description'];
+    protected array $columns = ['title', 'description'];
 
     public function handle(): int
     {

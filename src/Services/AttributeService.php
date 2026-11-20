@@ -10,6 +10,7 @@ use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
+use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
 
@@ -23,10 +24,10 @@ class AttributeService
     public function __construct(
         protected Model $model,
         protected ?string $column,
-        protected Locale|string|null $locale,
+        protected Locale|LocaleData|string|null $locale,
     ) {}
 
-    public static function of(Model $model, ?string $column = null, Locale|string|null $locale = null): static
+    public static function of(Model $model, ?string $column = null, Locale|LocaleData|string|null $locale = null): static
     {
         return new static($model, $column, $locale);
     }

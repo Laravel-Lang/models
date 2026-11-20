@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Support\Str;
+use LaravelLang\Filesystem\Filesystem;
 
 use function array_map;
+use function class_exists;
 use function dirname;
 use function pathinfo;
 use function sprintf;
@@ -19,9 +22,19 @@ class ModelGenerator extends Generator
 
     protected int $fillablePad = 4;
 
-    protected string $casts = '\'%s\' => TrimCast::class,';
+    protected string $casts = '\'%s\' => StringTrimCast::class,';
 
     protected int $castsPad = 12;
+
+    public function __construct(string $model, array $columns, Filesystem $filesystem)
+    {
+        parent::__construct($model, $columns, $filesystem);
+
+        if (! class_exists(Fillable::class)) {
+            $this->stub = __DIR__ . '/../../stubs/model-legacy.stub';
+            $this->fillablePad = 8;
+        }
+    }
 
     protected function finish(string $path): void
     {
