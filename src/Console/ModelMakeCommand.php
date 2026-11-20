@@ -11,7 +11,6 @@ use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
 use LaravelLang\Models\Services\ClassMapService;
-use Symfony\Component\Console\Attribute\AsCommand;
 
 use function array_filter;
 use function array_merge;
@@ -22,8 +21,7 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
-#[AsCommand(name: 'make:model-translation')]
-class ModelMakeCommand extends Command
+final class ModelMakeCommand extends Command
 {
     protected $signature = 'make:model-translation {model?} {--columns=*}';
 
@@ -31,7 +29,7 @@ class ModelMakeCommand extends Command
 
     protected array $columns = ['title', 'description'];
 
-    public function handle(): int
+    public function __invoke(): int
     {
         $model = $this->model();
 

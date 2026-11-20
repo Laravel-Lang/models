@@ -9,18 +9,16 @@ use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMapService;
-use Symfony\Component\Console\Attribute\AsCommand;
 
 use function ltrim;
 
-#[AsCommand(name: 'lang:models-helper')]
-class ModelsHelperCommand extends Command
+final class ModelsHelperCommand extends Command
 {
     protected $signature = 'lang:models-helper {model?}';
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
-    public function handle(Filesystem $filesystem, ModelLangConfig $config): void
+    public function __invoke(Filesystem $filesystem, ModelLangConfig $config): void
     {
         $this->cleanUp($filesystem, $config);
         $this->process();

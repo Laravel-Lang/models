@@ -7,7 +7,7 @@ namespace LaravelLang\Models\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class TranslationHasBeenForgetEvent
+final readonly class TranslationHasBeenForgetEvent
 {
     use Dispatchable;
 

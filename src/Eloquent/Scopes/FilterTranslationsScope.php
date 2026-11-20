@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Locales\Facades\Locales;
 
-class FilterTranslationsScope
+final class FilterTranslationsScope
 {
     public function __invoke(Builder $builder): void
     {

@@ -7,11 +7,11 @@ namespace LaravelLang\Models\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class AllTranslationsHasBeenForgetEvent
+final readonly class AllTranslationsHasBeenForgetEvent
 {
     use Dispatchable;
 
     public function __construct(
-        public Model $model
+        public Model $model,
     ) {}
 }
