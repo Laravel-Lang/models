@@ -14,7 +14,7 @@ trait ModelLoader
 {
     public static function bootModelLoader(): void
     {
-        static::saved(function (Model $model) {
+        static::saved(function (Model $model): void {
             RelationService::resolveKey($model);
 
             $model->translations?->each?->save();

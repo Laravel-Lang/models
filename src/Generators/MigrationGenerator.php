@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Generators;
 
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 use function array_map;
 use function database_path;
@@ -42,11 +42,11 @@ class MigrationGenerator extends Generator
 
     protected function getColumns(): array
     {
-        return array_map(fn (string $attribute) => sprintf($this->column, $attribute), $this->columns);
+        return array_map(fn (string $attribute): string => sprintf($this->column, $attribute), $this->columns);
     }
 
     protected function now(): string
     {
-        return Carbon::now()->format('Y_m_d_His');
+        return Date::now()->format('Y_m_d_His');
     }
 }

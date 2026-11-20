@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
+use LaravelLang\Models\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
@@ -14,7 +15,7 @@ use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
 
-/** @property Model|\LaravelLang\Models\HasTranslations $model */
+/** @property Model|HasTranslations $model */
 class AttributeService
 {
     protected ?string $cachedLocale = null;
@@ -109,28 +110,17 @@ class AttributeService
 
     protected function eventSetLocale(mixed $value): void
     {
-        TranslationHasBeenSetEvent::dispatch(
-            $this->model,
-            $this->column,
-            $this->alias(),
-            $this->get(),
-            $value
-        );
+        event(new TranslationHasBeenSetEvent($this->model, $this->column, $this->alias(), $this->get(), $value));
     }
 
     protected function eventForget(): void
     {
-        TranslationHasBeenForgetEvent::dispatch(
-            $this->model,
-            $this->alias()
-        );
+        event(new TranslationHasBeenForgetEvent($this->model, $this->alias()));
     }
 
     protected function eventForgetAll(): void
     {
-        AllTranslationsHasBeenForgetEvent::dispatch(
-            $this->model
-        );
+        event(new AllTranslationsHasBeenForgetEvent($this->model));
     }
 
     protected function locale(): ?string

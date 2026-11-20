@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
+use LaravelLang\Models\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Exceptions\UnknownLocaleException;
@@ -14,7 +15,7 @@ use LaravelLang\NativeLocaleNames\LocaleData;
 class ValidatorService
 {
     /**
-     * @param  Model|\LaravelLang\Models\HasTranslations  $model
+     * @param  Model|HasTranslations  $model
      *
      * @throws AttributeIsNotTranslatableException
      */

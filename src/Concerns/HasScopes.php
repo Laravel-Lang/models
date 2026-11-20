@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Locales\Facades\Locales;
 use SortDirection;
 
-/** @mixin \LaravelLang\Models\Concerns\HasNames */
+/** @mixin HasNames */
 trait HasScopes
 {
-    public function scopeTranslated(Builder $query): void
+    protected function scopeTranslated(Builder $query): void
     {
         $query->has('translations');
     }
 
-    public function scopeOrWhereTranslation(
+    protected function scopeOrWhereTranslation(
         Builder $query,
         string $translationField,
         $value,
@@ -25,7 +25,7 @@ trait HasScopes
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'orWhereHas');
     }
 
-    public function scopeOrWhereTranslationLike(
+    protected function scopeOrWhereTranslationLike(
         Builder $query,
         string $translationField,
         $value,
@@ -34,7 +34,7 @@ trait HasScopes
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'orWhereHas', 'LIKE');
     }
 
-    public function scopeWhereTranslation(
+    protected function scopeWhereTranslation(
         Builder $query,
         string $translationField,
         $value,
@@ -42,7 +42,7 @@ trait HasScopes
         string $method = 'whereHas',
         string $operator = '=',
     ): void {
-        $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
+        $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator): void {
             $query->where($this->translationQualifyColumn($translationField), $operator, $value);
 
             if ($locale) {
@@ -53,7 +53,7 @@ trait HasScopes
         });
     }
 
-    public function scopeWhereTranslationLike(
+    protected function scopeWhereTranslationLike(
         Builder $query,
         string $translationField,
         $value,
@@ -62,7 +62,7 @@ trait HasScopes
         $this->scopeWhereTranslation($query, $translationField, $value, $locale, 'whereHas', 'LIKE');
     }
 
-    public function scopeOrderByTranslation(
+    protected function scopeOrderByTranslation(
         Builder $query,
         string $translationField,
         SortDirection|string $sortMethod = 'asc',

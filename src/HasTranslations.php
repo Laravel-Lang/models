@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
+use LaravelLang\Models\Concerns\HasNames;
+use LaravelLang\Models\Concerns\HasScopes;
+use LaravelLang\Models\Concerns\ModelLoader;
+use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
@@ -19,14 +23,14 @@ use function in_array;
 use function is_iterable;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin HasAttributes
+ * @mixin Model
  */
 trait HasTranslations
 {
-    use Concerns\HasNames;
-    use Concerns\HasScopes;
-    use Concerns\ModelLoader;
+    use HasNames;
+    use HasScopes;
+    use ModelLoader;
 
     public function translations(): HasMany
     {
