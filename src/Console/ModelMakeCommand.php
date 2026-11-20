@@ -15,7 +15,6 @@ use LaravelLang\Models\Services\ClassMapService;
 use function array_filter;
 use function array_merge;
 use function class_exists;
-use function compact;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
@@ -72,7 +71,7 @@ final class ModelMakeCommand extends Command
 
     protected function generateHelper(string $model): void
     {
-        $this->call(ModelsHelperCommand::class, compact('model'));
+        $this->call(ModelsHelperCommand::class, ['model' => $model]);
     }
 
     protected function model(): ?string
@@ -84,7 +83,7 @@ final class ModelMakeCommand extends Command
         return null;
     }
 
-    protected function askModel(): ?string
+    protected function askModel(): string
     {
         if ($model = $this->argument('model')) {
             return $model;

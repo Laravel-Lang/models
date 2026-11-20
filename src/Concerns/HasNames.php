@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Config\Services\ModelLangConfig;
 
 trait HasNames
@@ -15,7 +16,7 @@ trait HasNames
 
     public function translationQualifyColumn(string $column): string
     {
-        /** @var \Illuminate\Database\Eloquent\Model $class */
+        /** @var Model $class */
         $class = $this->translationModel();
 
         return (new $class)->qualifyColumn($column);

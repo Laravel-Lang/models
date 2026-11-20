@@ -15,7 +15,7 @@ abstract class Translation extends Model
 
     public function translatable(): array
     {
-        return array_filter($this->getFillable(), static fn (string $column) => mb_strtolower($column) !== 'locale');
+        return array_filter($this->getFillable(), static fn (string $column): bool => mb_strtolower($column) !== 'locale');
     }
 
     protected function casts(): array

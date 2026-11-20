@@ -72,7 +72,7 @@ abstract class Generator
     protected function resolveData(): array
     {
         return collect($this->data())
-            ->map(fn (mixed $value) => is_array($value) ? implode(PHP_EOL, $value) : $value)
+            ->map(fn (mixed $value): array|string => is_array($value) ? implode(PHP_EOL, $value) : $value)
             ->merge($this->baseData())
             ->all();
     }

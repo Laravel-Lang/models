@@ -35,7 +35,7 @@ class HelperGenerator extends Generator
 
     protected function getProperties(): array
     {
-        return array_map(fn (string $attribute) => sprintf($this->properties, $attribute), $this->getTranslatable());
+        return array_map(fn (string $attribute): string => sprintf($this->properties, $attribute), $this->getTranslatable());
     }
 
     protected function getHash(): string
