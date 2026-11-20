@@ -1,28 +1,15 @@
-<?php
-//{{hash}}
-
+<?php //{{hash}}
 /** @noinspection all */
 
-/**
-     * {{properties}}
-     * @property-read Collection<{{translationModel}}> $translations
-     */
-    class
-    {
-    {
-    model
-    } {
+namespace {{namespace}} {
 
-    use {{
-        translationNamespace}};
+    use {{translationNamespace}};
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Model;
     
-    namespace
-{
-
-    {
-
-        namespace}}} extends Model {
-    }
+    /**
+{{properties}}
+     * @property-read Collection<{{translationModel}}> $translations
+     */
+    class {{model}} extends Model {}
 }
