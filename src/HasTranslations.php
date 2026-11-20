@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
-use LaravelLang\Models\Concerns\HasNames;
-use LaravelLang\Models\Concerns\HasScopes;
-use LaravelLang\Models\Concerns\ModelLoader;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasNames;
+use LaravelLang\Models\Concerns\HasScopes;
+use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\AttributeService;

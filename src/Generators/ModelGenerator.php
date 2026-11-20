@@ -61,12 +61,12 @@ class ModelGenerator extends Generator
 
     protected function getFillable(): array
     {
-        return array_map(fn(string $attribute): string => $this->pad(sprintf($this->fillable, $attribute), $this->fillablePad), $this->columns);
+        return array_map(fn (string $attribute): string => $this->pad(sprintf($this->fillable, $attribute), $this->fillablePad), $this->columns);
     }
 
     protected function getCasts(): array
     {
-        return array_map(fn(string $attribute): string => $this->pad(sprintf($this->casts, $attribute), $this->castsPad), $this->columns);
+        return array_map(fn (string $attribute): string => $this->pad(sprintf($this->casts, $attribute), $this->castsPad), $this->columns);
     }
 
     protected function extension(string $path): string

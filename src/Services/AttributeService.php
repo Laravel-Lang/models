@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
-use LaravelLang\Models\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
+use LaravelLang\Models\HasTranslations;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
