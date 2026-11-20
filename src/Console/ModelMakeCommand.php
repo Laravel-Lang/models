@@ -7,6 +7,7 @@ namespace LaravelLang\Models\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
@@ -28,7 +29,7 @@ final class ModelMakeCommand extends Command
 
     protected array $columns = ['title', 'description'];
 
-    public function __invoke(): int
+    public function __invoke(Filesystem $filesystem): int
     {
         $model = $this->model();
 
@@ -46,27 +47,27 @@ final class ModelMakeCommand extends Command
 
         $columns = $this->columns();
 
-        $this->attachToParent($model);
-        $this->generateModel($model, $columns);
-        $this->generateMigration($model, $columns);
+        $this->attachToParent($model, $filesystem);
+        $this->generateModel($model, $columns, $filesystem);
+        $this->generateMigration($model, $columns, $filesystem);
         $this->generateHelper($model);
 
         return self::SUCCESS;
     }
 
-    protected function generateModel(string $model, array $columns): void
+    protected function generateModel(string $model, array $columns, Filesystem $filesystem): void
     {
-        ModelGenerator::of($model, $columns)->generate();
+        (new ModelGenerator($model, $columns, $filesystem))->generate();
     }
 
-    protected function generateMigration(string $model, array $columns): void
+    protected function generateMigration(string $model, array $columns, Filesystem $filesystem): void
     {
-        MigrationGenerator::of($model, $columns)->generate();
+        (new MigrationGenerator($model, $columns, $filesystem))->generate();
     }
 
-    protected function attachToParent(string $model): void
+    protected function attachToParent(string $model, Filesystem $filesystem): void
     {
-        ParentGenerator::of($model)->generate();
+        (new ParentGenerator($model, [], $filesystem))->generate();
     }
 
     protected function generateHelper(string $model): void

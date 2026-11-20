@@ -21,19 +21,19 @@ final class ModelsHelperCommand extends Command
     public function __invoke(Filesystem $filesystem, ModelLangConfig $config): void
     {
         $this->cleanUp($filesystem, $config);
-        $this->process();
+        $this->process($filesystem);
     }
 
-    protected function process(): void
+    protected function process(Filesystem $filesystem): void
     {
         foreach ($this->models() as $model) {
-            $this->components->task($model, fn () => $this->generate($model));
+            $this->components->task($model, fn () => $this->generate($model, $filesystem));
         }
     }
 
-    protected function generate(string $model): void
+    protected function generate(string $model, Filesystem $filesystem): void
     {
-        HelperGenerator::of($model)->generate();
+        (new HelperGenerator($model, [], $filesystem))->generate();
     }
 
     protected function models(): array

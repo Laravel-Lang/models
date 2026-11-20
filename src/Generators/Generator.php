@@ -36,11 +36,6 @@ abstract class Generator
         protected Filesystem $filesystem,
     ) {}
 
-    public static function of(string $model, array $columns = []): static
-    {
-        return new static($model, $columns, app(Filesystem::class));
-    }
-
     public function generate(): void
     {
         if ($filename = $this->filename()) {
