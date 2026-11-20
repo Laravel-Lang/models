@@ -42,15 +42,18 @@ trait HasScopes
         string $method = 'whereHas',
         string $operator = '=',
     ): void {
-        $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator): void {
-            $query->where($this->translationQualifyColumn($translationField), $operator, $value);
+        $query->$method(
+            'translations',
+            function (Builder $query) use ($translationField, $value, $locale, $operator): void {
+                $query->where($this->translationQualifyColumn($translationField), $operator, $value);
 
-            if ($locale) {
-                $normalized = Locales::fromAlias($locale);
+                if ($locale) {
+                    $normalized = Locales::fromAlias($locale);
 
-                $query->where($this->translationQualifyColumn('locale'), $operator, $normalized);
+                    $query->where($this->translationQualifyColumn('locale'), $operator, $normalized);
+                }
             }
-        });
+        );
     }
 
     protected function scopeWhereTranslationLike(

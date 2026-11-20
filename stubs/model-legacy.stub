@@ -2,22 +2,40 @@
 
 declare(strict_types=1);
 
-namespace {{namespace}};
-
-use LaravelLang\Models\Casts\TrimStringCast;
-use LaravelLang\Models\Eloquent\Translation;
-
-class {{model}}{{suffix}} extends Translation
+class
 {
-    protected $fillable = [
+{
+model
+}
+
+namespace
+{
+
+    {
+
+        namespace}}
+}{
+    {
+        suffix}
+} extends
+Translation
+{
+    protected
+    $fillable = [
         'locale',
-{{fillable}}
-    ];
+{
+    {
+        fillable}
+}
+    ]
 
     protected function casts(): array
+{
+    return [
+{
     {
-        return [
-{{casts}}
-        ];
+        casts}
+}
+        ]
     }
 }

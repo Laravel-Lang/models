@@ -28,8 +28,11 @@ class AttributeService
         protected Locale|LocaleData|string|null $locale,
     ) {}
 
-    public static function of(Model $model, ?string $column = null, Locale|LocaleData|string|null $locale = null): static
-    {
+    public static function of(
+        Model $model,
+        ?string $column = null,
+        Locale|LocaleData|string|null $locale = null,
+    ): static {
         return new static($model, $column, $locale);
     }
 

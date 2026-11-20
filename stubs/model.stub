@@ -2,22 +2,35 @@
 
 declare(strict_types=1);
 
-namespace {{namespace}};
+class
+{
+{
+model
+}
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use LaravelLang\Models\Casts\TrimStringCast;
-use LaravelLang\Models\Eloquent\Translation;
-
-#[Fillable([
+#[
+Fillable([
     'locale',
 {{fillable}}
 ])]
-class {{model}}{{suffix}} extends Translation
+namespace
 {
-    protected function casts(): array
+
+    {
+
+        namespace}}}{
+    {
+        suffix}
+} extends Translation
+{
+    protected
+    function casts(): array
     {
         return [
-{{casts}}
-        ];
+{
+    {
+        casts}
+}
+        ]
     }
 }
