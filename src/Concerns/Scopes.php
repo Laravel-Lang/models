@@ -6,6 +6,7 @@ namespace LaravelLang\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Locales\Facades\Locales;
+use SortDirection;
 
 /** @mixin \LaravelLang\Models\Concerns\HasNames */
 trait Scopes
@@ -64,12 +65,16 @@ trait Scopes
     public function scopeOrderByTranslation(
         Builder $query,
         string $translationField,
-        \SortDirection|string $sortMethod = \SortDirection::Ascending,
+        SortDirection|string $sortMethod = 'asc',
         ?string $locale = null,
     ): void {
         $normalized = $locale
             ? Locales::fromAlias($locale)
             : Locales::current(false);
+
+        if ($sortMethod instanceof SortDirection) {
+            $sortMethod = $sortMethod === SortDirection::Descending ? 'desc' : 'asc';
+        }
 
         $query
             ->orderBy(
