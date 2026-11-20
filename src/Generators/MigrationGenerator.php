@@ -42,7 +42,7 @@ class MigrationGenerator extends Generator
 
     protected function getColumns(): array
     {
-        return array_map(fn (string $attribute) => sprintf($this->column, $attribute), $this->columns);
+        return array_map(fn (string $attribute): string => sprintf($this->column, $attribute), $this->columns);
     }
 
     protected function now(): string

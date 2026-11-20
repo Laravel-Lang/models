@@ -31,7 +31,7 @@ class ModelGenerator extends Generator
         parent::__construct($model, $columns, $filesystem);
 
         if (! class_exists(Fillable::class)) {
-            $this->stub = __DIR__ . '/../../stubs/model-legacy.stub';
+            $this->stub        = __DIR__ . '/../../stubs/model-legacy.stub';
             $this->fillablePad = 8;
         }
     }
@@ -61,16 +61,12 @@ class ModelGenerator extends Generator
 
     protected function getFillable(): array
     {
-        return array_map(function (string $attribute) {
-            return $this->pad(sprintf($this->fillable, $attribute), $this->fillablePad);
-        }, $this->columns);
+        return array_map(fn (string $attribute): string => $this->pad(sprintf($this->fillable, $attribute), $this->fillablePad), $this->columns);
     }
 
     protected function getCasts(): array
     {
-        return array_map(function (string $attribute) {
-            return $this->pad(sprintf($this->casts, $attribute), $this->castsPad);
-        }, $this->columns);
+        return array_map(fn (string $attribute): string => $this->pad(sprintf($this->casts, $attribute), $this->castsPad), $this->columns);
     }
 
     protected function extension(string $path): string

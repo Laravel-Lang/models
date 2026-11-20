@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Console;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Filesystem\Filesystem;
@@ -12,12 +14,10 @@ use LaravelLang\Models\Services\ClassMapService;
 
 use function ltrim;
 
+#[Description('Generating autocomplete translatable properties for models')]
+#[Signature('lang:models-helper {model?}')]
 final class ModelsHelperCommand extends Command
 {
-    protected $signature = 'lang:models-helper {model?}';
-
-    protected $description = 'Generating autocomplete translatable properties for models';
-
     public function __invoke(Filesystem $filesystem, ModelLangConfig $config): void
     {
         $this->cleanUp($filesystem, $config);

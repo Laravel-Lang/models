@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasNames;
+use LaravelLang\Models\Concerns\HasScopes;
+use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\AttributeService;
@@ -19,14 +23,14 @@ use function in_array;
 use function is_iterable;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin HasAttributes
+ * @mixin Model
  */
 trait HasTranslations
 {
-    use Concerns\HasNames;
-    use Concerns\ModelLoader;
-    use Concerns\HasScopes;
+    use HasNames;
+    use HasScopes;
+    use ModelLoader;
 
     public function translations(): HasMany
     {

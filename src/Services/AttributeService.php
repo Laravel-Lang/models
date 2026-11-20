@@ -10,11 +10,12 @@ use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
+use LaravelLang\Models\HasTranslations;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
 
-/** @property Model|\LaravelLang\Models\HasTranslations $model */
+/** @property Model|HasTranslations $model */
 class AttributeService
 {
     protected ?string $cachedLocale = null;

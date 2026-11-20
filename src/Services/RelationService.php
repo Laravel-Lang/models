@@ -10,7 +10,6 @@ use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Eloquent\Translation;
 
 use function blank;
-use function get_class;
 
 class RelationService
 {
@@ -55,6 +54,6 @@ class RelationService
 
     protected static function modelName(Model $model): string
     {
-        return get_class($model) . app(ModelLangConfig::class)->suffix;
+        return $model::class . app(ModelLangConfig::class)->suffix;
     }
 }

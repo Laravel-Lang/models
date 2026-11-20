@@ -11,7 +11,6 @@ use LaravelLang\Exceptions\UnknownModelPathException;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\ClassMapService;
-
 use LaravelLang\Models\Services\TemplateService;
 
 use function app;
@@ -73,7 +72,7 @@ abstract class Generator
     protected function resolveData(): array
     {
         return collect($this->data())
-            ->map(fn (mixed $value) => is_array($value) ? implode(PHP_EOL, $value) : $value)
+            ->map(fn (mixed $value): mixed => is_array($value) ? implode(PHP_EOL, $value) : $value)
             ->merge($this->baseData())
             ->all();
     }

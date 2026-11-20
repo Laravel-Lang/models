@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use LaravelLang\Locales\Facades\Locales;
 use SortDirection;
 
-/** @mixin \LaravelLang\Models\Concerns\HasNames */
+/** @mixin HasNames */
 trait HasScopes
 {
     public function scopeTranslated(Builder $query): void
@@ -42,7 +42,7 @@ trait HasScopes
         string $method = 'whereHas',
         string $operator = '=',
     ): void {
-        $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator) {
+        $query->$method('translations', function (Builder $query) use ($translationField, $value, $locale, $operator): void {
             $query->where($this->translationQualifyColumn($translationField), $operator, $value);
 
             if ($locale) {
