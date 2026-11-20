@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Console;
 
-use Illuminate\Console\Attributes\Description;
-use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use LaravelLang\Config\Services\ModelLangConfig;
@@ -23,10 +21,12 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
-#[Description('Creates a model for storing translations')]
-#[Signature('make:model-translation {model?} {--columns=*}')]
 final class ModelMakeCommand extends Command
 {
+    protected $signature = 'make:model-translation {model?} {--columns=*}';
+
+    protected $description = 'Creates a model for storing translations';
+
     protected array $columns = ['title', 'description'];
 
     public function __invoke(): int
@@ -84,7 +84,7 @@ final class ModelMakeCommand extends Command
         return null;
     }
 
-    protected function askModel(): string
+    protected function askModel(): ?string
     {
         if ($model = $this->argument('model')) {
             return $model;

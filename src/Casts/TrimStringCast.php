@@ -14,12 +14,12 @@ use function trim;
 
 final class TrimStringCast implements CastsAttributes
 {
-    public function get(Model $model, string $key, mixed $value, array $attributes): bool|float|int|string|null
+    public function get(Model $model, string $key, mixed $value, array $attributes): bool|int|float|null|string
     {
         return $value;
     }
 
-    public function set(Model $model, string $key, mixed $value, array $attributes): bool|float|int|string|null
+    public function set(Model $model, string $key, mixed $value, array $attributes): bool|int|float|null|string
     {
         if (is_bool($value) || is_numeric($value) || is_null($value)) {
             return $value;

@@ -9,15 +9,16 @@ use LaravelLang\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
-use LaravelLang\Models\HasTranslations;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 class ValidatorService
 {
     /**
-     * @param  Model|HasTranslations  $model
+     * @param  Model|\LaravelLang\Models\HasTranslations  $model
+     * @param  string  $column
      *
      * @throws AttributeIsNotTranslatableException
+     * @return string
      */
     public static function column(Model $model, string $column): string
     {

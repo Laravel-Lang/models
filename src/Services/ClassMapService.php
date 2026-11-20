@@ -20,14 +20,14 @@ class ClassMapService
     {
         return collect(static::map())
             ->keys()
-            ->filter(static fn (string $class): bool => static::isTranslatable($class))
+            ->filter(static fn (string $class) => static::isTranslatable($class))
             ->all();
     }
 
     public static function path(string $class): ?string
     {
         return collect(static::map())
-            ->filter(static fn (string $path, string $name): bool => $name === ltrim($class, '\\'))
+            ->filter(static fn (string $path, string $name) => $name === ltrim($class, '\\'))
             ->first();
     }
 
@@ -35,7 +35,7 @@ class ClassMapService
     {
         return collect(static::map())
             ->keys()
-            ->filter(static fn (string $name): bool => static::canTranslatable($name))
+            ->filter(static fn (string $name) => static::canTranslatable($name))
             ->sort()
             ->values()
             ->all();
