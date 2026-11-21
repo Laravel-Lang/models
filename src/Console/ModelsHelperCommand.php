@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
+use InvalidArgumentException;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMapService;
 
+use function is_string;
 use function ltrim;
 
 final class ModelsHelperCommand extends Command
@@ -36,9 +38,14 @@ final class ModelsHelperCommand extends Command
         (new HelperGenerator($model, [], $filesystem))->generate();
     }
 
+    /** @return array<int, string> */
     protected function models(): array
     {
         if ($model = $this->argument('model')) {
+            if (! is_string($model)) {
+                throw new InvalidArgumentException('The model argument must be a class name.');
+            }
+
             return [ltrim($model, '\\')];
         }
 

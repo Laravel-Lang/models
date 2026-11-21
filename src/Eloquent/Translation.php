@@ -13,6 +13,7 @@ abstract class Translation extends Model
 {
     public $timestamps = false;
 
+    /** @return array<array-key, string> */
     public function translatable(): array
     {
         return array_filter(

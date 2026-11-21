@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
-use Illuminate\Database\Eloquent\Model;
+use Closure;
 use LaravelLang\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
-use LaravelLang\Models\HasTranslations;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 class ValidatorService
 {
     /**
-     * @param  Model|HasTranslations  $model
+     * @param  Closure(): array<array-key, string>  $translatable
      *
      * @throws AttributeIsNotTranslatableException
      */
-    public static function column(Model $model, string $column): string
+    public static function column(string $column, bool $isTranslatable, Closure $translatable): string
     {
-        if (! $model->isTranslatable($column)) {
-            throw new AttributeIsNotTranslatableException($column, $model);
+        if (! $isTranslatable) {
+            throw new AttributeIsNotTranslatableException($column, $translatable());
         }
 
         return $column;

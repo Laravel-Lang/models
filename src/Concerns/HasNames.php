@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidTranslationModelException;
+use LaravelLang\Models\Eloquent\Translation;
+
+use function is_a;
 
 trait HasNames
 {
@@ -16,9 +19,20 @@ trait HasNames
 
     public function translationQualifyColumn(string $column): string
     {
-        /** @var Model $class */
-        $class = $this->translationModel();
+        $class = $this->translationClass();
 
         return (new $class)->qualifyColumn($column);
+    }
+
+    /** @return class-string<Translation> */
+    protected function translationClass(): string
+    {
+        $class = $this->translationModel();
+
+        if (! is_a($class, Translation::class, true)) {
+            throw new InvalidTranslationModelException($class);
+        }
+
+        return $class;
     }
 }

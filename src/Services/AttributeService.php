@@ -4,44 +4,31 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Services;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
-use LaravelLang\Models\HasTranslations;
 use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
 
-/** @property Model|HasTranslations $model */
 class AttributeService
 {
     protected ?string $cachedLocale = null;
 
     protected ?string $cachedAlias = null;
 
+    /** @param Closure(?string): Translation $translate */
     public function __construct(
         protected Model $model,
-        protected ?string $column = null,
+        protected Closure $translate,
         protected Locale|LocaleData|string|null $locale = null,
     ) {}
-
-    public function validate(): static
-    {
-        $this->validateColumn();
-        $this->validateLocale();
-
-        return $this;
-    }
-
-    public function validateColumn(): static
-    {
-        ValidatorService::column($this->model, $this->column);
-
-        return $this;
-    }
 
     public function validateLocale(): static
     {
@@ -50,46 +37,47 @@ class AttributeService
         return $this;
     }
 
-    public function get(): mixed
+    public function get(string $column): mixed
     {
         if ($locale = $this->locale()) {
-            return $this->model->translation($locale)->getAttribute($this->column);
+            return ($this->translate)($locale)->getAttribute($column);
         }
 
-        return $this->model->translation($this->currentLocale())->getAttribute($this->column)
-            ?? $this->model->translation($this->fallbackLocale())->getAttribute($this->column);
+        return ($this->translate)($this->currentLocale())->getAttribute($column)
+            ?? ($this->translate)($this->fallbackLocale())->getAttribute($column);
     }
 
-    public function set(mixed $value): Model
+    public function set(string $column, mixed $value): Model
     {
         $this->initRelation();
-        $this->eventSetLocale($value);
+        $this->eventSetLocale($column, $value);
 
-        $this->model->translation($this->locale())->setAttribute($this->column, $value);
+        ($this->translate)($this->locale())->setAttribute($column, $value);
 
         return $this->model;
     }
 
-    public function has(): bool
+    public function has(string $column): bool
     {
-        return filled($this->get());
+        return filled($this->get($column));
     }
 
     public function forget(): Model
     {
         $locale = $this->locale();
 
-        $this->model->translation($locale)->delete();
-        $this->model->translations->forget($locale);
+        ($this->translate)($locale)->delete();
+        $this->model->getRelationValue('translations')->forget($locale);
 
         $this->eventForget();
 
         return $this->model;
     }
 
-    public function forgetAll(): Model
+    /** @param HasMany<Translation, *> $translations */
+    public function forgetAll(HasMany $translations): Model
     {
-        $this->model->translationsRaw()->delete();
+        $translations->delete();
 
         RelationService::clear($this->model);
 
@@ -103,9 +91,9 @@ class AttributeService
         RelationService::initialize($this->model);
     }
 
-    protected function eventSetLocale(mixed $value): void
+    protected function eventSetLocale(string $column, mixed $value): void
     {
-        event(new TranslationHasBeenSetEvent($this->model, $this->column, $this->alias(), $this->get(), $value));
+        event(new TranslationHasBeenSetEvent($this->model, $column, $this->alias(), $this->get($column), $value));
     }
 
     protected function eventForget(): void

@@ -9,6 +9,7 @@ use function str_replace;
 
 class TemplateService
 {
+    /** @param array<array-key, string> $data */
     public static function replaceFormat(string $template, array $data, string $format): string
     {
         foreach ($data as $key => $value) {

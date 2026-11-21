@@ -26,6 +26,7 @@ class ModelGenerator extends Generator
 
     protected int $castsPad = 12;
 
+    /** @param array<array-key, string> $columns */
     public function __construct(string $model, array $columns, Filesystem $filesystem)
     {
         parent::__construct($model, $columns, $filesystem);
@@ -41,6 +42,7 @@ class ModelGenerator extends Generator
         require $path;
     }
 
+    /** @return array{suffix: string, fillable: array<array-key, string>, casts: array<array-key, string>} */
     protected function data(): array
     {
         return [
@@ -59,6 +61,7 @@ class ModelGenerator extends Generator
         return $directory . '/' . $filename . '.' . $extension;
     }
 
+    /** @return array<array-key, string> */
     protected function getFillable(): array
     {
         return array_map(
@@ -67,6 +70,7 @@ class ModelGenerator extends Generator
         );
     }
 
+    /** @return array<array-key, string> */
     protected function getCasts(): array
     {
         return array_map(

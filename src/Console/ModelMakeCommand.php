@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\MigrationGenerator;
@@ -16,6 +18,9 @@ use LaravelLang\Models\Services\ClassMapService;
 use function array_filter;
 use function array_merge;
 use function class_exists;
+use function is_a;
+use function is_array;
+use function is_string;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
@@ -27,13 +32,18 @@ final class ModelMakeCommand extends Command
 
     protected $description = 'Creates a model for storing translations';
 
+    /** @var list<string> */
     protected array $columns = ['title', 'description'];
 
     public function __invoke(Filesystem $filesystem): int
     {
-        $model = $this->model();
+        if (! $model = $this->model()) {
+            error('A model class name is required.');
 
-        if (! $this->validatedModel($model)) {
+            return self::FAILURE;
+        }
+
+        if (! is_a($model, Model::class, true)) {
             error("The model at `$model` namespace was not found.");
 
             return self::FAILURE;
@@ -55,11 +65,13 @@ final class ModelMakeCommand extends Command
         return self::SUCCESS;
     }
 
+    /** @param  array<array-key, string>  $columns */
     protected function generateModel(string $model, array $columns, Filesystem $filesystem): void
     {
         (new ModelGenerator($model, $columns, $filesystem))->generate();
     }
 
+    /** @param  array<array-key, string>  $columns */
     protected function generateMigration(string $model, array $columns, Filesystem $filesystem): void
     {
         (new MigrationGenerator($model, $columns, $filesystem))->generate();
@@ -84,21 +96,15 @@ final class ModelMakeCommand extends Command
         return null;
     }
 
-    protected function askModel(): string
+    protected function askModel(): ?string
     {
-        if ($model = $this->argument('model')) {
-            return $model;
-        }
+        $model = $this->argument('model')
+            ?: select(
+                label  : 'Select a model to create a translation repository:',
+                options: $this->models()
+            );
 
-        return select(
-            label  : 'Select a model to create a translation repository:',
-            options: $this->models()
-        );
-    }
-
-    protected function validatedModel(string $model): ?string
-    {
-        return class_exists($model) ? $model : null;
+        return is_string($model) ? $model : null;
     }
 
     protected function hasTranslation(string $model): bool
@@ -106,9 +112,20 @@ final class ModelMakeCommand extends Command
         return class_exists($model . app(ModelLangConfig::class)->suffix);
     }
 
+    /** @return array<array-key, string> */
     protected function columns(): array
     {
         if ($columns = $this->option('columns')) {
+            if (! is_array($columns)) {
+                throw new InvalidArgumentException('The columns option must be an array of column names.');
+            }
+
+            foreach ($columns as $column) {
+                if (! is_string($column)) {
+                    throw new InvalidArgumentException('Column names must be strings.');
+                }
+            }
+
             return $columns;
         }
 
@@ -119,15 +136,17 @@ final class ModelMakeCommand extends Command
         return $this->columns;
     }
 
+    /** @return list<class-string> */
     protected function models(): array
     {
         return ClassMapService::available();
     }
 
-    protected function askColumns(array $columns = []): array
+    /** @return array<int, string> */
+    protected function askColumns(): array
     {
         if ($column = text('Enter a column name or press Enter for continue')) {
-            return array_filter(array_merge([$column], $this->askColumns($columns)));
+            return array_filter(array_merge([$column], $this->askColumns()));
         }
 
         return [];

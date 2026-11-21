@@ -6,7 +6,7 @@ namespace LaravelLang\Models\Services;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use LaravelLang\Config\Services\ModelLangConfig;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use LaravelLang\Models\Eloquent\Translation;
 
 use function blank;
@@ -15,7 +15,7 @@ class RelationService
 {
     public static function initialize(Model $model): Model
     {
-        if (blank($model->translations)) {
+        if (blank($model->getRelationValue('translations'))) {
             $translations = $model->load('translations')->translations ?? new Collection;
 
             $model->setRelation('translations', $translations);
@@ -24,18 +24,21 @@ class RelationService
         return $model;
     }
 
-    public static function initializeLocale(Model $model, string $locale): Translation
+    /** @param HasMany<Translation, *> $translations */
+    public static function initializeLocale(Model $model, string $locale, HasMany $translations): Translation
     {
-        if ($item = $model->translationsRaw()->where('locale', $locale)->first()) {
+        if ($item = $translations->where('locale', $locale)->first()) {
             return static::setAttributes($model, $item, $locale);
         }
 
-        return static::setAttributes($model, new (static::modelName($model))(), $locale);
+        $class = $translations->getRelated()::class;
+
+        return static::setAttributes($model, new $class, $locale);
     }
 
     public static function resolveKey(Model $model): void
     {
-        $model->translations->each(
+        $model->getRelationValue('translations')->each(
             fn (Translation $item) => $item->forceFill(['item_id' => $model->getKey()])
         );
     }
@@ -50,10 +53,5 @@ class RelationService
         return $translation
             ->setAttribute('item_id', $model->getKey())
             ->setAttribute('locale', $locale);
-    }
-
-    protected static function modelName(Model $model): string
-    {
-        return $model::class . app(ModelLangConfig::class)->suffix;
     }
 }

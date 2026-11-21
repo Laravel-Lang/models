@@ -17,6 +17,7 @@ class HelperGenerator extends Generator
 
     protected string $properties = '     * @property string|null $%s';
 
+    /** @return array{hash: string, properties: array<array-key, string>, translationNamespace: string, translationModel: string} */
     protected function data(): array
     {
         return [
@@ -33,6 +34,7 @@ class HelperGenerator extends Generator
         return app(ModelLangConfig::class)->helpers . '/_ide_helper_models_' . $this->getHash() . '.php';
     }
 
+    /** @return array<array-key, string> */
     protected function getProperties(): array
     {
         return array_map(
@@ -46,6 +48,7 @@ class HelperGenerator extends Generator
         return hash('xxh128', $this->model);
     }
 
+    /** @return array<array-key, string> */
     protected function getTranslatable(): array
     {
         return $this->translationModel()->translatable();

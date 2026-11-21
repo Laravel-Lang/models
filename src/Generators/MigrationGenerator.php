@@ -16,6 +16,7 @@ class MigrationGenerator extends Generator
 
     protected string $column = '            $table->string(\'%s\')->nullable();';
 
+    /** @return array{baseTable: string, table: string, columns: array<array-key, string>} */
     protected function data(): array
     {
         return [
@@ -40,6 +41,7 @@ class MigrationGenerator extends Generator
         return $this->baseModel()->getTable();
     }
 
+    /** @return array<array-key, string> */
     protected function getColumns(): array
     {
         return array_map(fn (string $attribute): string => sprintf($this->column, $attribute), $this->columns);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Model;
 use LaravelLang\Models\Services\RelationService;
 
 use function array_merge;
@@ -14,7 +13,7 @@ trait ModelLoader
 {
     public static function bootModelLoader(): void
     {
-        static::saved(function (Model $model): void {
+        static::saved(function (self $model): void {
             RelationService::resolveKey($model);
 
             $model->translations?->each?->save();

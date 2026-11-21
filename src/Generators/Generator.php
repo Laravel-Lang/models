@@ -12,10 +12,10 @@ use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\ClassMapService;
 use LaravelLang\Models\Services\TemplateService;
+use UnexpectedValueException;
 
 use function app;
 use function collect;
-use function file_get_contents;
 use function implode;
 use function is_array;
 use function ltrim;
@@ -24,12 +24,15 @@ abstract class Generator
 {
     protected string $stub;
 
+    /** @var array<string, Model> */
     protected array $registry = [];
 
+    /** @return array<string, string|array<array-key, string>> */
     abstract protected function data(): array;
 
     abstract protected function filename(): string;
 
+    /** @param  array<array-key, string>  $columns */
     public function __construct(
         protected string $model,
         protected array $columns,
@@ -55,6 +58,7 @@ abstract class Generator
 
     protected function finish(string $path): void {}
 
+    /** @return array{fqn: string, namespace: string, model: string} */
     protected function baseData(): array
     {
         return [
@@ -64,6 +68,7 @@ abstract class Generator
         ];
     }
 
+    /** @return array<string, string> */
     protected function resolveData(): array
     {
         return collect($this->data())
@@ -97,14 +102,30 @@ abstract class Generator
 
     protected function baseModel(): Model
     {
-        return $this->registry[$this->model] ??= new $this->model;
+        return $this->modelInstance($this->model, Model::class);
     }
 
     protected function translationModel(): Translation
     {
-        $model = $this->translationModelNamespace();
+        return $this->modelInstance($this->translationModelNamespace(), Translation::class);
+    }
 
-        return $this->registry[$model] ??= new $model;
+    /**
+     * @template TModel of Model
+     *
+     * @param  class-string<TModel>  $expected
+     *
+     * @return TModel
+     */
+    protected function modelInstance(string $class, string $expected): Model
+    {
+        $model = $this->registry[$class] ?? new $class;
+
+        if (! $model instanceof $expected) {
+            throw new UnexpectedValueException("Model `$class` must extend `$expected`.");
+        }
+
+        return $this->registry[$class] = $model;
     }
 
     protected function translationModelNamespace(): string
@@ -119,7 +140,12 @@ abstract class Generator
 
     protected function template(): string
     {
-        return file_get_contents($this->stub);
+        return $this->readTemplate($this->stub);
+    }
+
+    protected function readTemplate(string $path): string
+    {
+        return $this->filesystem->fromString($path);
     }
 
     protected function path(): string
