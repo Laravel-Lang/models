@@ -8,12 +8,12 @@ use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\LocaleNames\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Events\AllTranslationsHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenForgetEvent;
 use LaravelLang\Models\Events\TranslationHasBeenSetEvent;
-use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function filled;
 

@@ -14,6 +14,7 @@ use LaravelLang\Exceptions\InvalidLocaleInputException;
 use LaravelLang\Exceptions\InvalidModelAttributeResultException;
 use LaravelLang\Exceptions\InvalidTranslationsRelationException;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\LocaleNames\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
 use LaravelLang\Models\Concerns\HasScopes;
@@ -23,7 +24,6 @@ use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\AttributeService;
 use LaravelLang\Models\Services\RelationService;
 use LaravelLang\Models\Services\ValidatorService;
-use LaravelLang\NativeLocaleNames\LocaleData;
 
 use function in_array;
 use function is_iterable;

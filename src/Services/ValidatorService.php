@@ -8,8 +8,8 @@ use Closure;
 use LaravelLang\Exceptions\AttributeIsNotTranslatableException;
 use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
+use LaravelLang\LocaleNames\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
-use LaravelLang\NativeLocaleNames\LocaleData;
 
 class ValidatorService
 {
