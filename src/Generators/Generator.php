@@ -7,12 +7,12 @@ namespace LaravelLang\Models\Generators;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelClassException;
 use LaravelLang\Exceptions\UnknownModelPathException;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\Services\ClassMapService;
 use LaravelLang\Models\Services\TemplateService;
-use UnexpectedValueException;
 
 use function app;
 use function collect;
@@ -114,7 +114,6 @@ abstract class Generator
      * @template TModel of Model
      *
      * @param  class-string<TModel>  $expected
-     *
      * @return TModel
      */
     protected function modelInstance(string $class, string $expected): Model
@@ -122,7 +121,7 @@ abstract class Generator
         $model = $this->registry[$class] ?? new $class;
 
         if (! $model instanceof $expected) {
-            throw new UnexpectedValueException("Model `$class` must extend `$expected`.");
+            throw new InvalidModelClassException($class, $expected);
         }
 
         return $this->registry[$class] = $model;

@@ -6,8 +6,8 @@ namespace LaravelLang\Models\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use LaravelLang\Exceptions\InvalidStoredAttributeValueException;
 use Stringable;
-use TypeError;
 
 use function is_bool;
 use function is_null;
@@ -24,7 +24,7 @@ final class TrimStringCast implements CastsAttributes
             return $value;
         }
 
-        throw new TypeError('The stored value must be a scalar or null.');
+        throw new InvalidStoredAttributeValueException;
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): bool|float|int|string|null

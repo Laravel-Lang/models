@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
+use LaravelLang\Exceptions\InvalidLocaleInputException;
+use LaravelLang\Exceptions\InvalidModelAttributeResultException;
+use LaravelLang\Exceptions\InvalidTranslationsRelationException;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
@@ -21,7 +24,6 @@ use LaravelLang\Models\Services\AttributeService;
 use LaravelLang\Models\Services\RelationService;
 use LaravelLang\Models\Services\ValidatorService;
 use LaravelLang\NativeLocaleNames\LocaleData;
-use TypeError;
 
 use function in_array;
 use function is_iterable;
@@ -67,13 +69,13 @@ trait HasTranslations
     /**
      * @param  iterable<mixed, mixed>  $values  Keyed by a locale string, Locale, LocaleData or null.
      *
-     * @throws TypeError
+     * @throws InvalidLocaleInputException
      */
     public function setTranslations(string $column, iterable $values): static
     {
         foreach ($values as $locale => $value) {
             if (! Locales::acceptsInput($locale)) {
-                throw new TypeError('The translation locale key must be a Locale, a LocaleData, a string, or null.');
+                throw InvalidLocaleInputException::forTranslationKey();
             }
 
             $this->setTranslation($column, $value, $locale);
@@ -122,7 +124,7 @@ trait HasTranslations
         $model = parent::setAttribute($key, $value);
 
         if (! $model instanceof Model) {
-            throw new TypeError('Setting an attribute must return an Eloquent model.');
+            throw new InvalidModelAttributeResultException;
         }
 
         return $model;
@@ -132,7 +134,7 @@ trait HasTranslations
     {
         if ($relation === 'translations') {
             if (! $value instanceof SupportCollection) {
-                throw new TypeError('The translations relation must be a collection.');
+                throw InvalidTranslationsRelationException::expectedCollection();
             }
 
             $value = $value->keyBy('locale');

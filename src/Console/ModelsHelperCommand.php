@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
-use InvalidArgumentException;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelCommandInputException;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\HelperGenerator;
 use LaravelLang\Models\Services\ClassMapService;
@@ -43,7 +43,7 @@ final class ModelsHelperCommand extends Command
     {
         if ($model = $this->argument('model')) {
             if (! is_string($model)) {
-                throw new InvalidArgumentException('The model argument must be a class name.');
+                throw InvalidModelCommandInputException::invalidModel();
             }
 
             return [ltrim($model, '\\')];

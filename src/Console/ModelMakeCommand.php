@@ -7,8 +7,8 @@ namespace LaravelLang\Models\Console;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelCommandInputException;
 use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
@@ -117,12 +117,12 @@ final class ModelMakeCommand extends Command
     {
         if ($columns = $this->option('columns')) {
             if (! is_array($columns)) {
-                throw new InvalidArgumentException('The columns option must be an array of column names.');
+                throw InvalidModelCommandInputException::invalidColumns();
             }
 
             foreach ($columns as $column) {
                 if (! is_string($column)) {
-                    throw new InvalidArgumentException('Column names must be strings.');
+                    throw InvalidModelCommandInputException::invalidColumnName();
                 }
             }
 

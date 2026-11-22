@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection as SupportCollection;
+use LaravelLang\Exceptions\InvalidTranslationsRelationException;
 use LaravelLang\Models\Eloquent\Translation;
-use TypeError;
 
 use function blank;
 
@@ -42,7 +42,7 @@ class RelationService
     {
         foreach (static::collection($model) as $translation) {
             if (! $translation instanceof Translation) {
-                throw new TypeError('The translations relation must contain only translation models.');
+                throw InvalidTranslationsRelationException::expectedTranslationModels();
             }
 
             $translation->forceFill(['item_id' => $model->getKey()]);
@@ -55,7 +55,7 @@ class RelationService
         $translations = $model->getRelationValue('translations');
 
         if (! $translations instanceof SupportCollection) {
-            throw new TypeError('The translations relation must be a collection.');
+            throw InvalidTranslationsRelationException::expectedCollection();
         }
 
         return $translations;
