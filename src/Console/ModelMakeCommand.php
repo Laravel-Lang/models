@@ -136,7 +136,7 @@ final class ModelMakeCommand extends Command
         return $this->columns;
     }
 
-    /** @return list<class-string> */
+    /** @return array<class-string> */
     protected function models(): array
     {
         return ClassMapService::available();

@@ -12,7 +12,6 @@ use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Models\Eloquent\Translation;
 use LaravelLang\Models\HasTranslations;
 
-use function collect;
 use function ltrim;
 
 class ClassMapService
@@ -33,7 +32,7 @@ class ClassMapService
             ->first();
     }
 
-    /** @return list<class-string> */
+    /** @return array<class-string> */
     public static function available(): array
     {
         return (new Collection(static::map()))

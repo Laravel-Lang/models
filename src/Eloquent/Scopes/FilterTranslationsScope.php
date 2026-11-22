@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Eloquent\Scopes;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use LaravelLang\Config\Services\ModelLangConfig;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Eloquent\Translation;
 
 final class FilterTranslationsScope
 {
-    /** @param Builder<Translation> $builder */
-    public function __invoke(Builder $builder): void
+    /** @param  HasMany<Translation, \Illuminate\Database\Eloquent\Model>  $builder */
+    public function __invoke(HasMany $builder): void
     {
         if (! $this->enabled()) {
             return;

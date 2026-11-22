@@ -39,9 +39,13 @@ trait HasTranslations
     /** @return HasMany<Translation, $this> */
     public function translations(): HasMany
     {
-        return $this->translationsRaw()->tap(
-            new FilterTranslationsScope
-        );
+        $builder = $this->translationsRaw();
+
+        $filter = new FilterTranslationsScope;
+
+        $filter($builder);
+        
+        return $builder;
     }
 
     /** @return HasMany<Translation, $this> */
@@ -60,7 +64,7 @@ trait HasTranslations
         return $this->translationAttribute($column, $locale)->set($column, $value);
     }
 
-    /** @param iterable<Locale|LocaleData|string, mixed> $values */
+    /** @param  iterable<Locale|LocaleData|string, mixed>  $values */
     public function setTranslations(string $column, iterable $values): static
     {
         foreach ($values as $locale => $value) {
@@ -144,13 +148,6 @@ trait HasTranslations
         return (new $class)->translatable();
     }
 
-    protected function translationAttribute(string $column, Locale|LocaleData|string|null $locale): AttributeService
-    {
-        ValidatorService::column($column, $this->isTranslatable($column), $this->translatable(...));
-
-        return (new AttributeService($this, $this->translation(...), $locale))->validateLocale();
-    }
-
     public function translation(?string $locale): Translation
     {
         $normalized = ($locale ? Locales::fromAlias($locale) : null) ?? Locales::current(false);
@@ -164,5 +161,12 @@ trait HasTranslations
             $normalized,
             fn (): Translation => RelationService::initializeLocale($this, $normalized, $this->translationsRaw()),
         );
+    }
+
+    protected function translationAttribute(string $column, Locale|LocaleData|string|null $locale): AttributeService
+    {
+        ValidatorService::column($column, $this->isTranslatable($column), $this->translatable(...));
+
+        return (new AttributeService($this, $this->translation(...), $locale))->validateLocale();
     }
 }
