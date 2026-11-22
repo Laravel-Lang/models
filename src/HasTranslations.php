@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
-use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
@@ -74,7 +73,7 @@ trait HasTranslations
     {
         foreach ($values as $locale => $value) {
             if (! Locales::acceptsInput($locale)) {
-                throw new UnknownLocaleException($locale);
+                throw new TypeError('The translation locale key must be a Locale, a LocaleData, a string, or null.');
             }
 
             $this->setTranslation($column, $value, $locale);
