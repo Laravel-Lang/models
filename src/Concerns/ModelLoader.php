@@ -6,8 +6,7 @@ namespace LaravelLang\Models\Concerns;
 
 use LaravelLang\Models\Services\RelationService;
 
-use function array_merge;
-use function array_unique;
+use function in_array;
 
 trait ModelLoader
 {
@@ -22,6 +21,14 @@ trait ModelLoader
 
     public function initializeModelLoader(): void
     {
-        $this->with = array_unique(array_merge($this->with, ['translations']));
+        if (isset($this->with['translations'])) {
+            return;
+        }
+
+        if (in_array('translations', $this->with, true)) {
+            return;
+        }
+
+        $this->with[] = 'translations';
     }
 }

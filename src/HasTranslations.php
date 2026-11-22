@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
+use LaravelLang\Exceptions\UnknownLocaleException;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
@@ -64,10 +65,18 @@ trait HasTranslations
         return $this->translationAttribute($column, $locale)->set($column, $value);
     }
 
-    /** @param  iterable<Locale|LocaleData|string, mixed>  $values */
+    /**
+     * @param  iterable<mixed, mixed>  $values  Keyed by a locale string, Locale, LocaleData or null.
+     *
+     * @throws TypeError
+     */
     public function setTranslations(string $column, iterable $values): static
     {
         foreach ($values as $locale => $value) {
+            if (! Locales::acceptsInput($locale)) {
+                throw new UnknownLocaleException($locale);
+            }
+
             $this->setTranslation($column, $value, $locale);
         }
 

@@ -22,6 +22,7 @@ abstract class Translation extends Model
         );
     }
 
+    /** @return array<array-key, mixed> */
     protected function casts(): array
     {
         return $this->casts;
