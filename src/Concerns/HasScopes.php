@@ -85,9 +85,9 @@ trait HasScopes
             : Locales::current(false);
 
         $direction = match ($sortMethod instanceof SortDirection ? $sortMethod : strtolower($sortMethod)) {
-            SortDirection::Ascending, 'asc' => 'asc',
+            SortDirection::Ascending, 'asc'   => 'asc',
             SortDirection::Descending, 'desc' => 'desc',
-            default => throw new InvalidSortDirectionException(),
+            default                           => throw new InvalidSortDirectionException,
         };
 
         $query
