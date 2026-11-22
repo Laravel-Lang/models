@@ -7,10 +7,12 @@ namespace LaravelLang\Models\Casts;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Stringable;
+use TypeError;
 
 use function is_bool;
 use function is_null;
 use function is_numeric;
+use function is_scalar;
 use function trim;
 
 /** @implements CastsAttributes<bool|float|int|string, bool|float|int|string|Stringable> */
@@ -18,7 +20,11 @@ final class TrimStringCast implements CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): bool|float|int|string|null
     {
-        return $value;
+        if (is_scalar($value) || $value === null) {
+            return $value;
+        }
+
+        throw new TypeError('The stored value must be a scalar or null.');
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): bool|float|int|string|null

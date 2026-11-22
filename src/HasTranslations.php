@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection as SupportCollection;
 use LaravelLang\LocaleList\Locale;
 use LaravelLang\Locales\Facades\Locales;
 use LaravelLang\Models\Concerns\HasNames;
@@ -20,6 +21,7 @@ use LaravelLang\Models\Services\AttributeService;
 use LaravelLang\Models\Services\RelationService;
 use LaravelLang\Models\Services\ValidatorService;
 use LaravelLang\NativeLocaleNames\LocaleData;
+use TypeError;
 
 use function in_array;
 use function is_iterable;
@@ -39,13 +41,11 @@ trait HasTranslations
     /** @return HasMany<Translation, $this> */
     public function translations(): HasMany
     {
-        $builder = $this->translationsRaw();
+        $relation = $this->translationsRaw();
 
-        $filter = new FilterTranslationsScope;
+        (new FilterTranslationsScope)($relation);
 
-        $filter($builder);
-        
-        return $builder;
+        return $relation;
     }
 
     /** @return HasMany<Translation, $this> */
@@ -111,15 +111,26 @@ trait HasTranslations
             return $this->setTranslation($key, $value);
         }
 
-        return parent::setAttribute($key, $value);
+        $model = parent::setAttribute($key, $value);
+
+        if (! $model instanceof Model) {
+            throw new TypeError('Setting an attribute must return an Eloquent model.');
+        }
+
+        return $model;
     }
 
     public function setRelation($relation, $value): static
     {
-        $this->relations[$relation] = match ($relation) {
-            'translations' => $value->keyBy('locale'),
-            default        => $value
-        };
+        if ($relation === 'translations') {
+            if (! $value instanceof SupportCollection) {
+                throw new TypeError('The translations relation must be a collection.');
+            }
+
+            $value = $value->keyBy('locale');
+        }
+
+        $this->relations[$relation] = $value;
 
         return $this;
     }

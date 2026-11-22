@@ -11,7 +11,7 @@ use LaravelLang\Models\Eloquent\Translation;
 
 final class FilterTranslationsScope
 {
-    /** @param  HasMany<Translation, \Illuminate\Database\Eloquent\Model>  $builder */
+    /** @param  HasMany<Translation, *>  $builder */
     public function __invoke(HasMany $builder): void
     {
         if (! $this->enabled()) {

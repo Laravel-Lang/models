@@ -67,7 +67,7 @@ class AttributeService
         $locale = $this->locale();
 
         ($this->translate)($locale)->delete();
-        $this->model->getRelationValue('translations')->forget($locale);
+        RelationService::collection($this->model)->forget($locale ?? []);
 
         $this->eventForget();
 

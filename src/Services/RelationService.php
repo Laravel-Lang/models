@@ -7,7 +7,9 @@ namespace LaravelLang\Models\Services;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection as SupportCollection;
 use LaravelLang\Models\Eloquent\Translation;
+use TypeError;
 
 use function blank;
 
@@ -16,7 +18,7 @@ class RelationService
     public static function initialize(Model $model): Model
     {
         if (blank($model->getRelationValue('translations'))) {
-            $translations = $model->load('translations')->translations ?? new Collection;
+            $translations = $model->load('translations')->getRelation('translations') ?? new Collection;
 
             $model->setRelation('translations', $translations);
         }
@@ -38,9 +40,25 @@ class RelationService
 
     public static function resolveKey(Model $model): void
     {
-        $model->getRelationValue('translations')->each(
-            fn (Translation $item) => $item->forceFill(['item_id' => $model->getKey()])
-        );
+        foreach (static::collection($model) as $translation) {
+            if (! $translation instanceof Translation) {
+                throw new TypeError('The translations relation must contain only translation models.');
+            }
+
+            $translation->forceFill(['item_id' => $model->getKey()]);
+        }
+    }
+
+    /** @return SupportCollection<array-key, mixed> */
+    public static function collection(Model $model): SupportCollection
+    {
+        $translations = $model->getRelationValue('translations');
+
+        if (! $translations instanceof SupportCollection) {
+            throw new TypeError('The translations relation must be a collection.');
+        }
+
+        return $translations;
     }
 
     public static function clear(Model $model): void
@@ -50,8 +68,9 @@ class RelationService
 
     protected static function setAttributes(Model $model, Translation $translation, string $locale): Translation
     {
-        return $translation
-            ->setAttribute('item_id', $model->getKey())
-            ->setAttribute('locale', $locale);
+        $translation->setAttribute('item_id', $model->getKey());
+        $translation->setAttribute('locale', $locale);
+
+        return $translation;
     }
 }
