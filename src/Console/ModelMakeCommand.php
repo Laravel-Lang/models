@@ -14,6 +14,7 @@ use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
 use LaravelLang\Models\Services\ClassMapService;
+use ReflectionClass;
 
 use function array_filter;
 use function array_merge;
@@ -45,6 +46,12 @@ final class ModelMakeCommand extends Command
 
         if (! is_a($model, Model::class, true)) {
             error("The model at `$model` namespace was not found.");
+
+            return self::FAILURE;
+        }
+
+        if (! (new ReflectionClass($model))->isInstantiable()) {
+            error("The model at `$model` namespace cannot be instantiated.");
 
             return self::FAILURE;
         }

@@ -96,7 +96,7 @@ trait HasScopes
                     ->query()
                     ->select($translationField)
                     ->where($this->translationQualifyColumn('locale'), $normalized)
-                    ->whereColumn($this->translationQualifyColumn('item_id'), $this->qualifyColumn('id')),
+                    ->whereColumn($this->translationQualifyColumn('item_id'), $this->getQualifiedKeyName()),
                 $direction
             );
     }

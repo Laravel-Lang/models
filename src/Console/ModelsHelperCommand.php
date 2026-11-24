@@ -22,7 +22,10 @@ final class ModelsHelperCommand extends Command
 
     public function __invoke(Filesystem $filesystem, ModelLangConfig $config): void
     {
-        $this->cleanUp($filesystem, $config);
+        if ($this->argument('model') === null) {
+            $this->cleanUp($filesystem, $config);
+        }
+
         $this->process($filesystem);
     }
 
