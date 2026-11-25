@@ -12,7 +12,7 @@
 
 ## Documentation
 
-See the [documentation](https://laravel-lang.com/start) for detailed information.
+[Add translated attributes to Eloquent models.](https://laravel-lang.com/models)
 
 ## Contributing
 
