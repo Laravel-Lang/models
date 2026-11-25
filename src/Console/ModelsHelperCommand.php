@@ -5,52 +5,60 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelCommandInputException;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\HelperGenerator;
-use LaravelLang\Models\Helpers\Filesystem;
-use LaravelLang\Models\Services\ClassMap;
-use Symfony\Component\Console\Attribute\AsCommand;
+use LaravelLang\Models\Services\ClassMapService;
 
+use function is_string;
 use function ltrim;
 
-#[AsCommand(name: 'lang:models-helper')]
-class ModelsHelperCommand extends Command
+final class ModelsHelperCommand extends Command
 {
     protected $signature = 'lang:models-helper {model?}';
 
     protected $description = 'Generating autocomplete translatable properties for models';
 
-    public function handle(): void
+    public function __invoke(Filesystem $filesystem, ModelLangConfig $config): void
     {
-        $this->cleanUp();
-        $this->process();
+        if ($this->argument('model') === null) {
+            $this->cleanUp($filesystem, $config);
+        }
+
+        $this->process($filesystem);
     }
 
-    protected function process(): void
+    protected function process(Filesystem $filesystem): void
     {
         foreach ($this->models() as $model) {
-            $this->components->task($model, fn () => $this->generate($model));
+            $this->components->task($model, fn () => $this->generate($model, $filesystem));
         }
     }
 
-    protected function generate(string $model): void
+    protected function generate(string $model, Filesystem $filesystem): void
     {
-        HelperGenerator::of($model)->generate();
+        (new HelperGenerator($model, [], $filesystem))->generate();
     }
 
+    /** @return array<int, string> */
     protected function models(): array
     {
         if ($model = $this->argument('model')) {
+            if (! is_string($model)) {
+                throw InvalidModelCommandInputException::invalidModel();
+            }
+
             return [ltrim($model, '\\')];
         }
 
-        return ClassMap::translatable();
+        return ClassMapService::translatable();
     }
 
-    protected function cleanUp(): void
+    protected function cleanUp(Filesystem $filesystem, ModelLangConfig $config): void
     {
-        Filesystem::ensureDeleteDirectory(
-            Config::shared()->models->helpers
+        $filesystem->ensureDelete(
+            $config->helpers
         );
     }
 }

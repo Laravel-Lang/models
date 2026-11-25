@@ -4,25 +4,31 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Model;
-use LaravelLang\Models\Services\Relation;
+use LaravelLang\Models\Services\RelationService;
 
-use function array_merge;
-use function array_unique;
+use function in_array;
 
 trait ModelLoader
 {
     public static function bootModelLoader(): void
     {
-        static::saved(function (Model $model) {
-            Relation::resolveKey($model);
+        static::saved(static function (self $model): void {
+            RelationService::resolveKey($model);
 
-            $model->translations?->each?->save();
+            $model->translations->each->save();
         });
     }
 
     public function initializeModelLoader(): void
     {
-        $this->with = array_unique(array_merge($this->with, ['translations']));
+        if (isset($this->with['translations'])) {
+            return;
+        }
+
+        if (in_array('translations', $this->with, true)) {
+            return;
+        }
+
+        $this->with[] = 'translations';
     }
 }

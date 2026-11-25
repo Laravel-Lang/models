@@ -4,61 +4,80 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection as SupportCollection;
+use LaravelLang\Exceptions\InvalidLocaleInputException;
+use LaravelLang\Exceptions\InvalidModelAttributeResultException;
+use LaravelLang\Exceptions\InvalidTranslationsRelationException;
 use LaravelLang\LocaleList\Locale;
-use LaravelLang\Locales\Data\LocaleData;
+use LaravelLang\LocaleNames\LocaleData;
 use LaravelLang\Locales\Facades\Locales;
+use LaravelLang\Models\Concerns\HasNames;
+use LaravelLang\Models\Concerns\HasScopes;
+use LaravelLang\Models\Concerns\ModelLoader;
 use LaravelLang\Models\Eloquent\Scopes\FilterTranslationsScope;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Services\Attribute;
-use LaravelLang\Models\Services\Registry;
-use LaravelLang\Models\Services\Relation;
+use LaravelLang\Models\Services\AttributeService;
+use LaravelLang\Models\Services\RelationService;
+use LaravelLang\Models\Services\ValidatorService;
 
-use function app;
 use function in_array;
 use function is_iterable;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Concerns\HasAttributes
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @property-read Collection<array-key, Translation> $translations
+ *
+ * @mixin HasAttributes
+ * @mixin Model
  */
 trait HasTranslations
 {
-    use Concerns\HasNames;
-    use Concerns\ModelLoader;
-    use Concerns\Scopes;
+    use HasNames;
+    use HasScopes;
+    use ModelLoader;
 
+    /** @return HasMany<Translation, $this> */
     public function translations(): HasMany
     {
-        return $this->translationsRaw()->tap(
-            new FilterTranslationsScope
-        );
+        $relation = $this->translationsRaw();
+
+        (new FilterTranslationsScope)($relation);
+
+        return $relation;
     }
 
+    /** @return HasMany<Translation, $this> */
     public function translationsRaw(): HasMany
     {
-        return $this->hasMany($this->translationModelName(), 'item_id');
+        return $this->hasMany($this->translationClass(), 'item_id');
     }
 
     public function hasTranslated(string $column, Locale|LocaleData|string|null $locale = null): bool
     {
-        return Attribute::of($this, $column, $locale)
-            ->validate()
-            ->has();
+        return $this->translationAttribute($column, $locale)->has($column);
     }
 
     public function setTranslation(string $column, mixed $value, Locale|LocaleData|string|null $locale = null): Model
     {
-        return Attribute::of($this, $column, $locale)
-            ->validate()
-            ->set($value);
+        return $this->translationAttribute($column, $locale)->set($column, $value);
     }
 
+    /**
+     * @param  iterable<mixed, mixed>  $values  Keyed by a locale string, Locale, LocaleData or null.
+     *
+     * @throws InvalidLocaleInputException
+     */
     public function setTranslations(string $column, iterable $values): static
     {
         foreach ($values as $locale => $value) {
+            if (! Locales::acceptsInput($locale)) {
+                throw InvalidLocaleInputException::forTranslationKey();
+            }
+
             $this->setTranslation($column, $value, $locale);
         }
 
@@ -67,9 +86,7 @@ trait HasTranslations
 
     public function getTranslation(string $column, Locale|LocaleData|string|null $locale = null): mixed
     {
-        return Attribute::of($this, $column, $locale)
-            ->validate()
-            ->get();
+        return $this->translationAttribute($column, $locale)->get($column);
     }
 
     public function isTranslatable(string $column): bool
@@ -79,14 +96,14 @@ trait HasTranslations
 
     public function forgetTranslation(Locale|LocaleData|string $locale): Model
     {
-        return Attribute::of($this, locale: $locale)
+        return (new AttributeService($this, $this->translation(...), $locale))
             ->validateLocale()
             ->forget();
     }
 
     public function forgetAllTranslations(): Model
     {
-        return Attribute::of($this)->forgetAll();
+        return (new AttributeService($this, $this->translation(...)))->forgetAll($this->translationsRaw());
     }
 
     public function getAttribute($key): mixed
@@ -104,15 +121,26 @@ trait HasTranslations
             return $this->setTranslation($key, $value);
         }
 
-        return parent::setAttribute($key, $value);
+        $model = parent::setAttribute($key, $value);
+
+        if (! $model instanceof Model) {
+            throw new InvalidModelAttributeResultException;
+        }
+
+        return $model;
     }
 
     public function setRelation($relation, $value): static
     {
-        $this->relations[$relation] = match ($relation) {
-            'translations' => $value->keyBy('locale'),
-            default        => $value
-        };
+        if ($relation === 'translations') {
+            if (! $value instanceof SupportCollection) {
+                throw InvalidTranslationsRelationException::expectedCollection();
+            }
+
+            $value = $value->keyBy('locale');
+        }
+
+        $this->relations[$relation] = $value;
 
         return $this;
     }
@@ -133,21 +161,33 @@ trait HasTranslations
         return $this;
     }
 
+    /** @return array<array-key, string> */
     public function translatable(): array
     {
-        return app(Registry::class)->get(__METHOD__, function () {
-            return (new ($this->translationModelName())())->translatable();
-        });
+        $class = $this->translationClass();
+
+        return (new $class)->translatable();
     }
 
-    public function translation(?LocaleData $locale): Translation
+    public function translation(?string $locale): Translation
     {
-        $locale ??= Locales::getCurrent();
+        $normalized = ($locale ? Locales::fromAlias($locale) : null) ?? Locales::current(false);
 
-        if (! $this->translations->has($locale->locale->value)) {
-            $this->translations->put($locale->locale->value, Relation::initializeLocale($this, $locale));
+        if (! $this->relationLoaded('translations')) {
+            // On first access Eloquent returns the collection before setRelation() keys it by locale.
+            $this->getRelationValue('translations');
         }
 
-        return $this->translations->get($locale->locale->value);
+        return $this->translations->getOrPut(
+            $normalized,
+            fn (): Translation => RelationService::initializeLocale($this, $normalized, $this->translationsRaw()),
+        );
+    }
+
+    protected function translationAttribute(string $column, Locale|LocaleData|string|null $locale): AttributeService
+    {
+        ValidatorService::column($column, $this->isTranslatable($column), $this->translatable(...));
+
+        return (new AttributeService($this, $this->translation(...), $locale))->validateLocale();
     }
 }

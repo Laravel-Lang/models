@@ -4,17 +4,35 @@ declare(strict_types=1);
 
 namespace LaravelLang\Models\Concerns;
 
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidTranslationModelException;
+use LaravelLang\Models\Eloquent\Translation;
+
+use function is_a;
 
 trait HasNames
 {
-    public function translationModelName(): string
+    public function translationModel(): string
     {
-        return static::class . Config::shared()->models->suffix;
+        return static::class . app(ModelLangConfig::class)->suffix;
     }
 
-    public function getTranslationTable(): string
+    public function translationQualifyColumn(string $column): string
     {
-        return (new ($this->translationModelName())())->getTable();
+        $class = $this->translationClass();
+
+        return (new $class)->qualifyColumn($column);
+    }
+
+    /** @return class-string<Translation> */
+    protected function translationClass(): string
+    {
+        $class = $this->translationModel();
+
+        if (! is_a($class, Translation::class, true)) {
+            throw new InvalidTranslationModelException($class);
+        }
+
+        return $class;
     }
 }

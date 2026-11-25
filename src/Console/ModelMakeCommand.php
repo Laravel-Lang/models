@@ -5,74 +5,93 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelCommandInputException;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Generators\MigrationGenerator;
 use LaravelLang\Models\Generators\ModelGenerator;
 use LaravelLang\Models\Generators\ParentGenerator;
-use LaravelLang\Models\Services\ClassMap;
-use Symfony\Component\Console\Attribute\AsCommand;
+use LaravelLang\Models\Services\ClassMapService;
+use ReflectionClass;
 
 use function array_filter;
 use function array_merge;
 use function class_exists;
-use function compact;
+use function is_a;
+use function is_array;
+use function is_string;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
 
-#[AsCommand(name: 'make:model-translation')]
-class ModelMakeCommand extends Command
+final class ModelMakeCommand extends Command
 {
     protected $signature = 'make:model-translation {model?} {--columns=*}';
 
     protected $description = 'Creates a model for storing translations';
 
-    protected array $columns = ['locale', 'title', 'description'];
+    /** @var list<string> */
+    protected array $columns = ['title', 'description'];
 
-    public function handle(): void
+    public function __invoke(Filesystem $filesystem): int
     {
-        $model = $this->model();
+        if (! $model = $this->model()) {
+            error('A model class name is required.');
 
-        if (! $this->validatedModel($model)) {
+            return self::FAILURE;
+        }
+
+        if (! is_a($model, Model::class, true)) {
             error("The model at `$model` namespace was not found.");
 
-            return;
+            return self::FAILURE;
+        }
+
+        if (! (new ReflectionClass($model))->isInstantiable()) {
+            error("The model at `$model` namespace cannot be instantiated.");
+
+            return self::FAILURE;
         }
 
         if ($this->hasTranslation($model)) {
             warning('The specified model already has a translation repository.');
 
-            return;
+            return self::FAILURE;
         }
 
         $columns = $this->columns();
 
-        $this->attachToParent($model);
-        $this->generateModel($model, $columns);
-        $this->generateMigration($model, $columns);
+        $this->attachToParent($model, $filesystem);
+        $this->generateModel($model, $columns, $filesystem);
+        $this->generateMigration($model, $columns, $filesystem);
         $this->generateHelper($model);
+
+        return self::SUCCESS;
     }
 
-    protected function generateModel(string $model, array $columns): void
+    /** @param  array<array-key, string>  $columns */
+    protected function generateModel(string $model, array $columns, Filesystem $filesystem): void
     {
-        ModelGenerator::of($model, $columns)->generate();
+        (new ModelGenerator($model, $columns, $filesystem))->generate();
     }
 
-    protected function generateMigration(string $model, array $columns): void
+    /** @param  array<array-key, string>  $columns */
+    protected function generateMigration(string $model, array $columns, Filesystem $filesystem): void
     {
-        MigrationGenerator::of($model, $columns)->generate();
+        (new MigrationGenerator($model, $columns, $filesystem))->generate();
     }
 
-    protected function attachToParent(string $model): void
+    protected function attachToParent(string $model, Filesystem $filesystem): void
     {
-        ParentGenerator::of($model)->generate();
+        (new ParentGenerator($model, [], $filesystem))->generate();
     }
 
     protected function generateHelper(string $model): void
     {
-        $this->call(ModelsHelperCommand::class, compact('model'));
+        $this->call(ModelsHelperCommand::class, ['model' => $model]);
     }
 
     protected function model(): ?string
@@ -86,29 +105,34 @@ class ModelMakeCommand extends Command
 
     protected function askModel(): ?string
     {
-        if ($model = $this->argument('model')) {
-            return $model;
-        }
+        $model = $this->argument('model')
+            ?: select(
+                label  : 'Select a model to create a translation repository:',
+                options: $this->models()
+            );
 
-        return select(
-            label  : 'Select a model to create a translation repository:',
-            options: $this->models()
-        );
-    }
-
-    protected function validatedModel(string $model): ?string
-    {
-        return class_exists($model) ? $model : null;
+        return is_string($model) ? $model : null;
     }
 
     protected function hasTranslation(string $model): bool
     {
-        return class_exists($model . Config::shared()->models->suffix);
+        return class_exists($model . app(ModelLangConfig::class)->suffix);
     }
 
+    /** @return array<array-key, string> */
     protected function columns(): array
     {
         if ($columns = $this->option('columns')) {
+            if (! is_array($columns)) {
+                throw InvalidModelCommandInputException::invalidColumns();
+            }
+
+            foreach ($columns as $column) {
+                if (! is_string($column)) {
+                    throw InvalidModelCommandInputException::invalidColumnName();
+                }
+            }
+
             return $columns;
         }
 
@@ -119,15 +143,17 @@ class ModelMakeCommand extends Command
         return $this->columns;
     }
 
+    /** @return array<class-string> */
     protected function models(): array
     {
-        return ClassMap::available();
+        return ClassMapService::available();
     }
 
-    protected function askColumns(array $columns = []): array
+    /** @return array<int, string> */
+    protected function askColumns(): array
     {
         if ($column = text('Enter a column name or press Enter for continue')) {
-            return array_filter(array_merge([$column], $this->askColumns($columns)));
+            return array_filter(array_merge([$column], $this->askColumns()));
         }
 
         return [];

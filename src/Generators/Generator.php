@@ -6,38 +6,38 @@ namespace LaravelLang\Models\Generators;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str as IS;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelLangConfig;
+use LaravelLang\Exceptions\InvalidModelClassException;
+use LaravelLang\Exceptions\UnknownModelPathException;
+use LaravelLang\Filesystem\Filesystem;
 use LaravelLang\Models\Eloquent\Translation;
-use LaravelLang\Models\Exceptions\UnknownModelPathException;
-use LaravelLang\Models\Helpers\Filesystem;
-use LaravelLang\Models\Services\ClassMap;
+use LaravelLang\Models\Services\ClassMapService;
+use LaravelLang\Models\Services\TemplateService;
 
+use function app;
 use function collect;
-use function file_get_contents;
 use function implode;
 use function is_array;
 use function ltrim;
-use function strtr;
 
 abstract class Generator
 {
     protected string $stub;
 
+    /** @var array<string, Model> */
     protected array $registry = [];
 
+    /** @return array<string, string|array<array-key, string>> */
     abstract protected function data(): array;
 
     abstract protected function filename(): string;
 
+    /** @param  array<array-key, string>  $columns */
     public function __construct(
         protected string $model,
-        protected array $columns
+        protected array $columns,
+        protected Filesystem $filesystem,
     ) {}
-
-    public static function of(string $model, array $columns = []): static
-    {
-        return new static($model, $columns);
-    }
 
     public function generate(): void
     {
@@ -49,17 +49,16 @@ abstract class Generator
 
     protected function make(): string
     {
-        $replace = [];
-
-        foreach ($this->resolveData() as $key => $value) {
-            $replace['{{' . $key . '}}'] = (string) $value;
-        }
-
-        return strtr($this->template(), $replace);
+        return TemplateService::replaceFormat(
+            template: $this->template(),
+            data    : $this->resolveData(),
+            format  : '{{%s}}'
+        );
     }
 
     protected function finish(string $path): void {}
 
+    /** @return array{fqn: string, namespace: string, model: string} */
     protected function baseData(): array
     {
         return [
@@ -69,17 +68,18 @@ abstract class Generator
         ];
     }
 
+    /** @return array<string, string> */
     protected function resolveData(): array
     {
         return collect($this->data())
-            ->map(fn (mixed $value) => is_array($value) ? implode(PHP_EOL, $value) : $value)
+            ->map(fn (mixed $value): string => is_array($value) ? implode(PHP_EOL, $value) : $value)
             ->merge($this->baseData())
             ->all();
     }
 
     protected function store(string $path, string $content): void
     {
-        Filesystem::store($path, $content);
+        $this->filesystem->store($path, $content);
     }
 
     protected function getFqn(): string
@@ -102,14 +102,29 @@ abstract class Generator
 
     protected function baseModel(): Model
     {
-        return $this->registry[$this->model] ??= new $this->model;
+        return $this->modelInstance($this->model, Model::class);
     }
 
     protected function translationModel(): Translation
     {
-        $model = $this->translationModelNamespace();
+        return $this->modelInstance($this->translationModelNamespace(), Translation::class);
+    }
 
-        return $this->registry[$model] ??= new $model;
+    /**
+     * @template TModel of Model
+     *
+     * @param  class-string<TModel>  $expected
+     * @return TModel
+     */
+    protected function modelInstance(string $class, string $expected): Model
+    {
+        $model = $this->registry[$class] ?? new $class;
+
+        if (! $model instanceof $expected) {
+            throw new InvalidModelClassException($class, $expected);
+        }
+
+        return $this->registry[$class] = $model;
     }
 
     protected function translationModelNamespace(): string
@@ -119,17 +134,22 @@ abstract class Generator
 
     protected function modelSuffix(): string
     {
-        return Config::shared()->models->suffix;
+        return app(ModelLangConfig::class)->suffix;
     }
 
     protected function template(): string
     {
-        return file_get_contents($this->stub);
+        return $this->readTemplate($this->stub);
+    }
+
+    protected function readTemplate(string $path): string
+    {
+        return $this->filesystem->fromString($path);
     }
 
     protected function path(): string
     {
-        if ($path = ClassMap::path($this->model)) {
+        if ($path = ClassMapService::path($this->model)) {
             return $path;
         }
 

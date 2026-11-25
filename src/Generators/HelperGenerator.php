@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace LaravelLang\Models\Generators;
 
 use Illuminate\Support\Str;
-use LaravelLang\Config\Facades\Config;
+use LaravelLang\Config\Services\ModelLangConfig;
 
 use function array_map;
-use function md5;
+use function hash;
 use function sprintf;
 
 class HelperGenerator extends Generator
@@ -17,6 +17,7 @@ class HelperGenerator extends Generator
 
     protected string $properties = '     * @property string|null $%s';
 
+    /** @return array{hash: string, properties: array<array-key, string>, translationNamespace: string, translationModel: string} */
     protected function data(): array
     {
         return [
@@ -30,19 +31,24 @@ class HelperGenerator extends Generator
 
     protected function filename(): string
     {
-        return Config::shared()->models->helpers . '/_ide_helper_models_' . $this->getHash() . '.php';
+        return app(ModelLangConfig::class)->helpers . '/_ide_helper_models_' . $this->getHash() . '.php';
     }
 
+    /** @return array<array-key, string> */
     protected function getProperties(): array
     {
-        return array_map(fn (string $attribute) => sprintf($this->properties, $attribute), $this->getTranslatable());
+        return array_map(
+            fn (string $attribute): string => sprintf($this->properties, $attribute),
+            $this->getTranslatable()
+        );
     }
 
     protected function getHash(): string
     {
-        return md5($this->model);
+        return hash('xxh128', $this->model);
     }
 
+    /** @return array<array-key, string> */
     protected function getTranslatable(): array
     {
         return $this->translationModel()->translatable();
